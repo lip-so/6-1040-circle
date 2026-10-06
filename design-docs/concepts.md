@@ -1,22 +1,24 @@
 # Concepts
 
-## Design choices
+## Role of the concepts
 
-Use four concepts:
+Circle is composed of four concepts. None of them knows about the others; type parameters and reactions instantiate them for this app.
 
-Remembering, Graphing, Seeking, and Connecting.
+**Remembering [User]** stores raw encounter accounts. *User* is the student who owns the notes. Capture, revision, and deletion happen only here.
 
-Remembering retains accounts of encounters;
+**Graphing [User, Source]** turns those accounts into a navigable set of usable claims. In Circle, *Source* is bound to Remembering’s *Memory*. Graphing does not know that a source is a memory; reactions pass the memory identity as an opaque source. Rejected claims stay in the graph but are not usable for tracing until restored, the same way a used nonce stays recorded until it is released.
 
-Graphing makes relationships across those accounts navigable
+**Seeking [User]** stores the student’s current needs. A seek stays active until the student resolves or deletes it.
 
-Seeking maintains current needs;
+**Connecting [User, Target, Need, Evidence]** holds explained suggestions and the student’s responses. In Circle, *Target* is a Graphing *Entity* of kind person, *Need* is a Seeking *Seek*, and *Evidence* is a Graphing *Claim*. Connecting never inspects those objects; it only stores the identities and explanations supplied to it.
 
-Connecting maintains an actionable collection of explained suggestions and the user's responses.
+User-facing requests are modeled with the pseudo-concept **Request**. Reactions that start from a student action include `Request`; reactions that only chain concept actions do not.
+
+---
 
 ## 1. Remembering
 
-```text
+```
 concept Remembering [User]
 
 purpose
@@ -37,37 +39,43 @@ state
     an optional contact String
 
 actions
-  remember (owner: User, content: String,
-            occurredAt?: Time, contact?: String)
-    : returns (memory: Memory)
+  remember (owner: User, content: String, occurredAt: Time,
+            contact?: String)
+    : (memory: Memory)
     where content is not blank
     then
-      create memory with the given owner and content
-      set capturedAt to the current time
-      set occurredAt to the supplied time, or capturedAt if omitted
-      set contact to the supplied value, or leave it absent
+      create memory with owner, content, occurredAt, and contact
+      set capturedAt to now
+      return memory
+
+  remember (owner: User, content: String, contact?: String)
+    : (memory: Memory)
+    where content is not blank
+    then
+      create memory with owner, content, and contact
+      set capturedAt to now
+      set occurredAt to capturedAt
       return memory
 
   revise (owner: User, memory: Memory, content: String)
-    where memory exists, memory.owner = owner,
-          and content is not blank
+    where memory exists
+          memory.owner = owner
+          content is not blank
     then replace memory.content with content
 
   forget (owner: User, memory: Memory)
-    where memory exists and memory.owner = owner
+    where memory exists
+          memory.owner = owner
     then remove memory
-
-queries
-  _memories (owner: User)
-    : many (memory: Memory, content: String,
-            occurredAt: Time, contact?: String)
-    Return the owner's memories, newest occurrence first;
-    return no rows if none exist.
 ```
+
+Notes. The two `remember` cases split the optional occurrence time: one `where` requires a supplied time, the other does not. `forget` is the delete that pairs with `remember`.
+
+---
 
 ## 2. Graphing
 
-```text
+```
 concept Graphing [User, Source]
 
 purpose
@@ -105,27 +113,32 @@ state
 actions
   ingest (owner: User, source: Source,
           content: String, observedAt: Time)
-    where content is not blank,
-          and any existing claims for source belong to owner
+    where content is not blank
+          every existing claim with this source has owner
     then
-      remove previous claims for source
-      create or reuse the owner's self entity
-      extract explicitly supported relationships from content
-      create or reuse entities within this owner's graph
-      create a usable claim for each extracted relationship,
-        with source, an exact supporting quote from content,
-        and observedAt
-      preserve qualifiers: 'sometimes hosts' is not 'offers'
-      retain existing entity identities when their identity is clear
-      leave ambiguous identities separate
-      create no claim for an unsupported relationship
+      remove every claim with this source
+      add usable claims extracted from content
+        owned by owner, attributed to source, at observedAt
 
   reject (owner: User, claim: Claim)
-    where claim exists, claim.owner = owner, and claim.usable
+    where claim exists
+          claim.owner = owner
+          claim.usable
     then set claim.usable to false
 
+  restore (owner: User, claim: Claim)
+    where claim exists
+          claim.owner = owner
+          claim.usable is false
+    then set claim.usable to true
+
+  remove (owner: User, claim: Claim)
+    where claim exists
+          claim.owner = owner
+    then remove claim
+
   retract (owner: User, source: Source)
-    where any existing claims for source belong to owner
+    where every existing claim with this source has owner
     then remove every claim with this source
 
 queries
@@ -139,14 +152,18 @@ queries
 
 ### Tracing rules
 
-1. Start with someone the user knows, combine evidence across memories when useful.
+1. Start with someone the user knows, and combine evidence across sources when useful.
 2. Match by meaning without inventing facts. Explain what kind of help the evidence supports.
 3. Show uncertainty. Exclude known conflicts and identify missing or disputed information.
 4. Return at most five people, preferring fewer gaps, fewer acquaintance hops, and more recent evidence.
 
+Notes. Extraction may create or reuse entities for this owner; it records only relationships the content supports (for example, *sometimes hosts* is not *offers*). Ambiguous identities stay separate. `reject` makes a claim unusable for tracing without deleting it; `restore` returns it to the usable set; `remove` deletes it. `retract` deletes every claim from one source.
+
+---
+
 ## 3. Seeking
 
-```text
+```
 concept Seeking [User]
 
 purpose
@@ -156,7 +173,7 @@ purpose
 principle
   If a user declares a need, it remains active without being
   re-entered. The user can refine it as their plans change,
-  and resolve it when they stop pursuing it.
+  and resolve or delete it when they stop pursuing it.
 
 state
   a set of Seeks with
@@ -167,34 +184,52 @@ state
 
 actions
   seek (owner: User, description: String)
-    : returns (seek: Seek)
+    : (seek: Seek)
     where description is not blank
     then
       create seek with owner and description
-      set createdAt to the current time and active to true
+      set createdAt to now
+      set active to true
       return seek
 
   revise (owner: User, seek: Seek, description: String)
-    where seek exists, seek.owner = owner,
-          seek.active, and description is not blank
+    where seek exists
+          seek.owner = owner
+          seek.active
+          description is not blank
     then replace seek.description with description
 
   resolve (owner: User, seek: Seek)
-    where seek exists, seek.owner = owner, and seek.active
+    where seek exists
+          seek.owner = owner
+          seek.active
     then set seek.active to false
+
+  reopen (owner: User, seek: Seek)
+    where seek exists
+          seek.owner = owner
+          seek.active is false
+    then set seek.active to true
+
+  delete (owner: User, seek: Seek)
+    where seek exists
+          seek.owner = owner
+    then remove seek
 
 queries
   _active (owner: User)
     : many (seek: Seek, description: String)
-    Return the owner's active seeks, oldest first;
-    return no rows if none exist.
+    Return the owner's active seeks, oldest first.
+    Return no rows if none exist.
 ```
 
-seek stays active when the student closes the app. Multiple needs can coexist, such as a spring UROP and a summer internship.
+Notes. A seek stays active when the student closes the app. Multiple needs can coexist. `delete` pairs with `seek`. `reopen` returns a resolved need to the active set.
+
+---
 
 ## 4. Connecting
 
-```text
+```
 concept Connecting [User, Target, Need, Evidence]
 
 purpose
@@ -204,16 +239,11 @@ purpose
 principle
   If explained candidates are supplied for a user's need,
   the user can inspect them and dismiss or mark one useful.
-  Refreshing candidates updates their explanations without
-  presenting handled candidates as new suggestions.
+  Later offers update explanations without presenting handled
+  candidates as new suggestions.
 
 types
   Status = {suggested, dismissed, useful}
-  Candidate = value containing
-    target: Target
-    evidence: set of Evidence
-    reason: String
-    gaps: set of String
 
 state
   a set of Connections with
@@ -224,32 +254,52 @@ state
     a reason String
     a gaps set of String
     a status Status
-    a eligible Boolean
+    an eligible Boolean
 
 actions
-  refresh (owner: User, need: Need,
-           candidates: set of Candidate)
-    where candidate targets are distinct,
-          and each candidate has nonempty evidence and reason
+  reset (owner: User, need: Need)
+    then set eligible to false
+         for every connection with this owner and need
+
+  offer (owner: User, need: Need, target: Target,
+         evidence: set of Evidence, reason: String,
+         gaps: set of String)
+    where evidence is nonempty
+          reason is not blank
+          no connection exists with this owner, need, and target
     then
-      set eligible to false for existing connections
-        of this owner and need
-      for each candidate
-        find the connection with this owner, need, and target
-        or create one with status suggested if none exists
-        replace its evidence, reason, and gaps with supplied values
-        set eligible to true
-      preserve the status of every existing connection
+      create a connection with the given fields
+      set status to suggested
+      set eligible to true
+
+  offer (owner: User, need: Need, target: Target,
+         evidence: set of Evidence, reason: String,
+         gaps: set of String)
+    where evidence is nonempty
+          reason is not blank
+          a connection c exists with this owner, need, and target
+    then
+      replace c.evidence, c.reason, and c.gaps
+      set c.eligible to true
 
   dismiss (owner: User, connection: Connection)
-    where connection exists, connection.owner = owner,
-          connection.eligible, and connection.status = suggested
+    where connection exists
+          connection.owner = owner
+          connection.eligible
+          connection.status = suggested
     then set connection.status to dismissed
 
   use (owner: User, connection: Connection)
-    where connection exists, connection.owner = owner,
-          connection.eligible, and connection.status = suggested
+    where connection exists
+          connection.owner = owner
+          connection.eligible
+          connection.status = suggested
     then set connection.status to useful
+
+  remove (owner: User, connection: Connection)
+    where connection exists
+          connection.owner = owner
+    then remove connection
 
   clear (owner: User, need: Need)
     then remove every connection with this owner and need
@@ -259,71 +309,145 @@ queries
     : many (connection: Connection, target: Target, need: Need,
             evidence: set of Evidence, reason: String,
             gaps: set of String)
-    Return only this owner's eligible, suggested connections.
+    Return this owner's eligible, suggested connections.
     Return no rows if none exist. Order is unspecified.
 ```
 
-## Reactions
+Notes. The two `offer` cases split insert from update: the `where` says whether a connection for that target already exists. `then` never branches. `remove` deletes one connection; `clear` deletes every connection for a need.
 
-### A. Capture and correction rebuild only the affected source
+---
 
-```text
-when Remembering.remember (u, content, ...): (m)
-  or Remembering.revise (u, m, content)
-where Remembering contains m owned by u
-      with current content and occurredAt
-then Graphing.ingest (u, m, content, occurredAt)
+## Essential reactions
+
+Format: `when` an action completes, `where` any extra condition or query, `then` the next action. `where` may bind query results; each bound row is a separate firing. `then` only invokes actions.
+
+### A. Capture from a user request
+
+```
+sync rememberOnRequest
+  when Request.remember (u, content, occurredAt, contact)
+  then Remembering.remember (u, content, occurredAt, contact)
+
+sync rememberNowOnRequest
+  when Request.remember (u, content, contact)
+  then Remembering.remember (u, content, contact)
+
+sync ingestOnRemember
+  when Remembering.remember (u, content, ...): (m)
+  where Remembering contains m
+        m.owner = u
+  then Graphing.ingest (u, m, m.content, m.occurredAt)
+
+sync ingestOnRevise
+  when Remembering.revise (u, m, content)
+  where Remembering contains m
+        m.owner = u
+  then Graphing.ingest (u, m, m.content, m.occurredAt)
 ```
 
-This lets several memories contribute to one graph while keeping evidence separate.
+The first two reactions are fired by user requests. Ingest is not: it follows Remembering, so it does not mention Request.
 
-### B. A new seek reconsiders old evidence
+### B. A new seek from a user request
 
-```text
-when Seeking.seek (u, description): (s)
-where Seeking contains active s owned by u
-      candidates = Graphing._trace (u, description)
-then Connecting.refresh (u, s, candidates)
 ```
+sync seekOnRequest
+  when Request.seek (u, description)
+  then Seeking.seek (u, description)
+
+sync resetOnSeek
+  when Seeking.seek (u, description): (s)
+  then Connecting.reset (u, s)
+
+sync offerOnSeek
+  when Connecting.reset (u, s)
+  where Seeking contains s
+        s.owner = u
+        s.active
+        Graphing._trace (u, s.description):
+          (target, evidence, reason, gaps)
+  then Connecting.offer (u, s, target, evidence, reason, gaps)
+```
+
+`Request.seek` is included because a student started the need. Reset and offer chain from Seeking, not from Request.
 
 ### C. New or corrected evidence reconsiders ongoing needs
 
-```text
-when Graphing.ingest (u, source, content, observedAt)
-  or Graphing.reject (u, claim)
-  or Graphing.retract (u, source)
-where for each (s, description) in Seeking._active (u)
-      candidates = Graphing._trace (u, description)
-then Connecting.refresh (u, s, candidates)
 ```
+sync resetOnIngest
+  when Graphing.ingest (u, source, content, observedAt)
+  where Seeking._active (u): (s, description)
+  then Connecting.reset (u, s)
+
+sync resetOnReject
+  when Graphing.reject (u, claim)
+  where Seeking._active (u): (s, description)
+  then Connecting.reset (u, s)
+
+sync resetOnRestore
+  when Graphing.restore (u, claim)
+  where Seeking._active (u): (s, description)
+  then Connecting.reset (u, s)
+
+sync resetOnRemoveClaim
+  when Graphing.remove (u, claim)
+  where Seeking._active (u): (s, description)
+  then Connecting.reset (u, s)
+
+sync resetOnRetract
+  when Graphing.retract (u, source)
+  where Seeking._active (u): (s, description)
+  then Connecting.reset (u, s)
+```
+
+Offering after these resets uses the same `offerOnSeek` rule, which already fires when `Connecting.reset` completes.
 
 ### D. Deleting a memory withdraws its evidence
 
-```text
-when Remembering.forget (u, m)
-then Graphing.retract (u, m)
+```
+sync retractOnForget
+  when Remembering.forget (u, m)
+  then Graphing.retract (u, m)
 ```
 
-### E. Changed and completed needs have explicit lifecycles
+### E. Changed and completed needs
 
-```text
-when Seeking.revise (u, s, description)
-then Connecting.clear (u, s)
-     followed by Connecting.refresh (
-       u, s, Graphing._trace (u, description))
+```
+sync clearOnRevise
+  when Seeking.revise (u, s, description)
+  then Connecting.clear (u, s)
 
-when Seeking.resolve (u, s)
-then Connecting.clear (u, s)
+sync resetOnRevise
+  when Seeking.revise (u, s, description)
+  then Connecting.reset (u, s)
+
+sync clearOnResolve
+  when Seeking.resolve (u, s)
+  then Connecting.clear (u, s)
+
+sync clearOnDeleteSeek
+  when Seeking.delete (u, s)
+  then Connecting.clear (u, s)
+
+sync resetOnReopen
+  when Seeking.reopen (u, s)
+  then Connecting.reset (u, s)
 ```
 
-### F. Evidence inspection is restricted to the same owner
+### F. Evidence inspection is restricted to the owner
 
-```text
-when the signed-in user u requests a connection's explanation
-where Connecting contains that connection owned by u
-      each referenced Graphing claim is owned by u
-      each source memory in Remembering is owned by u
-then display the reason, named semantic bridges, gaps,
-     claim observation dates, and original source accounts
 ```
-Does not change the state.
+sync inspectConnection
+  when Request.inspect (u, connection)
+  where Connecting contains connection
+        connection.owner = u
+        every claim in connection.evidence
+          is a Graphing claim owned by u
+        every source of those claims
+          is a Remembering memory owned by u
+  then
+    Request.respond (reason: connection.reason,
+                     gaps: connection.gaps,
+                     evidence: connection.evidence)
+```
+
+This reaction does not change concept state. It is the access-control pattern: a request is answered only when every referenced object belongs to the same owner.

@@ -28,9 +28,9 @@ The design notebook and personal reflections are in the private individual repos
 
 [Concept design](design-docs/concepts.md) specifies four concepts—**Remembering**, **Graphing**, **Seeking**, and **Connecting**—and how they work together.
 
-- [Note on the role of the concepts](design-docs/concepts.md#design-choices)
+- [Note on the role of the concepts](design-docs/concepts.md#role-of-the-concepts)
 - [Concept specifications](design-docs/concepts.md#1-remembering)
-- [Essential reactions](design-docs/concepts.md#reactions)
+- [Essential reactions](design-docs/concepts.md#essential-reactions)
 
 ### UI sketches
 

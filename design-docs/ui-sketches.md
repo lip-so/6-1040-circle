@@ -1,7 +1,5 @@
 # UI sketches
 
-Low-fidelity sketches of Circle’s primary screens. Registration, login, and error handling are omitted. Annotations on the sketches mark anything that might not be obvious from the layout.
-
 Original scans: [UI.pdf](UI/UI.pdf).
 
 ## 1. Home
