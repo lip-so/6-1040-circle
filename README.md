@@ -26,7 +26,7 @@ The design notebook and personal reflections are in the private individual repos
 
 ### Concept specifications, essential reactions, and the note explaining their roles
 
-[Concept design](design-docs/concepts.md) specifies four concepts—**Remembering**, **Graphing**, **Seeking**, and **Connecting**—and how they work together.
+[Concept design](design-docs/concepts.md) specifies four concepts: **Remembering**, **Graphing**, **Seeking**, and **Connecting**; how they work together.
 
 - [Note on the role of the concepts](design-docs/concepts.md#role-of-the-concepts)
 - [Concept specifications](design-docs/concepts.md#1-remembering)
@@ -34,7 +34,7 @@ The design notebook and personal reflections are in the private individual repos
 
 ### UI sketches
 
-[UI sketches](design-docs/ui-sketches.md) are low-fidelity screens for Home, Remember Someone, Find Someone, and Check the Memory, included as images in Markdown (original scan: [UI.pdf](design-docs/UI/UI.pdf)).
+[UI sketches](design-docs/ui-sketches.md) are low-fidelity screens for Home, Remember Someone, Find Someone, and Check the Memory, included as images in Markdown (original scan: [UI.pdf](design-docs/UI-assets/UI.pdf)).
 
 1. [Home](design-docs/ui-sketches.md#1-home)
 2. [Remember Someone](design-docs/ui-sketches.md#2-remember-someone)

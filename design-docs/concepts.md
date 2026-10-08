@@ -2,11 +2,11 @@
 
 ## Role of the concepts
 
-Circle is composed of four concepts. None of them knows about the others; type parameters and reactions instantiate them for this app.
+Circle is composed of four concepts.
 
 **Remembering [User]** stores raw encounter accounts. *User* is the student who owns the notes. Capture, revision, and deletion happen only here.
 
-**Graphing [User, Source]** turns those accounts into a navigable set of usable claims. In Circle, *Source* is bound to Remembering’s *Memory*. Graphing does not know that a source is a memory; reactions pass the memory identity as an opaque source. Rejected claims stay in the graph but are not usable for tracing until restored, the same way a used nonce stays recorded until it is released.
+**Graphing [User, Source]** turns those accounts into a navigable set of usable claims. In Circle, *Source* is bound to Remembering’s *Memory*. Graphing does not know that a source is a memory; reactions pass the memory identity as an opaque source (making sure concepts are truly modular). Rejected claims stay in the graph but are not usable for tracing until restored, the same way a used nonce stays recorded until it is released.
 
 **Seeking [User]** stores the student’s current needs. A seek stays active until the student resolves or deletes it.
 
@@ -345,7 +345,8 @@ sync ingestOnRevise
   then Graphing.ingest (u, m, m.content, m.occurredAt)
 ```
 
-The first two reactions are fired by user requests. Ingest is not: it follows Remembering, so it does not mention Request.
+The first two reactions are fired by user requests.
+Ingest is not: it follows Remembering, so it does not mention Request.
 
 ### B. A new seek from a user request
 
