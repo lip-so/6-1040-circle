@@ -8,9 +8,9 @@ Circle is composed of four concepts.
 
 **Graphing [User, Source]** turns those accounts into a navigable set of usable claims. In Circle, *Source* is bound to Remembering’s *Memory*. Graphing does not know that a source is a memory; reactions pass the memory identity as an opaque source (making sure concepts are truly modular). Rejected claims stay in the graph but are not usable for tracing until restored, the same way a used nonce stays recorded until it is released.
 
-**Seeking [User]** stores the student’s current needs. A seek stays active until the student resolves or deletes it.
+**Seeking [User]** stores the student’s current needs. A need stays active until the student resolves or deletes it.
 
-**Connecting [User, Target, Need, Evidence]** holds explained suggestions and the student’s responses. In Circle, *Target* is a Graphing *Entity* of kind person, *Need* is a Seeking *Seek*, and *Evidence* is a Graphing *Claim*. Connecting never inspects those objects; it only stores the identities and explanations supplied to it.
+**Connecting [User, Target, Need, Evidence]** holds explained suggestions and the student’s responses. In Circle, *Target* is a Graphing *Entity* of kind person, *Need* is a Seeking *Need*, and *Evidence* is a Graphing *Claim*. Connecting never inspects those objects; it only stores the identities and explanations supplied to it.
 
 User-facing requests are modeled with the pseudo-concept **Request**. Reactions that start from a student action include `Request`; reactions that only chain concept actions do not.
 
@@ -145,7 +145,7 @@ queries
   _trace (owner: User, description: String)
     : many (target: Entity, evidence: set of Claim,
             reason: String, gaps: set of String)
-    Return explained candidate people using only the owner's
+    Return explained suggestions of people using only the owner's
     usable claims, under the tracing rules below.
     Return no rows for a blank description or no qualifying route.
 ```
@@ -167,16 +167,16 @@ Notes. Extraction may create or reuse entities for this owner; it records only r
 concept Seeking [User]
 
 purpose
-  keep unfinished needs available for reconsideration until
-  the user decides they no longer matter
+  keep needs active and available for reconsideration until
+  the user resolves or deletes them
 
 principle
-  If a user declares a need, it remains active without being
+  If a user records a need, it remains active without being
   re-entered. The user can refine it as their plans change,
   and resolve or delete it when they stop pursuing it.
 
 state
-  a set of Seeks with
+  a set of Needs with
     an owner User
     a description String
     a createdAt Time
@@ -184,46 +184,46 @@ state
 
 actions
   seek (owner: User, description: String)
-    : (seek: Seek)
+    : (need: Need)
     where description is not blank
     then
-      create seek with owner and description
+      create need with owner and description
       set createdAt to now
       set active to true
-      return seek
+      return need
 
-  revise (owner: User, seek: Seek, description: String)
-    where seek exists
-          seek.owner = owner
-          seek.active
+  revise (owner: User, need: Need, description: String)
+    where need exists
+          need.owner = owner
+          need.active
           description is not blank
-    then replace seek.description with description
+    then replace need.description with description
 
-  resolve (owner: User, seek: Seek)
-    where seek exists
-          seek.owner = owner
-          seek.active
-    then set seek.active to false
+  resolve (owner: User, need: Need)
+    where need exists
+          need.owner = owner
+          need.active
+    then set need.active to false
 
-  reopen (owner: User, seek: Seek)
-    where seek exists
-          seek.owner = owner
-          seek.active is false
-    then set seek.active to true
+  reopen (owner: User, need: Need)
+    where need exists
+          need.owner = owner
+          need.active is false
+    then set need.active to true
 
-  delete (owner: User, seek: Seek)
-    where seek exists
-          seek.owner = owner
-    then remove seek
+  delete (owner: User, need: Need)
+    where need exists
+          need.owner = owner
+    then remove need
 
 queries
   _active (owner: User)
-    : many (seek: Seek, description: String)
-    Return the owner's active seeks, oldest first.
+    : many (need: Need, description: String)
+    Return the owner's active needs, oldest first.
     Return no rows if none exist.
 ```
 
-Notes. A seek stays active when the student closes the app. Multiple needs can coexist. `delete` pairs with `seek`. `reopen` returns a resolved need to the active set.
+Notes. `seek` records a need and returns its identity as a `Need`. A need stays active when the student closes the app. Multiple needs can coexist. `delete` pairs with `seek`. `reopen` returns a resolved need to the active set.
 
 ---
 
@@ -237,10 +237,10 @@ purpose
   reconsidering ones they have already handled
 
 principle
-  If explained candidates are supplied for a user's need,
+  If explained suggestions are supplied for a user's need,
   the user can inspect them and dismiss or mark one useful.
   Later offers update explanations without presenting handled
-  candidates as new suggestions.
+  suggestions as new.
 
 types
   Status = {suggested, dismissed, useful}
@@ -309,11 +309,12 @@ queries
     : many (connection: Connection, target: Target, need: Need,
             evidence: set of Evidence, reason: String,
             gaps: set of String)
-    Return this owner's eligible, suggested connections.
+    Return this owner's explained suggestions: connections that
+    are eligible and have status suggested.
     Return no rows if none exist. Order is unspecified.
 ```
 
-Notes. The two `offer` cases split insert from update: the `where` says whether a connection for that target already exists. `then` never branches. `remove` deletes one connection; `clear` deletes every connection for a need.
+Notes. Each connection stores one explained suggestion for a need. The two `offer` cases split insert from update: the `where` says whether a connection for that target already exists. `then` never branches. `remove` deletes one connection; `clear` deletes every connection for a need.
 
 ---
 
@@ -348,7 +349,7 @@ sync ingestOnRevise
 The first two reactions are fired by user requests.
 Ingest is not: it follows Remembering, so it does not mention Request.
 
-### B. A new seek from a user request
+### B. A new need from a user request
 
 ```
 sync seekOnRequest
@@ -356,17 +357,17 @@ sync seekOnRequest
   then Seeking.seek (u, description)
 
 sync resetOnSeek
-  when Seeking.seek (u, description): (s)
-  then Connecting.reset (u, s)
+  when Seeking.seek (u, description): (need)
+  then Connecting.reset (u, need)
 
 sync offerOnSeek
-  when Connecting.reset (u, s)
-  where Seeking contains s
-        s.owner = u
-        s.active
-        Graphing._trace (u, s.description):
+  when Connecting.reset (u, need)
+  where Seeking contains need
+        need.owner = u
+        need.active
+        Graphing._trace (u, need.description):
           (target, evidence, reason, gaps)
-  then Connecting.offer (u, s, target, evidence, reason, gaps)
+  then Connecting.offer (u, need, target, evidence, reason, gaps)
 ```
 
 `Request.seek` is included because a student started the need. Reset and offer chain from Seeking, not from Request.
@@ -376,28 +377,28 @@ sync offerOnSeek
 ```
 sync resetOnIngest
   when Graphing.ingest (u, source, content, observedAt)
-  where Seeking._active (u): (s, description)
-  then Connecting.reset (u, s)
+  where Seeking._active (u): (need, description)
+  then Connecting.reset (u, need)
 
 sync resetOnReject
   when Graphing.reject (u, claim)
-  where Seeking._active (u): (s, description)
-  then Connecting.reset (u, s)
+  where Seeking._active (u): (need, description)
+  then Connecting.reset (u, need)
 
 sync resetOnRestore
   when Graphing.restore (u, claim)
-  where Seeking._active (u): (s, description)
-  then Connecting.reset (u, s)
+  where Seeking._active (u): (need, description)
+  then Connecting.reset (u, need)
 
 sync resetOnRemoveClaim
   when Graphing.remove (u, claim)
-  where Seeking._active (u): (s, description)
-  then Connecting.reset (u, s)
+  where Seeking._active (u): (need, description)
+  then Connecting.reset (u, need)
 
 sync resetOnRetract
   when Graphing.retract (u, source)
-  where Seeking._active (u): (s, description)
-  then Connecting.reset (u, s)
+  where Seeking._active (u): (need, description)
+  then Connecting.reset (u, need)
 ```
 
 Offering after these resets uses the same `offerOnSeek` rule, which already fires when `Connecting.reset` completes.
@@ -414,24 +415,24 @@ sync retractOnForget
 
 ```
 sync clearOnRevise
-  when Seeking.revise (u, s, description)
-  then Connecting.clear (u, s)
+  when Seeking.revise (u, need, description)
+  then Connecting.clear (u, need)
 
 sync resetOnRevise
-  when Seeking.revise (u, s, description)
-  then Connecting.reset (u, s)
+  when Seeking.revise (u, need, description)
+  then Connecting.reset (u, need)
 
 sync clearOnResolve
-  when Seeking.resolve (u, s)
-  then Connecting.clear (u, s)
+  when Seeking.resolve (u, need)
+  then Connecting.clear (u, need)
 
-sync clearOnDeleteSeek
-  when Seeking.delete (u, s)
-  then Connecting.clear (u, s)
+sync clearOnDeleteNeed
+  when Seeking.delete (u, need)
+  then Connecting.clear (u, need)
 
 sync resetOnReopen
-  when Seeking.reopen (u, s)
-  then Connecting.reset (u, s)
+  when Seeking.reopen (u, need)
+  then Connecting.reset (u, need)
 ```
 
 ### F. Evidence inspection is restricted to the owner
