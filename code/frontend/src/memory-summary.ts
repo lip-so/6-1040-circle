@@ -12,6 +12,7 @@ export function memorySummary(content: string, name: string): MemoryDetail[] {
       { label: "Does", value: guided.does || "Not recorded" },
     ];
     if (guided.discussed) rows.push({ label: "Discussed", value: guided.discussed });
+    if (guided.contact) rows.push({ label: "Contact", value: guided.contact });
     return rows;
   }
   const { entities, claims } = extractEncounter(content);

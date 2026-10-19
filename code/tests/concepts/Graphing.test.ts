@@ -184,3 +184,12 @@ describe("Graphing", () => {
     }
   });
 });
+
+
+test("contact details stay in the source without becoming searchable subjects", async () => {
+  const content = writeMemoryFields({ person: "Mira", when: "", does: "Biologist", discussed: "Ocean sensors", contact: "https://www.linkedin.com/in/contactonly529 +1 617 555 0142" });
+  await graphing.ingest({ owner: "ralph", source: "contact-note", content });
+  expect(await graphing._trace({ owner: "ralph", description: "contactonly529" })).toEqual([]);
+  expect(await graphing._trace({ owner: "ralph", description: "617 555 0142" })).toEqual([]);
+  expect(await graphing._trace({ owner: "ralph", description: "ocean sensors" })).toMatchObject([{ label: "Mira", source: "contact-note" }]);
+});

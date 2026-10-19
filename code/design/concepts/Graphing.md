@@ -57,6 +57,7 @@ ingest(owner: User, source: Source, content: String) : returns ()
     use DISCUSSED for conversational topics and FOUNDED for founding a company; do not treat either as employment or expertise
     for the local MVP, recognize one named person per note using introductions or a named profile, with positive affiliation, work, research, discussion, and offer statements
     also recognize guided memories containing Person, When, Does, and Discussed fields; take the explicit person name as written, record Does as DESCRIBED_AS and Discussed as DISCUSSED, and keep When as source context without treating it as a subject relationship
+    optional Contact text stays in the supporting source; do not create relationships or searchable subject terms from phone numbers or profile URLs
     do not infer employment or expertise from a discussion; leave a negated Does or Discussed field unindexed
     leave unsupported or negated relationship statements unindexed
     returns

@@ -53,7 +53,12 @@ people with the same name, or repeated encounters with one person, remain separa
 Cards show recorded context and an expandable original note; old unparsed notes
 use “Saved encounter” rather than a guessed person. Optional fields remain optional.
 Long labels wrap and previews are limited to two lines; the complete note stays
-available. No contact, edit, delete, or automatic identity-merging features are added.
+available. The optional Contact field accepts a phone number, LinkedIn URL, or
+other contact text and is shown on saved and matching cards. It stays in the
+owner's original memo, using the existing content API; old four-field memos
+remain readable. Contact values are displayed as text, without guessing phone
+formats or interpreting arbitrary text as executable links. Edit, delete, and
+automatic identity-merging features remain deferred.
 
 The list distinguishes loading, a failed request with Retry, and a genuinely empty
 account. It refreshes after save attempts, so a saved note remains visible when

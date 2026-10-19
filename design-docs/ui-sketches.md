@@ -48,3 +48,12 @@ response or indexing failure uses the same submission token, so it reuses the
 saved note. The list reads saved notes directly, so an unindexed encounter is
 still visible. Signing out clears the screen and ignores pending replies.
 Editing, deleting, contact links, and automatic person merging remain deferred.
+
+
+### Optional contact information
+
+Remember also has an optional Contact field for a phone number, LinkedIn URL,
+or other contact text. It saves with the memo and appears as a Contact row on
+both recent-person and search-result cards. Existing notes without it still
+work. Contact is displayed as entered; no external lookup, new contact concept,
+or graph inference is added.

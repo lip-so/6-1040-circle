@@ -24,6 +24,7 @@ a set of Memories with
 
 Rule: new memories use an identity derived from owner and submission. Names and note text are not identities. A different submission creates a separate encounter, even for the same person or the same text.
 Rule: older memories may have no capturedAt; do not invent their save times.
+Rule: guided memo content may include optional contact information such as a phone number or LinkedIn URL. Keep it with the original account; existing memories without it remain valid.
 ```
 
 ## Actions

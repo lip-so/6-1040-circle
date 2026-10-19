@@ -87,10 +87,11 @@ describe("Circle authenticated flows", () => {
     const { browser, database } = await setup();
     const sam = browser();
     const owner = await sam.signIn(SAM);
-    const content = writeMemoryFields({ person: "mira chen", when: "October 16, 2026", does: "Marine biologist", discussed: "Ocean sensors" });
+    const content = writeMemoryFields({ person: "mira chen", when: "October 16, 2026", does: "Marine biologist", discussed: "Ocean sensors", contact: "https://www.linkedin.com/in/mira-example" });
     const saved = await sam.post("/memories/remember", { content });
     expect(saved.status).toBe(200);
     expect(await database.collection("remembering.memories").findOne({ owner })).toMatchObject({ content });
+    expect(await sam.post("/memories/list", { after: "" })).toMatchObject({ status: 200, body: { memories: [{ content }] } });
     expect(await sam.post("/needs/seek", { description: "ocean sensors" })).toMatchObject({
       status: 200, body: { results: { suggestions: [{ label: "mira chen", source: saved.body.memory, content }] } },
     });

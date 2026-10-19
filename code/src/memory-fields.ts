@@ -3,16 +3,17 @@ export interface MemoryFields {
   when: string;
   does: string;
   discussed: string;
+  contact?: string;
 }
 
 const fields = [
-  ["Person", "person"], ["When", "when"], ["Does", "does"], ["Discussed", "discussed"],
+  ["Person", "person"], ["When", "when"], ["Does", "does"], ["Discussed", "discussed"], ["Contact", "contact"],
 ] as const;
 
 /** A readable memo; continuation lines cannot turn into a different field. */
 export function writeMemoryFields(values: MemoryFields): string {
-  return fields.map(([label, key]) => {
-    const [first, ...rest] = values[key].trim().replace(/\r\n?/gu, "\n").split("\n");
+  return fields.filter(([, key]) => key !== "contact" || values.contact?.trim()).map(([label, key]) => {
+    const [first, ...rest] = (values[key] ?? "").trim().replace(/\r\n?/gu, "\n").split("\n");
     return [`${label}:${first ? ` ${first}` : ""}`, ...rest.map(line => `  ${line}`)].join("\n");
   }).join("\n");
 }
@@ -31,5 +32,6 @@ export function readMemoryFields(content: string): MemoryFields | undefined {
       values[key] += `\n${line.slice(2)}`;
     } else return undefined;
   }
-  return index === fields.length - 1 && values.person.trim() ? values : undefined;
+  // Contact is optional; the original four-field format remains readable.
+  return index >= fields.length - 2 && values.person.trim() ? values : undefined;
 }

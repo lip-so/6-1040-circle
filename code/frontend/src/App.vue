@@ -14,7 +14,7 @@ import { useSession } from "./reusable/session.ts";
 const { me, checked, signingOut, error: accountError, load, signOut, sessionEnded } = useSession();
 const callback = ref(window.location.pathname === "/auth/commons/callback");
 const mode = ref<"remember" | "find">("find");
-const draft = reactive({ person: "", when: "", does: "", discussed: "" });
+const draft = reactive({ person: "", when: "", does: "", discussed: "", contact: "" });
 const description = ref("");
 const saving = ref(false);
 const searching = ref(false);
@@ -79,7 +79,7 @@ function finishedCommons() {
 
 function clearDraft() {
   pendingSave = null;
-  Object.assign(draft, { person: "", when: "", does: "", discussed: "" });
+  Object.assign(draft, { person: "", when: "", does: "", discussed: "", contact: "" });
 }
 
 async function switchMode(next: "remember" | "find") {
@@ -178,6 +178,8 @@ async function seek() {
           </div>
           <label for="does">What they do</label>
           <input id="does" v-model="draft.does" placeholder="e.g. Founder of an AI-chip startup" />
+          <label for="contact">Contact</label>
+          <input id="contact" v-model="draft.contact" placeholder="Phone number or LinkedIn URL" :spellcheck="false" />
           <label for="discussed">What you discussed</label>
           <textarea id="discussed" v-model="draft.discussed" rows="2" placeholder="e.g. Systems engineering" />
         </fieldset>

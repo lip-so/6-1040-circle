@@ -60,7 +60,7 @@ Paths below are relative to the repository root.
 
 - **No LLM input processing for the alpha.** Sofia selected a local parser and then explicit entry boxes. Do not add a model, API key requirement, or hidden AI fallback. Broader language processing is future work.
 - The main page has a **Remember / Find** toggle; show one form at a time. Switching preserves an unsaved memo draft. A successful save returns to Find.
-- Remember fields: **Person**, **When**, **What they do**, **What you discussed**. Only Person is required. When accepts the user's date/context text; do not invent dates or resolve relative wording into a guessed date.
+- Remember fields: **Person**, **When**, **What they do**, **Contact**, **What you discussed**. Only Person is required. When accepts the user's date/context text; do not invent dates or resolve relative wording into a guessed date.
 - `writeMemoryFields` stores the fields as readable `Person:`, `When:`, `Does:`, `Discussed:` lines through the existing content API. It indents multiline continuations so a field value cannot become a different header. Keep the reader/writer shared and compatible; do not make users type magic parser phrases into guided fields.
 - Guided result cards use the entered values directly. Show the person and short **When / Does / Discussed** rows, with **Offers** only when supported. Missing encounter context is “Not recorded.” The original note is expandable.
 - Older free-text notes still use the local TypeScript parser. It recognizes a bounded set of introductions, work/affiliation, research, discussion, and offer wording. Unsupported wording may yield no match; do not fabricate an extraction.
@@ -191,3 +191,8 @@ These references explain mechanisms and assignment expectations. Sofia's explici
 - Explain these decisions in code/design/concepts/Remembering.md, code/design/compositions/Circle.md, and design-docs/ui-sketches.md. The full P1 specs remain unchanged.
 
 Verified this addition with 89 passing tests, backend/Vue checks, and a frontend build. The framework now reports nine advisories: seven endpoint-fallback notices and two former-ordering notices; query order is explicit and tested. Browser checks covered the centered toggle, immediate saved-list refresh, two same-name encounter cards, legacy notes, and narrow-screen overflow. Only temporary UI-test notes were removed afterward. These changes are local until committed and deployed.
+
+
+## Optional contact field
+
+Sofia requested contact information such as a phone number or LinkedIn URL. Keep one optional Contact text field, stored in the original memo and displayed on both saved and matching cards. Read old four-field memos too. Contact text is not used for graph relationships or subject matching. No new concept, endpoint, external lookup, or automatic link execution is needed.
