@@ -5,7 +5,7 @@
 - Cleaned up the P1 wording after feedback: `Need` is the thing Seeking stores, and `seek` creates it. Used “explained suggestions” consistently instead of switching between suggestions and candidates.
 
 # P2
-## Oct 16, 2026 - new additions, scope changes for alpha verison
+## Oct 16, 2026 - new additions, scope changes for alpha version
 - Kept the Ralph/Faustin story, but cut it down: start empty, save an encounter note, enter a need, see a relevant person with an explanation and the original note. That's enough to show why Circle is useful - MVP start.
 - The first P2 concept drafts carried over too much of the full design. Trimmed them down. The full P1 design stays in `design-docs/concepts.md` for later.
 - **Remembering:** just the owner and original note text. `remember` saves it; `_get` reads it for its owner. Dates, contact details, editing, and deletion can wait.
@@ -20,4 +20,15 @@
 - button size is comfortable for clicking
 - in the form ONLY the name is required
 - did not add an option to edit or delete connections yet for simplicity (beta to-do), trying to keep it scoped and as lean as possible
-- in alpha oen can only save, view, and search people and their encounter notes.
+- in alpha one can only save, view, and search people and their encounter notes
+
+## tests
+- cover persistence, inputs, users (identification and ownership issues), retries, same-name issues, search fails
+- use real MongoDB storage and a simulated sign-in thru commons
+- frontend tests check formatting and loading / state behaviour
+- few tests create legacy or damaged data
+- Tests run sign-in → save → index → search → logout through the real HTTP handler and sync-engine. They check two-user isolation, forged requests, and downstream failures.
+
+## challenges
+- ownership: backend gets the owner from the signed-in session, and database queries only read that owner’s data, frontend doesn’t decide who can access a note.
+- if indexing fails after saving, keep the original note and show an error. retrying the same save shouldn’t create duplicates.

@@ -1,12 +1,3 @@
 # P2: User Journey
 
-The user signs in to Circle through Commons for the first time, with no saved memories or needs. After a hackathon, he switches to Remember and fills in Person: Faustin; When: after the hackathon; What they do: founder of an AI-chip startup; What you discussed: systems engineering. He saves the memo and switches to Find.
-
-Later, user enters a need: “I’m looking for systems engineering work at an AI startup.”
-
-Circle suggests Faustin, explains
-
-1. how the encounter relates to the user's need
-2. shows the original note.
-
--> User remembers their conversation -> can decide whether to contact Faustin or not.
+A user signs in to Circle through Commons for the first time, with no saved memories or needs. After a hackathon, they switch to Remember and enter Faustin's name, when they met, his role as the founder of an AI-chip startup, his phone number, and their discussion about systems engineering. They save the encounter and switch to Find. Later, they enter a need: “I’m looking for systems engineering work at an AI startup.” Circle returns Faustin with short details from the saved encounter and an expandable original note. The user opens the note to recall the conversation and decides whether to contact him.

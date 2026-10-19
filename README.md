@@ -4,7 +4,7 @@
 
 This public repository is Sofia Lipkevych’s 6.1040 Fall 2026 personal project. Design work and implementation are here.
 
-The design notebook and personal reflections are in the private individual repository.
+Project decisions and progress are recorded in the [design journal](desing-journal.md). Personal reflections are in the private individual repository.
 
 ## P1: Design
 
@@ -61,7 +61,7 @@ The alpha covers only core functionality, nothing fancy yet:
 - save an encounter
 - find a relevant person when a need comes up with keywords (LLM indexing to be added)
 
-**Remember** uses Person, When, What they do, What you discussed fields; **Find** returns matching people with short details and their original notes.
+**Remember** has five fields: Person, When, What they do, Contact, and What you discussed. Only Person is required. **Find** returns matching people with short details and their original notes.
 
 The two forms share a **Remember / Find toggle**.
 
@@ -69,6 +69,7 @@ The two forms share a **Remember / Find toggle**.
 | Part                                       | Files                                                                                                                                                                            |
 | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Core user journey                          | [P2 journey](design-docs/p2-user-journey.md)                                                                                                                                     |
+| Design journal                             | [Decisions, progress, and challenges](desing-journal.md) |
 | Concept specifications                     | [Concepts](code/design/concepts/) and [type bindings](code/design/types.md)                                                                                                      |
 | Reactions, endpoints, views, and formers   | [Circle specification](code/design/compositions/Circle.md) and [implementation](code/src/compositions/Circle.ts)                                                                 |
 | TypeScript concepts and MongoDB operations | [Concept implementations](code/src/concepts/)                                                                                                                                    |
@@ -86,3 +87,32 @@ Graphing uses a local TypeScript parser and keyword matching; there is no LLM pr
 Connecting's dismissed/useful suggestion history and broader language understanding are deferred.
 
 **[Screen recording](https://www.loom.com/share/1795afb2bf8446a7be5abd993374e1d6).**
+
+### Run locally
+
+Requires Bun and a running MongoDB instance. From the repository root, install the dependencies:
+
+```sh
+bun install --cwd code
+bun install --cwd code/frontend
+```
+
+If you do not already have `code/.env`, create it from [code/.env.example](code/.env.example). Set `MONGODB_URL` for the app and `TEST_MONGODB_URL` for the tests. For this local run, use `PUBLIC_ORIGIN=http://localhost:3000` and `COMMONS_ORIGIN=https://class.mit-sdg.dev`.
+
+Build and start the app:
+
+```sh
+bun run build
+bun run start
+```
+
+Open [http://localhost:3000](http://localhost:3000) and sign in through Commons.
+
+To check the specifications and types and run the tests:
+
+```sh
+bun run check
+bun run test
+```
+
+MongoDB tests create and remove uniquely named temporary databases using `TEST_MONGODB_URL`.
