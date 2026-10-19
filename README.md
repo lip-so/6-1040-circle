@@ -61,19 +61,7 @@ The alpha covers only core functionality, nothing fancy yet:
 - save an encounter
 - find a relevant person when a need comes up with keywords (LLM indexing to be added)
 
-**Remember** uses:
-
-Person
-
-When
-
-What they do
-
- What you discussed
-
-fields;
-
-**Find** returns matching people with short details and their original notes.
+**Remember** uses Person, When, What they do, What you discussed fields; **Find** returns matching people with short details and their original notes.
 
 The two forms share a **Remember / Find toggle**.
 
@@ -97,4 +85,4 @@ Graphing uses a local TypeScript parser and keyword matching; there is no LLM pr
 
 Connecting's dismissed/useful suggestion history and broader language understanding are deferred.
 
-**Screen recording:** link to be added.
+**[Screen recording](https://www.loom.com/share/1795afb2bf8446a7be5abd993374e1d6).**
