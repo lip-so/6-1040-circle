@@ -1,10 +1,24 @@
 import { endpoint, receive, respond } from "@mit-sdg/sync-engine/boundary";
-import { each, former, view, where } from "@mit-sdg/sync-engine/language";
+import { each, former, now, view, where } from "@mit-sdg/sync-engine/language";
 import { concepts } from "../concepts.ts";
 
-import { sessionTextInput } from "./inputs.ts";
+import { memoryListInput, rememberInput, sessionTextInput } from "./inputs.ts";
 
 const { Remembering, Seeking, Graphing, Sessioning } = concepts;
+
+export const SavedMemories = former(
+  "saved memories of (owner) after (after)",
+  ({ owner, after }, { memory, content }) =>
+    each(Remembering._list({ owner, after }).is({ memory, content })).form({ memory, content }),
+);
+
+const ListMemories = endpoint(
+  "/memories/list",
+  ({ session, owner, after }) => receive({ session, after })
+    .then(Sessioning.use({ session }).responds({ subject: owner }))
+    .then(respond({ memories: SavedMemories({ owner, after }) })),
+  { input: { required: ["session", "after"] }, validators: { input: memoryListInput } },
+);
 
 /** Read the note only through its owner's query. */
 export const OwnedMemory = view(
@@ -27,16 +41,16 @@ export const NeedResults = former(
 
 const Remember = endpoint(
   "/memories/remember",
-  ({ session, owner, content, memory, savedContent }) =>
-    receive({ session, content })
+  ({ session, owner, content, submission, capturedAt, memory, savedContent }) =>
+    receive({ session, content, submission }).where(now(capturedAt))
       .then(Sessioning.use({ session }).responds({ subject: owner }))
-      .then(Remembering.remember({ owner, content }).responds({ memory }))
+      .then(Remembering.remember({ owner, content, submission, capturedAt }).responds({ memory }))
       .then(
         where(OwnedMemory({ owner, memory }).is({ content: savedContent }))
           .then(Graphing.ingest({ owner, source: memory, content: savedContent }).responds({}))
           .then(respond({ memory })),
       ),
-  { input: { required: ["session", "content"] }, validators: { input: sessionTextInput("content") } },
+  { input: { required: ["session", "content", "submission"] }, validators: { input: rememberInput } },
 );
 
 const Seek = endpoint(
@@ -49,4 +63,4 @@ const Seek = endpoint(
   { input: { required: ["session", "description"] }, validators: { input: sessionTextInput("description") } },
 );
 
-export const composition = { OwnedMemory, NeedResults, Remember, Seek };
+export const composition = { OwnedMemory, NeedResults, SavedMemories, ListMemories, Remember, Seek };

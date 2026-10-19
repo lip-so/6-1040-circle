@@ -17,10 +17,18 @@ const NOTE = "Met Faustin, founder of an AI-chip startup. We talked about system
 const applications: ReturnType<typeof assembleApplication>[] = [];
 afterEach(async () => { for (const app of applications.splice(0)) await app.beginDrain(); });
 
-async function setup(failure?: "ingest" | "trace") {
+async function setup(failure?: "ingest" | "trace" | "ingest-once") {
   const database = await testDatabase();
   const commons = new MemoryProvider();
   const graph = new GraphingConcept(database);
+  if (failure === "ingest-once") {
+    const original = graph.ingest.bind(graph);
+    let failed = false;
+    graph.ingest = async function ingest(input) {
+      if (!failed) { failed = true; throw new Error("index unavailable"); }
+      return original(input);
+    };
+  }
   if (failure === "ingest") graph.ingest = async function ingest() { throw new Error("index unavailable"); };
   if (failure === "trace") graph._trace = async function _trace() { throw new Error("search unavailable"); };
   const application = assembleApplication(database, { commons, instances: { Graphing: graph } });
@@ -32,6 +40,7 @@ async function setup(failure?: "ingest" | "trace") {
   function browser() {
     const jar = new Map<string, string>();
     async function post(path: string, body: object = {}, origin = ORIGIN) {
+      if (path === "/memories/remember" && !Object.hasOwn(body, "submission")) body = { ...body, submission: crypto.randomUUID() };
       const response = await handle(new Request(`${ORIGIN}/api${path}`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Origin: origin, Cookie: [...jar].map(([k, v]) => `${k}=${v}`).join("; ") },
@@ -192,5 +201,43 @@ describe("Circle authenticated flows", () => {
     expect(await other.post("/auth/me")).toMatchObject({ body: { username: "leo" } });
     expect(await sam.post("/auth/me")).toMatchObject({ body: { username: "sam" } });
     expect(await other.signIn(LEO)).not.toBe(original);
+  });
+});
+
+
+describe("Saved people HTTP edge cases", () => {
+  test("listing authenticates first, rejects owner/timestamp input, and never returns another user's notes", async () => {
+    const { browser } = await setup();
+    const sam = browser(), leo = browser();
+    expect(await sam.post("/memories/list", { after: "" })).toMatchObject({ status: 401 });
+    await sam.signIn(SAM);
+    await leo.signIn(LEO);
+    expect(await sam.post("/memories/list", { after: "" })).toMatchObject({ status: 200, body: { memories: [] } });
+    const own = await sam.post("/memories/remember", { content: NOTE });
+    const other = await leo.post("/memories/remember", { content: "Private note" });
+    expect(await sam.post("/memories/list", { after: "" })).toMatchObject({ status: 200, body: { memories: [{ memory: own.body.memory, content: NOTE }] } });
+    expect(await sam.post("/memories/list", { after: other.body.memory })).toMatchObject({ status: 200, body: { memories: [] } });
+    expect(await sam.post("/memories/list", { after: "", owner: "someone-else" })).toMatchObject({ status: 400 });
+    expect(await sam.post("/memories/remember", { content: NOTE, capturedAt: "2020-01-01" })).toMatchObject({ status: 400 });
+    expect(await sam.post("/memories/remember", { content: NOTE, submission: "invalid" })).toMatchObject({ status: 400 });
+    expect(await sam.post("/memories/remember", { content: NOTE, submission: undefined })).toMatchObject({ status: 400 });
+    await sam.post("/auth/logout");
+    expect(await sam.post("/memories/list", { after: "" })).toMatchObject({ status: 401 });
+  });
+
+  test("a note remains visible after indexing failure and a manual retry does not duplicate it", async () => {
+    const { browser, database } = await setup("ingest-once");
+    const sam = browser();
+    await sam.signIn(SAM);
+    const input = { content: NOTE, submission: crypto.randomUUID() };
+    expect(await sam.post("/memories/remember", input)).toMatchObject({ status: 500 });
+    const listed = await sam.post("/memories/list", { after: "" });
+    expect(listed.body.memories).toHaveLength(1);
+    expect(listed.body.memories[0].content).toBe(NOTE);
+    const retry = await sam.post("/memories/remember", input);
+    expect(retry).toMatchObject({ status: 200, body: { memory: listed.body.memories[0].memory } });
+    expect(await database.collection("remembering.memories").countDocuments()).toBe(1);
+    expect(await database.collection("graphing.sources").countDocuments()).toBe(1);
+    expect(await sam.post("/memories/remember", { ...input, content: "Different note" })).toMatchObject({ status: 409 });
   });
 });

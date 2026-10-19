@@ -74,15 +74,16 @@ Paths below are relative to the repository root.
 - Owner-scope database queries at the query itself. Do not load everyone’s notes/graph and filter afterward. The normal flow never searches another user's graph.
 - Index only the memory the backend just saved and read back through its owner's query. There is no public “index arbitrary source” endpoint.
 - A graph source's owner is immutable, even when extraction produces zero claims. Re-ingestion replaces that source's graph atomically; it cannot transfer ownership.
-- If a memory or need was saved and downstream indexing/search fails, **keep the saved data and return an error**. No compensating deletion or automatic retry was agreed.
+- If a memory or need was saved and downstream indexing/search fails, **keep the saved data and return an error**. No compensating deletion or automatic retry. Manual retries of the same draft reuse its token and memory identity; a conflicting text is refused.
 - Omit a match whose original source is missing or unreadable. This is a defensive integrity check, not permission to index or read another owner's data.
 - Keep secrets, session cookies, sign-in attempts, codes, verifiers, and private note contents out of unnecessary logs and reports. Do not paste `.env` values into chat or documentation.
 
 ## Backend implementation details to preserve
 
-The two Circle HTTP routes are:
+The Circle HTTP routes are:
 
-- `POST /api/memories/remember`: session → owner → save memory → read owned original → ingest graph → respond with memory identity. Success waits for indexing.
+- `POST /api/memories/remember`: session → owner → save memory with a per-draft submission token and engine-supplied capturedAt → read owned original → ingest graph → respond with memory identity. Success waits for indexing.
+- `POST /api/memories/list`: session → owner → a cursor page of owned memories. Show 20 rows and use the 21st as lookahead; continue after the last displayed memory.
 - `POST /api/needs/seek`: session → owner → save need → `NeedResults` → owned graph matches joined with owned original notes. Returns `{ results: { need, description, suggestions } }`; each suggestion includes target, label, source, reason, and content.
 
 `OwnedMemory` is an optional view. `NeedResults` is a former, with an empty suggestions list when there are no readable matches. Do not replace these with frontend database access or hardcoded results.
@@ -177,3 +178,16 @@ Sofia claimed **circle.mit-sdg.dev**. The course platform was configured for rep
 - [sync-engine 1.1.0 documentation index](https://github.com/mit-sdg/sync-engine/blob/v1.1.0/docs/user/llms.txt) and [specification format](https://github.com/mit-sdg/sync-engine/blob/v1.1.0/docs/user/reference/concept-specification.md).
 
 These references explain mechanisms and assignment expectations. Sofia's explicit choices determine Circle's feature scope; optional reference-app capabilities are not requirements.
+
+
+## Recent people decisions added October 18, 2026
+
+- Sofia approved separate cards for separate encounters, including identical names.
+- List Remembering memories directly, including legacy/unparsed/unindexed notes; never depend on a graph match to show a saved encounter.
+- New saves use the engine-provided capturedAt for ordering. Preserve the user's When text separately; do not backfill unknown save dates.
+- Keep per-draft UUID submission tokens across failed manual retries. The backend atomically reuses that owner's memory for the token; a new intentional save gets a new token. Do not deduplicate by name or text.
+- Cursor pages keep older notes accessible while new ones arrive. The UI has Load more, loading, empty, and Retry states.
+- Clear data on account changes/sign-out and ignore stale replies. Recheck the account before refreshing on focus. Already accepted backend work is not cancelled by clearing the UI.
+- Explain these decisions in code/design/concepts/Remembering.md, code/design/compositions/Circle.md, and design-docs/ui-sketches.md. The full P1 specs remain unchanged.
+
+Verified this addition with 89 passing tests, backend/Vue checks, and a frontend build. The framework now reports nine advisories: seven endpoint-fallback notices and two former-ordering notices; query order is explicit and tested. Browser checks covered the centered toggle, immediate saved-list refresh, two same-name encounter cards, legacy notes, and narrow-screen overflow. Only temporary UI-test notes were removed afterward. These changes are local until committed and deployed.

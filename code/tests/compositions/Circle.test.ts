@@ -41,7 +41,7 @@ const encounter = "Met Faustin, founder of an AI-chip startup. We talked about s
 describe("Circle result composition", () => {
   test("joins an owned need, graph match, and exact original note", async () => {
     const memories = new RememberingConcept(db);
-    const { memory } = await memories.remember({ owner: "ralph", content: encounter });
+    const { memory } = await memories.remember({ capturedAt: new Date("2026-10-18T12:00:00Z"), submission: crypto.randomUUID(), owner: "ralph", content: encounter });
     await new GraphingConcept(db).ingest({ owner: "ralph", source: memory, content: encounter });
     const description = "systems engineering at an AI startup";
     const { need } = await new SeekingConcept(db).seek({ owner: "ralph", description });
@@ -60,7 +60,7 @@ describe("Circle result composition", () => {
   });
 
   test("does not read another owner's graph", async () => {
-    const { memory } = await new RememberingConcept(db).remember({ owner: "another-student", content: encounter });
+    const { memory } = await new RememberingConcept(db).remember({ capturedAt: new Date("2026-10-18T12:00:00Z"), submission: crypto.randomUUID(), owner: "another-student", content: encounter });
     await new GraphingConcept(db).ingest({ owner: "another-student", source: memory, content: encounter });
     const { need } = await new SeekingConcept(db).seek({ owner: "ralph", description: "systems engineering" });
     expect(await application().form(NeedResults({ owner: "ralph", need }))).toMatchObject({ need, suggestions: [] });

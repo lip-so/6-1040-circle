@@ -2,7 +2,7 @@ import { conceptSet, registerConcept } from "@mit-sdg/sync-engine/assembly";
 import rememberingSpec from "@design/concepts/Remembering.md" with { type: "text" };
 import seekingSpec from "@design/concepts/Seeking.md" with { type: "text" };
 import graphingSpec from "@design/concepts/Graphing.md" with { type: "text" };
-import { EmptyContent, RememberingConcept } from "./concepts/Remembering.ts";
+import { EmptyContent, SubmissionConflict, RememberingConcept } from "./concepts/Remembering.ts";
 import { EmptyDescription, SeekingConcept } from "./concepts/Seeking.ts";
 import { EmptySourceContent, GraphingConcept, SourceNotOwned } from "./concepts/Graphing.ts";
 
@@ -35,7 +35,7 @@ const sessioning = registerConcept({
 const remembering = registerConcept({
   class: RememberingConcept,
   spec: rememberingSpec,
-  refusals: { EMPTY_CONTENT: EmptyContent },
+  refusals: { EMPTY_CONTENT: EmptyContent, SUBMISSION_CONFLICT: SubmissionConflict },
 });
 
 const seeking = registerConcept({

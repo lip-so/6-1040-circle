@@ -68,15 +68,29 @@ export type CircleWire = {
     };
     error: { error: AppWideError | "INVALID_INPUT" | "NOT_SIGNED_IN" };
   };
+  "/memories/list": {
+    input: {
+      "after": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_list"]>[0], ["after"]>>;
+      "session": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["use"]>[0], ["session"]>>;
+    };
+    output: {
+      "memories": {
+        "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_list"]>>>, ["content"]>>;
+        "memory": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_list"]>>>, ["memory"]>>;
+      }[];
+    };
+    error: { error: AppWideError | "INVALID_INPUT" | "NOT_SIGNED_IN" };
+  };
   "/memories/remember": {
     input: {
       "content": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["remember"]>[0], ["content"]>>;
       "session": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["use"]>[0], ["session"]>>;
+      "submission": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["remember"]>[0], ["submission"]>>;
     };
     output: {
       "memory": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["ingest"]>[0], ["source"]>>;
     };
-    error: { error: AppWideError | "EMPTY_CONTENT" | "EMPTY_SOURCE_CONTENT" | "INVALID_INPUT" | "NOT_SIGNED_IN" | "SOURCE_NOT_OWNED" };
+    error: { error: AppWideError | "EMPTY_CONTENT" | "EMPTY_SOURCE_CONTENT" | "INVALID_INPUT" | "NOT_SIGNED_IN" | "SOURCE_NOT_OWNED" | "SUBMISSION_CONFLICT" };
   };
   "/needs/seek": {
     input: {
@@ -143,14 +157,27 @@ export type CircleWireHttp = {
     };
     error: { error: HttpAppWideError | "INVALID_REQUEST" | "UNAUTHORIZED" };
   };
+  "/memories/list": {
+    input: {
+      "after": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_list"]>[0], ["after"]>>;
+    };
+    output: {
+      "memories": {
+        "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_list"]>>>, ["content"]>>;
+        "memory": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_list"]>>>, ["memory"]>>;
+      }[];
+    };
+    error: { error: HttpAppWideError | "INVALID_REQUEST" | "UNAUTHORIZED" };
+  };
   "/memories/remember": {
     input: {
       "content": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["remember"]>[0], ["content"]>>;
+      "submission": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["remember"]>[0], ["submission"]>>;
     };
     output: {
       "memory": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["ingest"]>[0], ["source"]>>;
     };
-    error: { error: HttpAppWideError | "FORBIDDEN" | "INVALID_REQUEST" | "UNAUTHORIZED" };
+    error: { error: HttpAppWideError | "CONFLICT" | "FORBIDDEN" | "INVALID_REQUEST" | "UNAUTHORIZED" };
   };
   "/needs/seek": {
     input: {
