@@ -77,7 +77,7 @@ The two forms share a **Remember / Find toggle**.
 | Tests                                      | [Concept tests](code/tests/concepts/), [composition/HTTP tests](code/tests/compositions/), and [formatting tests](code/tests/ui/)                                                |
 
 
-The MVP implements Remembering, Seeking, and Graphing, plus the reused authentication concepts.
+The MVP implements Remembering, Seeking, and Graphing + the reused authentication concepts.
 
 Each user's notes, needs, and graph are scoped to their authenticated account to prevent security issues.
 
