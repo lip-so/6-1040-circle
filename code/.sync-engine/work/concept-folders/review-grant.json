@@ -1,0 +1,52 @@
+{
+  "readableAreas": [
+    {
+      "area": "design",
+      "path": "compositions"
+    },
+    {
+      "area": "design",
+      "path": "concepts"
+    },
+    {
+      "area": "design",
+      "path": "types.md"
+    },
+    {
+      "area": "application",
+      "path": "frontend/src/App.vue"
+    },
+    {
+      "area": "application",
+      "path": "frontend/src/memory-summary.ts"
+    },
+    {
+      "area": "application",
+      "path": "src/assembly.ts"
+    },
+    {
+      "area": "application",
+      "path": "src/concepts"
+    },
+    {
+      "area": "application",
+      "path": "src/concepts.ts"
+    },
+    {
+      "area": "application",
+      "path": "src/main.ts"
+    },
+    {
+      "area": "application",
+      "path": "tests"
+    }
+  ],
+  "writableAreas": [],
+  "toolKinds": [
+    "repository-read"
+  ],
+  "projectShell": "none",
+  "network": false,
+  "generatedOutput": false,
+  "longRunningProcesses": false
+}

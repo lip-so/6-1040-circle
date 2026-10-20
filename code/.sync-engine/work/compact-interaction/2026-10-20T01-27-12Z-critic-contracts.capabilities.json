@@ -1,0 +1,88 @@
+{
+  "readableAreas": [
+    {
+      "area": "design",
+      "path": "compositions/Circle.md"
+    },
+    {
+      "area": "design",
+      "path": "concepts/Connecting.md"
+    },
+    {
+      "area": "design",
+      "path": "concepts/Seeking.md"
+    },
+    {
+      "area": "design",
+      "path": "types.md"
+    },
+    {
+      "area": "application",
+      "path": "frontend/src"
+    },
+    {
+      "area": "application",
+      "path": "generated/wire.ts"
+    },
+    {
+      "area": "application",
+      "path": "src/assembly.ts"
+    },
+    {
+      "area": "application",
+      "path": "src/compositions/Circle.ts"
+    },
+    {
+      "area": "application",
+      "path": "src/compositions/inputs.ts"
+    },
+    {
+      "area": "application",
+      "path": "src/concepts.ts"
+    },
+    {
+      "area": "application",
+      "path": "src/concepts/Connecting.ts"
+    },
+    {
+      "area": "application",
+      "path": "src/concepts/Seeking.ts"
+    },
+    {
+      "area": "application",
+      "path": "src/concepts/recommendation-policy.ts"
+    },
+    {
+      "area": "application",
+      "path": "src/host/http.ts"
+    },
+    {
+      "area": "application",
+      "path": "src/main.ts"
+    },
+    {
+      "area": "application",
+      "path": "tests/compositions/authenticated-flows.test.ts"
+    },
+    {
+      "area": "application",
+      "path": "tests/concepts/Seeking.test.ts"
+    },
+    {
+      "area": "application",
+      "path": "tests/concepts/lifecycle.test.ts"
+    },
+    {
+      "area": "application",
+      "path": "tests/providers"
+    }
+  ],
+  "writableAreas": [],
+  "toolKinds": [
+    "repository-read"
+  ],
+  "projectShell": "none",
+  "network": false,
+  "generatedOutput": false,
+  "longRunningProcesses": false
+}

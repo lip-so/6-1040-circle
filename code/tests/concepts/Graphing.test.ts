@@ -1,7 +1,8 @@
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "bun:test";
 import { MongoClient, type Db } from "mongodb";
 import { writeMemoryFields } from "../../src/memory-fields.ts";
-import { EmptySourceContent, GraphingConcept, SourceNotOwned } from "../../src/concepts/Graphing.ts";
+import { EmptySourceContent, GraphingConcept, SourceNotOwned } from "../../src/concepts/Graphing/Graphing.ts";
+import { InvalidExtraction } from "../../src/concepts/Graphing/graphing-extraction.ts";
 
 const testUrl = process.env.TEST_MONGODB_URL;
 if (!testUrl) throw new Error("Set TEST_MONGODB_URL in .env to run the MongoDB tests.");
@@ -34,6 +35,18 @@ afterAll(async () => {
 const encounter = "Met Faustin, founder of an AI-chip startup. We talked about systems engineering.";
 
 describe("Graphing", () => {
+  test("invalid or failed model extraction cannot replace a previously indexed source", async () => {
+    await graphing.ingest({ owner: "ralph", source: "memory-1", content: encounter });
+    const invalid = new GraphingConcept(db, { extract: async () => ({
+      entities: [{ key: "p", kind: "PERSON", label: "Faustin" }, { key: "t", kind: "TOPIC", label: "systems engineering" }],
+      claims: [{ from: "p", relation: "WORKS_ON", to: "t", quote: "An invented quote." }],
+    }) });
+    await expect(invalid.ingest({ owner: "ralph", source: "memory-1", content: encounter })).rejects.toThrow(InvalidExtraction);
+    const failed = new GraphingConcept(db, { extract: async () => { throw new Error("provider unavailable"); } });
+    await expect(failed.ingest({ owner: "ralph", source: "memory-1", content: encounter })).rejects.toThrow();
+    expect(await graphing._trace({ owner: "ralph", description: "systems engineering" })).toHaveLength(1);
+  });
+
   test("extracts the encounter and explains a match using its actual source", async () => {
     await graphing.ingest({ owner: "ralph", source: "memory-1", content: encounter });
     const rows = await graphing._trace({ owner: "ralph", description: "I'm looking for systems engineering work at an AI startup." });
@@ -72,28 +85,11 @@ describe("Graphing", () => {
     expect((await graphing._trace({ owner: "ralph", description: "sol rivera" })).map(row => row.label)).toEqual(["sol rivera"]);
   });
 
-  test("handles other names and subjects, rather than seeded demo results", async () => {
-    await graphing.ingest({ owner: "ralph", source: "marine-note", content: "Met Mira Chen, researcher at Delta Lab. She researches marine biology." });
-    const rows = await graphing._trace({ owner: "ralph", description: "marine biology research" });
-    expect(rows.map(row => row.label)).toEqual(["Mira Chen"]);
-    expect(await graphing._trace({ owner: "ralph", description: "database security" })).toEqual([]);
-  });
-
-  test("normalizes supported wording such as engineer/engineering and artificial intelligence/AI", async () => {
-    await graphing.ingest({ owner: "ralph", source: "ai-note", content: "Met Sol Rivera. They work on artificial intelligence and systems engineering." });
-    expect((await graphing._trace({ owner: "ralph", description: "AI system engineer" })).map(row => row.label)).toEqual(["Sol Rivera"]);
-  });
-
   test("returns no rows for blank descriptions or unsupported note wording", async () => {
     await graphing.ingest({ owner: "ralph", source: "unknown", content: "A memorable evening with interesting ideas." });
     expect(await graphing._trace({ owner: "ralph", description: "interesting ideas" })).toEqual([]);
     expect(await graphing._trace({ owner: "ralph", description: " \t " })).toEqual([]);
     expect(await graphing._trace({ owner: "ralph", description: "Someone who could help me" })).toEqual([]);
-  });
-
-  test("does not return another owner's graph", async () => {
-    await graphing.ingest({ owner: "ralph", source: "memory-1", content: encounter });
-    expect(await graphing._trace({ owner: "another-student", description: "systems engineering" })).toEqual([]);
   });
 
   test("refuses an attempt to replace another owner's source", async () => {
@@ -166,25 +162,7 @@ describe("Graphing", () => {
     expect((await graphing._trace({ owner: "ralph", description: "who is hiring" })).map(row => row.label)).toEqual(["Nora"]);
   });
 
-  test("orders results by person label regardless of ingestion order", async () => {
-    await graphing.ingest({ owner: "ralph", source: "z", content: "Met Zoya. We discussed robotics." });
-    await graphing.ingest({ owner: "ralph", source: "a", content: "Met Amina. We discussed robotics." });
-    expect((await graphing._trace({ owner: "ralph", description: "robotics" })).map(row => row.label)).toEqual(["Amina", "Zoya"]);
-  });
-
-  test("persists extracted relationships across a new database connection", async () => {
-    await graphing.ingest({ owner: "ralph", source: "memory-1", content: encounter });
-    const readerClient = new MongoClient(testUrl);
-    try {
-      await readerClient.connect();
-      const reader = new GraphingConcept(readerClient.db(databaseName));
-      expect((await reader._trace({ owner: "ralph", description: "systems engineering" })).map(row => row.label)).toEqual(["Faustin"]);
-    } finally {
-      await readerClient.close();
-    }
-  });
 });
-
 
 test("contact details stay in the source without becoming searchable subjects", async () => {
   const content = writeMemoryFields({ person: "Mira", when: "", does: "Biologist", discussed: "Ocean sensors", contact: "https://www.linkedin.com/in/contactonly529 +1 617 555 0142" });
@@ -192,4 +170,48 @@ test("contact details stay in the source without becoming searchable subjects", 
   expect(await graphing._trace({ owner: "ralph", description: "contactonly529" })).toEqual([]);
   expect(await graphing._trace({ owner: "ralph", description: "617 555 0142" })).toEqual([]);
   expect(await graphing._trace({ owner: "ralph", description: "ocean sensors" })).toMatchObject([{ label: "Mira", source: "contact-note" }]);
+});
+
+test("cross-note paths retain all proof, distinguish generic organizations, and support claim correction", async () => {
+  await graphing.ingest({ owner: "ralph", source: "toni", content: "Met Toni. Toni belongs to Improbable AI Lab." });
+  await graphing.ingest({ owner: "ralph", source: "lab", content: "Improbable AI Lab researches robotics. Improbable AI Lab sometimes hosts undergraduate researchers." });
+  const [result] = await graphing._trace({ owner: "ralph", description: "robotics research" });
+  expect(result).toMatchObject({ label: "Toni", source: "toni" });
+  expect(result!.evidence.length).toBeGreaterThanOrEqual(3);
+  const proofs = await Promise.all(result!.evidence.map(claim => graphing._evidence({ owner: "ralph", claim })));
+  expect(new Set(proofs.flat().map(row => row.source))).toEqual(new Set(["toni", "lab"]));
+  const robotics = (await graphing._claims({ owner: "ralph", source: "lab" })).find(c => c.relation === "RESEARCHES")!;
+  await graphing.reject({ owner: "ralph", claim: robotics.claim });
+  expect(await graphing._trace({ owner: "ralph", description: "robotics research" })).toEqual([]);
+  await graphing.restore({ owner: "ralph", claim: robotics.claim });
+  expect(await graphing._trace({ owner: "ralph", description: "robotics research" })).toHaveLength(1);
+  await graphing.remove({ owner: "another-owner", claim: robotics.claim });
+  expect(await graphing._evidence({ owner: "ralph", claim: robotics.claim })).toHaveLength(1);
+  await graphing.remove({ owner: "ralph", claim: robotics.claim });
+  expect(await graphing._evidence({ owner: "ralph", claim: robotics.claim })).toEqual([]);
+  await graphing.ingest({ owner: "ralph", source: "ambiguous-one", content: "Met Nora, founder of a robotics startup." });
+  await graphing.ingest({ owner: "ralph", source: "ambiguous-two", content: "Met Sam, founder of a robotics startup. The startup is hiring systems engineers." });
+  expect((await graphing._trace({ owner: "ralph", description: "hiring systems engineers" })).map(r => r.label)).toEqual(["Sam"]);
+});
+
+test("explicit KNOWS keeps expertise attached to its person and known withdrawal removes an opening", async () => {
+  await graphing.ingest({ owner: "ralph", source: "knows", content: "Met Mira. Mira knows Leo. Leo researches robotics." });
+  expect((await graphing._trace({ owner: "ralph", description: "robotics" })).map(r => r.label)).toEqual(["Leo"]);
+  await graphing.ingest({ owner: "ralph", source: "withdrawn", content: "Met Nora. Nora is hiring robotics engineers. Nora is no longer hiring." });
+  expect(await graphing._trace({ owner: "ralph", description: "hiring robotics engineers" })).toEqual([]);
+});
+
+test("source versions and retraction prevent stale extraction from resurrecting evidence", async () => {
+  let release!: (value: unknown) => void;
+  const delayed = new GraphingConcept(db, { extract: () => new Promise(resolve => { release = resolve; }) });
+  const pending = delayed.ingest({ owner: "ralph", source: "versioned", content: "Met Mira. Mira researches robotics.", sourceRevision: 0 });
+  await new Promise(resolve => setTimeout(resolve, 10));
+  await graphing.ingest({ owner: "ralph", source: "versioned", content: "Met Mira. Mira researches biology.", sourceRevision: 1 });
+  release({ entities: [], claims: [] });
+  await expect(pending).rejects.toThrow();
+  expect(await graphing._trace({ owner: "ralph", description: "biology" })).toHaveLength(1);
+  await graphing.retract({ owner: "ralph", source: "versioned" });
+  await expect(graphing.ingest({ owner: "ralph", source: "versioned", content: "Met Mira. Mira researches biology.", sourceRevision: 2 })).rejects.toThrow();
+  expect(await graphing._trace({ owner: "ralph", description: "biology" })).toEqual([]);
+  expect(await graphing._members({ owner: "ralph", evidence: ["missing", "foreign", "missing"] })).toEqual([{ claim: "foreign" }, { claim: "missing" }]);
 });

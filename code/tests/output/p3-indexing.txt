@@ -1,0 +1,114 @@
+$ bun run --cwd code test
+$ bun test
+bun test v1.4.2 (744846f84)
+
+tests/ui/recent-people.test.ts:
+(pass) recent people distinguish a failed initial load from a genuinely empty account and can retry [0.50ms]
+(pass) Load more uses the last displayed identity and keeps different encounters with the same name [0.39ms]
+(pass) sign-out or an account change ignores a pending list response [0.08ms]
+(pass) expired sessions clear previous results and request sign-in [0.05ms]
+
+tests/ui/memory-fields.test.ts:
+(pass) guided memories > the fields display exactly what was entered, without requiring natural-language trigger phrases [0.18ms]
+(pass) guided memories > multiline entries cannot overwrite the person or another field [0.02ms]
+(pass) guided memories > only a person's name is needed, and older free-text notes are still recognized separately [0.02ms]
+(pass) optional contact information > preserves and displays contact text [0.02ms]
+
+tests/ui/memory-summary.test.ts:
+(pass) short encounter details > discussing a topic does not become employment or expertise [0.67ms]
+(pass) short encounter details > another person's role and negated work are not attributed to the person [0.04ms]
+
+tests/compositions/Circle.test.ts:
+(pass) Circle result composition > does not form results for another owner's need [33.43ms]
+
+tests/compositions/authenticated-flows.test.ts:
+{"action":"ingest","actionId":"c80a94f8-3bc0-41ea-96ac-1700fbf53c66","error":{"name":"ExtractionUnavailable"},"level":"error","message":"Consequence action faulted","timestamp":"2026-10-19T18:22:42.731Z"}
+(pass) Circle authenticated flows > OpenAI indexing keeps a saved note on provider failure, retries the same identity, and searches only its owner's validated graph [128.76ms]
+(pass) Circle authenticated flows > Commons sign-in, save, index, search, original note, and sign-out work from an empty database [70.83ms]
+(pass) Circle authenticated flows > two signed-in users get only their own notes and graph, including the same person's name [59.95ms]
+(pass) Circle authenticated flows > a body cannot pick the owner or source, supply a session without its cookie, or invoke indexing [35.86ms]
+(pass) Circle authenticated flows > unauthenticated and expired sessions save nothing; blank notes and needs use their declared refusals [34.20ms]
+{"action":"respond","actionId":"d2a69e01-46f8-4319-89bb-e4cdd1596a97","error":{"name":"Error"},"level":"error","message":"Reaction \"Circle.Seek#3\": consequence input former failed","timestamp":"2026-10-19T18:22:43.013Z"}
+(pass) Circle authenticated flows > search failure keeps the saved need and returns an error [36.45ms]
+(pass) Circle authenticated flows > a missing original source is omitted from otherwise owned search results [47.35ms]
+(pass) Circle authenticated flows > Commons' stable subject returns to the same Circle owner after its username changes [54.40ms]
+(pass) Circle authenticated flows > sign-in is bound to its browser and PKCE verifier; HTTP hides credentials and refuses other origins [32.58ms]
+(pass) Circle authenticated flows > a duplicate Commons username uses the blueprint's choose flow without linking the wrong user [40.80ms]
+(pass) Saved people HTTP edge cases > listing authenticates first, rejects owner/timestamp input, and never returns another user's notes [49.90ms]
+
+tests/concepts/Seeking.test.ts:
+(pass) Seeking > saves and retrieves the owner's exact need description [6.11ms]
+(pass) Seeking > refuses blank descriptions without saving [0.97ms]
+(pass) Seeking > does not return another owner's need [1.01ms]
+(pass) Seeking > saves separate needs without overwriting earlier ones [1.72ms]
+
+tests/concepts/Sessioning.test.ts:
+(pass) Sessioning > its principle: Maya stays signed in until she signs out, leaves a session unused for a week, or reaches 90 days [47.82ms]
+(pass) Sessioning > every use sets lastUsed to now, so the week of idleness counts from the latest use [8.51ms]
+(pass) Sessioning > a refused use or end changes no session [9.00ms]
+(pass) Sessioning > Sessioning refuses to use or end an unknown or ended session [7.63ms]
+
+tests/concepts/Federating.test.ts:
+(pass) Federating > its principle: Sam comes back to the same user after his Commons username changes, and neither Leo's link nor Sam's code read by Leo finishes a sign-in [21.58ms]
+(pass) Federating > start returns an address carrying a fresh nonce and challenge in the forms Commons accepts, and an attempt that expires in 10 minutes [12.21ms]
+(pass) Federating > finish refuses an unknown, expired, or confirmed attempt, or another nonce, with SIGN_IN_EXPIRED before contacting the other site [17.91ms]
+(pass) Federating > finish refuses a code the other site doesn't confirm with SIGN_IN_REFUSED, and the attempt stays unconfirmed [11.45ms]
+(pass) Federating > of two finishes of one attempt at once, one confirms it and the other is refused [12.37ms]
+(pass) Federating > link refuses an unconfirmed attempt with NOT_CONFIRMED and a subject already linked with ALREADY_LINKED [17.93ms]
+
+tests/concepts/Registering.test.ts:
+(pass) Registering > its principle: Sam finds Maya by her username, and Ben registers another when hers is taken [13.41ms]
+(pass) Registering > a username must have 3 to 32 ASCII letters, digits, underscores, or hyphens [7.60ms]
+(pass) Registering > of two registrations of one username at once, one succeeds and the other is refused with USERNAME_TAKEN [8.20ms]
+
+tests/concepts/CommonsProvider.test.ts:
+(pass) CommonsProvider > the sign-in address names the app by its origin, carries the nonce as state, and the verifier's S256 challenge [1.35ms]
+(pass) CommonsProvider > redeeming posts exactly the code, the app, and the verifier, and returns Commons' user as the subject [6.57ms]
+Commons at http://localhost:54679 didn't redeem a sign-in code: Error: status 503
+Commons at http://localhost:54679 didn't redeem a sign-in code: Error: no user in the answer
+(pass) CommonsProvider > a refused code, an error, or an answer without a user returns undefined, and nothing is retried [0.55ms]
+Commons at http://localhost:54679 didn't redeem a sign-in code: TimeoutError: The operation timed out.
+(pass) CommonsProvider > Commons not answering within the timeout returns undefined [50.80ms]
+
+tests/concepts/OpenAIExtractor.test.ts:
+(pass) OpenAI encounter extraction > sends only the supplied note to the fixed server API with a strict schema and storage disabled [0.35ms]
+(pass) OpenAI encounter extraction > refuses HTTP errors, incomplete/refused/malformed answers, without retrying or exposing provider details [0.43ms]
+(pass) OpenAI encounter extraction > aborts a stalled provider and refuses oversized input before sending it [20.53ms]
+
+tests/concepts/Remembering.test.ts:
+(pass) Remembering > retrieves an encounter exactly as its owner wrote it [8.07ms]
+(pass) Remembering > refuses blank content without saving anything [1.81ms]
+(pass) Remembering > does not return another owner's memory [2.06ms]
+(pass) Remembering > creates separate memories for separate saves [2.41ms]
+(pass) Remembering > keeps the note after closing the writing connection and opening a new one [11.85ms]
+(pass) Remembering saved-list edge cases > concurrent retries make one note and keep the original timestamp [12.17ms]
+(pass) Remembering saved-list edge cases > the same token from different owners cannot collide or reveal another user's note [3.05ms]
+(pass) Remembering saved-list edge cases > same-name encounters remain separate; legacy notes and exact text stay available without graph extraction [3.26ms]
+(pass) Remembering saved-list edge cases > every older note remains reachable when a new save arrives between pages [10.87ms]
+
+tests/concepts/graphing-extraction.test.ts:
+(pass) untrusted graph extraction > accepts supported relationships and derives stable identities from labels rather than model keys [0.08ms]
+(pass) untrusted graph extraction > rejects malformed graphs, unknown enums, bad references, duplicate keys, and fabricated labels or evidence [0.19ms]
+(pass) untrusted graph extraction > refuses negated evidence and a quote cropped to hide the negation [0.03ms]
+(pass) untrusted graph extraction > refuses multi-person output until tracing can keep their relationships separate [0.02ms]
+
+tests/concepts/Graphing.test.ts:
+(pass) Graphing > invalid or failed model extraction cannot replace a previously indexed source [5.85ms]
+(pass) Graphing > extracts the encounter and explains a match using its actual source [2.02ms]
+(pass) Graphing > indexes guided fields directly, including names and roles outside the free-text patterns [2.42ms]
+(pass) Graphing > a guided discussion doesn't imply a role, hiring, or a positive fact contradicted by the field [2.46ms]
+(pass) Graphing > returns no rows for blank descriptions or unsupported note wording [1.09ms]
+(pass) Graphing > refuses an attempt to replace another owner's source [2.34ms]
+(pass) Graphing > never reassigns a source even when the first index has no claims [1.68ms]
+(pass) Graphing > checks source ownership atomically for simultaneous ingests [3.77ms]
+(pass) Graphing > replaces a source's old relationships instead of appending duplicates [2.77ms]
+(pass) Graphing > rejects blank source content without changing the existing graph [1.24ms]
+(pass) Graphing > keeps same-named people in separate sources separate and does not combine their topics [1.94ms]
+(pass) Graphing > does not turn negated statements or another person's statements into claims [1.54ms]
+(pass) Graphing > requires an explicit hiring statement for hiring searches [3.08ms]
+(pass) contact details stay in the source without becoming searchable subjects [1.86ms]
+
+ 73 pass
+ 0 fail
+ 432 expect() calls
+Ran 73 tests across 14 files. [1166.00ms]

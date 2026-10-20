@@ -1,0 +1,151 @@
+{
+  "state": "finalized",
+  "work": {
+    "slug": "visual-study-integration",
+    "path": "/private/tmp/circle-visual-study/code/.sync-engine/work/visual-study-integration"
+  },
+  "role": "critic",
+  "phase": "contracts",
+  "execution": "delegated",
+  "independent": true,
+  "harness": "codex",
+  "timeoutSeconds": 1800,
+  "prompt": {
+    "path": "/private/tmp/circle-visual-study/code/.sync-engine/work/visual-study-integration/2026-10-19T23-40-47Z-critic-contracts.prompt.md",
+    "sha256": "b5bd661a2f915040d647f0af200af58e2d538ea2eb14aa775405301c2d32ae66"
+  },
+  "capabilities": {
+    "path": "/private/tmp/circle-visual-study/code/.sync-engine/work/visual-study-integration/2026-10-19T23-40-47Z-critic-contracts.capabilities.json",
+    "sha256": "f120858a5fa3e475e3f670c5e17900af36eba99787161ffba4e4fbf94db7ec1c"
+  },
+  "grant": {
+    "readableAreas": [
+      {
+        "area": "design",
+        "path": "compositions/Circle.md"
+      },
+      {
+        "area": "design",
+        "path": "types.md"
+      },
+      {
+        "area": "application",
+        "path": "frontend/src/App.vue"
+      },
+      {
+        "area": "application",
+        "path": "frontend/src/assets/circle/motion.d.ts"
+      },
+      {
+        "area": "application",
+        "path": "frontend/src/assets/circle/motion.js"
+      },
+      {
+        "area": "application",
+        "path": "frontend/src/reusable/CircleFigure.vue"
+      },
+      {
+        "area": "application",
+        "path": "frontend/src/reusable/CommonsButton.vue"
+      },
+      {
+        "area": "application",
+        "path": "frontend/src/style.css"
+      }
+    ],
+    "writableAreas": [],
+    "toolKinds": [
+      "repository-read"
+    ],
+    "projectShell": "none",
+    "network": false,
+    "generatedOutput": false,
+    "longRunningProcesses": false
+  },
+  "response": {
+    "path": "/private/tmp/circle-visual-study/code/.sync-engine/work/visual-study-integration/2026-10-19T23-40-47Z-critic-contracts.response.md",
+    "sha256": "0e817de94d0e1ea46084baf067360eb8018fff8e7252363b99168834de37c19c",
+    "bytes": 4026
+  },
+  "retainedSources": [
+    {
+      "inputId": "brief",
+      "displayName": ".sync-engine/work/visual-study-integration/brief.md",
+      "sha256": "56c7f1c92a77c150779663606fed00d81b5a8b59c36e43597c369fcde24ceb82"
+    },
+    {
+      "inputId": "affected-contracts",
+      "displayName": "design/types.md",
+      "sha256": "9fe12f19806bb30fb32fd421d0cfa41c9c7d9615ff018192551846f8661c31bb"
+    }
+  ],
+  "policy": {
+    "review": "required",
+    "execution": "mixed"
+  },
+  "workspace": {
+    "root": "/private/tmp/circle-visual-study/code",
+    "baseline": {
+      "path": "/private/tmp/circle-visual-study/code/.sync-engine/work/visual-study-integration/2026-10-19T23-40-47Z-critic-contracts.baseline.json",
+      "sha256": "3340d30898dd76bd6dcbab47877e7dba6b5d13559bc30e6153dc8b39d3dc1b11"
+    }
+  },
+  "design": {
+    "root": "/private/tmp/circle-visual-study/code/design",
+    "before": "4be74e835a4131ffff0c692c28ed00c70c549f6bf3fd890f928886169e554af6",
+    "beforeFiles": [
+      {
+        "path": "compositions/Circle.md",
+        "sha256": "bf46d237d33a527da2a829629dcccc4fa8bae9c74176e3cb7be55253db10d7ea"
+      },
+      {
+        "path": "compositions/reusable/accounts.md",
+        "sha256": "b4c3fc51af033e41c525bdc848fcbe005365250e2f04eaf0bc1f9dec26af2cc2"
+      },
+      {
+        "path": "compositions/reusable/commons.md",
+        "sha256": "1231b51781afb5c08b02e790fce544b4db57be64dc13f86d36df5b59ac5b40f2"
+      },
+      {
+        "path": "concepts/Connecting.md",
+        "sha256": "52c141c2964fdd9a5dd07541ca33396fd8577599b7ed08614bde3a25a00b762c"
+      },
+      {
+        "path": "concepts/Federating.md",
+        "sha256": "fdd29a2154b9d7c68938d278eaada07e80779250ec03c16f3b0f8e2768c3b699"
+      },
+      {
+        "path": "concepts/Graphing.md",
+        "sha256": "c7fbb592e8c1400616fbd8c631a5b3c7253c7b309e485a623364b611723e23af"
+      },
+      {
+        "path": "concepts/Registering.md",
+        "sha256": "72e2f72dba60dc1c7def945510c7337ae1805d7d30fd757f6f5beac83d86e9cb"
+      },
+      {
+        "path": "concepts/Remembering.md",
+        "sha256": "ea9a33b8ce6bc1d87abd857d13fd736b03303665e83e76522ac121b63f4e8150"
+      },
+      {
+        "path": "concepts/Seeking.md",
+        "sha256": "d6c3ca6cad5e77e1a4fb43ad39c43836741c9c04d0ae57f6254ecb0b090bbfcc"
+      },
+      {
+        "path": "concepts/Sessioning.md",
+        "sha256": "b47a9125cadab0e938b6298ac2cd782d7592eefdbd76caa879d4c8366e0ef9bc"
+      },
+      {
+        "path": "types.md",
+        "sha256": "9fe12f19806bb30fb32fd421d0cfa41c9c7d9615ff018192551846f8661c31bb"
+      }
+    ]
+  },
+  "review": {
+    "subject": "design",
+    "digest": "4be74e835a4131ffff0c692c28ed00c70c549f6bf3fd890f928886169e554af6"
+  },
+  "status": "completed",
+  "result": "approve",
+  "agentId": "/root/visual_review",
+  "enforcement": "prompt-guided"
+}

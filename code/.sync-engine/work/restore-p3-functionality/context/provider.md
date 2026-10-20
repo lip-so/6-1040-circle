@@ -1,0 +1,9 @@
+# OpenAI provider implementation context
+
+Official documentation fetched October 19, 2026: https://developers.openai.com/api/docs/guides/speech-to-text (File transcription).
+
+Use POST https://api.openai.com/v1/audio/transcriptions with multipart FormData fields file (actual audio Blob with suitable extension), model (server config OPENAI_TRANSCRIBE_MODEL, default gpt-transcribe), response_format json. Read returned text string. Official formats include mp3/mp4/mpeg/mpga/m4a/wav/webm; browser capture should prefer audio/webm or audio/mp4, never assume Ogg supported. This app chooses a lower 4 MiB binary bound (base64 JSON fits under explicit 6 MiB HTTP limit). Add a 30-second provider timeout, redirect:error, no automatic retries, no logs with recording/transcript/key, opaque provider errors. Validate canonical base64, MIME and decoded size before provider, nonblank bounded response after provider. Recordings are not stored. The transcription provider is injected into Remembering; runtime-only configured provider may be unavailable when no key; tool/test assembly cannot call network accidentally. Never print .env or copy it back from staged work.
+
+Existing Responses integration already uses a JSON schema, store:false and a 20-second timeout. Expand the extractor prompt/validator to explicit multiple people plus supported KNOWS directions and organization-topic facts required by approved graph paths. All extraction remains source quoted; no external lookups or person-name merging. Preserve local selected mode and provider-failure behavior. Conservative alias matching and directed paths are the approved semantic retrieval baseline, not a new embeddings store.
+
+User chose OpenAI, but real key is absent. Test injectable providers and local Fetch stand-ins; do not claim live quality or spend on a provider until user configures its local key. No SDK dependency is required; use built-in Fetch/FormData/Blob.

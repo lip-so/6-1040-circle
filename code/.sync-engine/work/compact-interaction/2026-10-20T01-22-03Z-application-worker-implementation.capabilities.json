@@ -1,0 +1,106 @@
+{
+  "readableAreas": [
+    {
+      "area": "design",
+      "path": "compositions/Circle.md"
+    },
+    {
+      "area": "design",
+      "path": "concepts/Connecting.md"
+    },
+    {
+      "area": "design",
+      "path": "types.md"
+    },
+    {
+      "area": "application",
+      "path": "frontend/src"
+    },
+    {
+      "area": "application",
+      "path": "generated/wire.ts"
+    },
+    {
+      "area": "application",
+      "path": "package.json"
+    },
+    {
+      "area": "application",
+      "path": "src"
+    },
+    {
+      "area": "application",
+      "path": "tests"
+    }
+  ],
+  "writableAreas": [
+    {
+      "area": "owned-concept",
+      "path": "src/concepts/Connecting.ts"
+    },
+    {
+      "area": "owned-concept",
+      "path": "src/concepts/recommendation-policy.ts"
+    },
+    {
+      "area": "owned-integration",
+      "path": "src/assembly.ts"
+    },
+    {
+      "area": "owned-integration",
+      "path": "src/compositions/Circle.ts"
+    },
+    {
+      "area": "owned-integration",
+      "path": "src/compositions/inputs.ts"
+    },
+    {
+      "area": "owned-integration",
+      "path": "src/concepts.ts"
+    },
+    {
+      "area": "owned-integration",
+      "path": "src/host/http.ts"
+    },
+    {
+      "area": "owned-integration",
+      "path": "src/main.ts"
+    },
+    {
+      "area": "owned-configuration",
+      "path": "frontend/node_modules/.tmp"
+    },
+    {
+      "area": "owned-frontend",
+      "path": "frontend/src/App.vue"
+    },
+    {
+      "area": "owned-frontend",
+      "path": "frontend/src/reusable"
+    },
+    {
+      "area": "owned-frontend",
+      "path": "frontend/src/style.css"
+    },
+    {
+      "area": "owned-test",
+      "path": "tests/compositions/authenticated-flows.test.ts"
+    },
+    {
+      "area": "owned-test",
+      "path": "tests/concepts/lifecycle.test.ts"
+    },
+    {
+      "area": "owned-test",
+      "path": "tests/providers"
+    }
+  ],
+  "toolKinds": [
+    "repository-read",
+    "repository-write"
+  ],
+  "projectShell": "project-validation",
+  "network": false,
+  "generatedOutput": true,
+  "longRunningProcesses": false
+}

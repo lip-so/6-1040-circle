@@ -1,0 +1,138 @@
+{
+  "state": "finalized",
+  "work": {
+    "slug": "restore-p3-functionality",
+    "path": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality"
+  },
+  "role": "critic",
+  "phase": "verification",
+  "execution": "delegated",
+  "independent": true,
+  "harness": "codex",
+  "timeoutSeconds": 1800,
+  "prompt": {
+    "path": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality/2026-10-19T22-58-21Z-critic-verification.prompt.md",
+    "sha256": "1e4896dd99fd6b56538bdfad51ad5edc846346c031e8379d601371fbfd411b42"
+  },
+  "capabilities": {
+    "path": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality/2026-10-19T22-58-21Z-critic-verification.capabilities.json",
+    "sha256": "c4bffa690a879262e4a7a17ef15506e7fc2a61abcda05d17819d40fb23594403"
+  },
+  "grant": {
+    "readableAreas": [
+      {
+        "area": "work-unit",
+        "path": "context"
+      },
+      {
+        "area": "application",
+        "path": "design"
+      }
+    ],
+    "writableAreas": [],
+    "toolKinds": [
+      "repository-read"
+    ],
+    "projectShell": "project-validation",
+    "network": false,
+    "generatedOutput": false,
+    "longRunningProcesses": false
+  },
+  "response": {
+    "path": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality/2026-10-19T22-58-21Z-critic-verification.response.md",
+    "sha256": "e9bdc645e6d279d9928c1fd762979b024a71c4a5d73421cb648916d4912e0a12",
+    "bytes": 513
+  },
+  "retainedSources": [
+    {
+      "inputId": "brief",
+      "displayName": ".sync-engine/work/restore-p3-functionality/brief.md",
+      "sha256": "c89384fa66d44724944befbdb1a33a2c74b85233c3b3160b46138b95a4dd6a38"
+    },
+    {
+      "inputId": "review-guidance",
+      "displayName": "node_modules/@mit-sdg/sync-engine/docs/user/reference/public-api.md",
+      "sha256": "0e4c88adc1d078b1a5ae887ff315ed26f164d0b59080e62a5d4b03f0eae3b17f"
+    },
+    {
+      "inputId": "review-guidance",
+      "displayName": "node_modules/@mit-sdg/sync-engine/docs/user/reference/semantics.md",
+      "sha256": "5a9de1084b95e1431450365bfafe08013f65fcbd215742839b484e857f06f50f"
+    }
+  ],
+  "policy": {
+    "review": "required",
+    "execution": "mixed"
+  },
+  "workspace": {
+    "root": "/private/tmp/circle-p3-complete/code",
+    "baseline": {
+      "path": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality/2026-10-19T22-58-21Z-critic-verification.baseline.json",
+      "sha256": "bb81ffe85ef5d46165e57d426c238ce95bb6f47a94371682385323cfc4290866"
+    }
+  },
+  "design": {
+    "root": "/private/tmp/circle-p3-complete/code/design",
+    "before": "f8301cfa18c5e6fe94460af7d878d18e62f7b18de90dc6e7b1d6ab69cb78653b",
+    "beforeFiles": [
+      {
+        "path": "compositions/Circle.md",
+        "sha256": "3a8f9d65a669a48615d3aa555a4691748acadf768f78d483c2b6bcbfd0d04dd6"
+      },
+      {
+        "path": "compositions/reusable/accounts.md",
+        "sha256": "b4c3fc51af033e41c525bdc848fcbe005365250e2f04eaf0bc1f9dec26af2cc2"
+      },
+      {
+        "path": "compositions/reusable/commons.md",
+        "sha256": "1231b51781afb5c08b02e790fce544b4db57be64dc13f86d36df5b59ac5b40f2"
+      },
+      {
+        "path": "concepts/Connecting.md",
+        "sha256": "52c141c2964fdd9a5dd07541ca33396fd8577599b7ed08614bde3a25a00b762c"
+      },
+      {
+        "path": "concepts/Federating.md",
+        "sha256": "fdd29a2154b9d7c68938d278eaada07e80779250ec03c16f3b0f8e2768c3b699"
+      },
+      {
+        "path": "concepts/Graphing.md",
+        "sha256": "c7fbb592e8c1400616fbd8c631a5b3c7253c7b309e485a623364b611723e23af"
+      },
+      {
+        "path": "concepts/Registering.md",
+        "sha256": "72e2f72dba60dc1c7def945510c7337ae1805d7d30fd757f6f5beac83d86e9cb"
+      },
+      {
+        "path": "concepts/Remembering.md",
+        "sha256": "ea9a33b8ce6bc1d87abd857d13fd736b03303665e83e76522ac121b63f4e8150"
+      },
+      {
+        "path": "concepts/Seeking.md",
+        "sha256": "eb31ebbe697c76224ef0b23808e05366c1054c9bc0144dff1a609cb6acee6def"
+      },
+      {
+        "path": "concepts/Sessioning.md",
+        "sha256": "b47a9125cadab0e938b6298ac2cd782d7592eefdbd76caa879d4c8366e0ef9bc"
+      },
+      {
+        "path": "types.md",
+        "sha256": "9fe12f19806bb30fb32fd421d0cfa41c9c7d9615ff018192551846f8661c31bb"
+      }
+    ]
+  },
+  "review": {
+    "subject": "design",
+    "digest": "f8301cfa18c5e6fe94460af7d878d18e62f7b18de90dc6e7b1d6ab69cb78653b"
+  },
+  "relationship": {
+    "kind": "continuation",
+    "recordPath": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality/2026-10-19T22-53-11Z-critic-verification.record.json",
+    "targetHarness": "codex",
+    "targetAgentId": "/root/p3_critic"
+  },
+  "status": "completed",
+  "result": "approve",
+  "agentId": "/root/p3_critic",
+  "enforcement": "prompt-guided"
+}

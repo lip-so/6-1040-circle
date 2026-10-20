@@ -1,5 +1,5 @@
 import { readMemoryFields } from "../../src/memory-fields.ts";
-import { extractEncounter } from "../../src/concepts/graphing-text.ts";
+import { extractEncounter } from "../../src/concepts/Graphing/graphing-text.ts";
 
 export interface MemoryDetail { label: string; value: string }
 
@@ -26,7 +26,8 @@ export function memorySummary(content: string, name: string): MemoryDetail[] {
       case "FOUNDED": return [`Founder, ${topic}`];
       case "MEMBER_OF": {
         const role = /\b(researcher|engineer|student|PhD)\s+at\b/iu.exec(claim.quote)?.[1];
-        return [role ? `${capitalized(role)}, ${topic}` : `Works at ${topic}`];
+        return [role ? `${capitalized(role)}, ${topic}`
+          : /\bwork(?:s|ing)?\s+(?:at|for)\b/iu.test(claim.quote) ? `Works at ${topic}` : `Member of ${topic}`];
       }
       case "WORKS_ON": return [`Works on ${topic}`];
       case "RESEARCHES": return [`Researches ${topic}`];

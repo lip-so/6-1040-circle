@@ -55,6 +55,8 @@ Project decisions and progress are recorded in the [design journal](desing-journ
 
 ## P2: Alpha implementation
 
+This section describes the submitted P2 snapshot. Current functionality is documented under P3 below.
+
 The alpha covers only core functionality, nothing fancy yet:
 
 - sign in through Commons
@@ -116,3 +118,76 @@ bun run test
 ```
 
 MongoDB tests create and remove uniquely named temporary databases using `TEST_MONGODB_URL`.
+
+The tests focus on each concept's core behavior, sign-in and ownership boundaries,
+preserving saved data, retry safety, evidence correctness, and the main save/search
+journey. Repeated examples and lower-priority formatting checks are omitted.
+
+## P3: Restored functionality
+
+Circle now implements Remembering, Seeking, Graphing, and Connecting, alongside
+Commons sign-in. Remember uses one free-form note with a gentle reminder of useful
+details. Voice input returns editable text and never saves automatically. Existing
+guided notes remain readable and editable.
+
+Find keeps ongoing searches across visits. Repeating the same description (ignoring
+case and whitespace) reuses an ongoing search. Every legacy need is ongoing until
+resolved; **Resolved** is next to each search. Searches can be edited, reopened, or
+deleted. There is one Need type; goal is another word for that same record.
+
+Notes can be edited, deleted, inspected, and explicitly reindexed. Claim corrections
+leave the original words unchanged. Suggestions update after note and claim changes,
+include every supporting source quote, and retain Useful/Dismissed responses across
+refreshes. Safe directed paths can span notes through distinctive organization/topic
+identities. People with the same name in separate encounters stay separate. Search
+uses conservative aliases and graph paths; unsupported meaning can still yield no
+match. Discussion and possible hosting never establish expertise or a current opening.
+
+### OpenAI configuration
+
+Keep these values server-side in `code/.env`:
+
+```dotenv
+GRAPHING_EXTRACTOR=openai
+OPENAI_API_KEY=your-server-side-key
+OPENAI_GRAPH_MODEL=gpt-4.1-mini
+OPENAI_TRANSCRIBE_MODEL=gpt-transcribe
+```
+
+`GRAPHING_EXTRACTOR=local` is the default and uses the local parser. Selecting OpenAI
+indexing without its key/model fails startup; provider failures never silently fall
+back. Voice transcription uses the server key and configured transcription model.
+Never put a key in a frontend `VITE_` variable or commit it. This change does not
+replace an existing `.env`.
+
+Indexing sends the supplied note to the [Responses API with structured output](https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=responses)
+and `store: false`. Legacy guided Contact fields are excluded; free-form text has no
+separate Contact boundary. The server does not send session/account identities,
+other notes, or the existing graph. Validation checks structure, references, literal
+labels, and full source quotes; it cannot prove the model interpreted a statement
+correctly. The original note remains the authority.
+
+Voice sends only the recording to the [file transcription API](https://developers.openai.com/api/docs/guides/speech-to-text).
+Browser recordings stop at two minutes or 4 MiB; the API accepts bounded supported
+audio, and the app does not persist recordings. Cancelled or account-stale replies
+cannot add text to a draft.
+
+### Failure and recovery
+
+Saved originals survive indexing/search errors. Retry an unchanged save with the
+same token to avoid duplication, or use **Retry indexing** on an encounter. Edits
+invalidate old evidence immediately; deleting a note withdraws its evidence and
+blocks an old save retry from resurrecting it. Legacy graph rows without current
+digest metadata require an explicit reindex before supporting new suggestions.
+There is no automatic external reindexing of existing notes.
+
+The deployed API uses one complete-settlement FIFO per server process, including
+reads. Provider requests can delay later calls until their bounded timeout. This
+beta requires one application process; independent processes or direct root callers
+need their own admission coordination. It does not promise distributed transactions
+or automatic replay.
+
+Provider checks for this restoration use simulated responses, as Sofia requested.
+See [agent-journal.md](agent-journal.md) for verification and the retained/deleted
+test inventory. The earlier [indexing-only test output](code/tests/output/p3-indexing.txt)
+is a historical snapshot, not evidence for the full restoration.

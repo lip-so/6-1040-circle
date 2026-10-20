@@ -1,0 +1,58 @@
+{
+  "readableAreas": [
+    {
+      "area": "work-unit",
+      "path": "context"
+    },
+    {
+      "area": "application",
+      "path": "design"
+    },
+    {
+      "area": "application",
+      "path": "src/compositions/Circle.ts"
+    },
+    {
+      "area": "application",
+      "path": "src/concepts"
+    },
+    {
+      "area": "application",
+      "path": "src/concepts.ts"
+    }
+  ],
+  "writableAreas": [
+    {
+      "area": "assigned-design",
+      "path": "compositions/Circle.md"
+    },
+    {
+      "area": "assigned-design",
+      "path": "concepts/Connecting.md"
+    },
+    {
+      "area": "assigned-design",
+      "path": "concepts/Graphing.md"
+    },
+    {
+      "area": "assigned-design",
+      "path": "concepts/Remembering.md"
+    },
+    {
+      "area": "assigned-design",
+      "path": "concepts/Seeking.md"
+    },
+    {
+      "area": "assigned-design",
+      "path": "types.md"
+    }
+  ],
+  "toolKinds": [
+    "repository-read",
+    "repository-write"
+  ],
+  "projectShell": "project-validation",
+  "network": false,
+  "generatedOutput": false,
+  "longRunningProcesses": false
+}

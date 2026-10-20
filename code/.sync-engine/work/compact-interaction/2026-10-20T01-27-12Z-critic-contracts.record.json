@@ -1,0 +1,201 @@
+{
+  "state": "finalized",
+  "work": {
+    "slug": "compact-interaction",
+    "path": "/private/tmp/circle-compact-interaction/code/.sync-engine/work/compact-interaction"
+  },
+  "role": "critic",
+  "phase": "contracts",
+  "execution": "delegated",
+  "independent": true,
+  "harness": "codex",
+  "timeoutSeconds": 1800,
+  "prompt": {
+    "path": "/private/tmp/circle-compact-interaction/code/.sync-engine/work/compact-interaction/2026-10-20T01-27-12Z-critic-contracts.prompt.md",
+    "sha256": "5bd43c23d6bca0cc1b16ed24e9c661256ce03697c195f9e2193a91cc70b044c5"
+  },
+  "capabilities": {
+    "path": "/private/tmp/circle-compact-interaction/code/.sync-engine/work/compact-interaction/2026-10-20T01-27-12Z-critic-contracts.capabilities.json",
+    "sha256": "99cf84d1001131019040a89be6580a4de0c1e4242d9160523d38d6a1566268da"
+  },
+  "grant": {
+    "readableAreas": [
+      {
+        "area": "design",
+        "path": "compositions/Circle.md"
+      },
+      {
+        "area": "design",
+        "path": "concepts/Connecting.md"
+      },
+      {
+        "area": "design",
+        "path": "concepts/Seeking.md"
+      },
+      {
+        "area": "design",
+        "path": "types.md"
+      },
+      {
+        "area": "application",
+        "path": "frontend/src"
+      },
+      {
+        "area": "application",
+        "path": "generated/wire.ts"
+      },
+      {
+        "area": "application",
+        "path": "src/assembly.ts"
+      },
+      {
+        "area": "application",
+        "path": "src/compositions/Circle.ts"
+      },
+      {
+        "area": "application",
+        "path": "src/compositions/inputs.ts"
+      },
+      {
+        "area": "application",
+        "path": "src/concepts.ts"
+      },
+      {
+        "area": "application",
+        "path": "src/concepts/Connecting.ts"
+      },
+      {
+        "area": "application",
+        "path": "src/concepts/Seeking.ts"
+      },
+      {
+        "area": "application",
+        "path": "src/concepts/recommendation-policy.ts"
+      },
+      {
+        "area": "application",
+        "path": "src/host/http.ts"
+      },
+      {
+        "area": "application",
+        "path": "src/main.ts"
+      },
+      {
+        "area": "application",
+        "path": "tests/compositions/authenticated-flows.test.ts"
+      },
+      {
+        "area": "application",
+        "path": "tests/concepts/Seeking.test.ts"
+      },
+      {
+        "area": "application",
+        "path": "tests/concepts/lifecycle.test.ts"
+      },
+      {
+        "area": "application",
+        "path": "tests/providers"
+      }
+    ],
+    "writableAreas": [],
+    "toolKinds": [
+      "repository-read"
+    ],
+    "projectShell": "none",
+    "network": false,
+    "generatedOutput": false,
+    "longRunningProcesses": false
+  },
+  "response": {
+    "path": "/private/tmp/circle-compact-interaction/code/.sync-engine/work/compact-interaction/2026-10-20T01-27-12Z-critic-contracts.response.md",
+    "sha256": "0e06a5d4c083f1c979d4380ae2b897df3bbc268b4dd837d8aeff4839c97018b7",
+    "bytes": 4082
+  },
+  "retainedSources": [
+    {
+      "inputId": "brief",
+      "displayName": ".sync-engine/work/compact-interaction/brief.md",
+      "sha256": "b6b83f9eb819f2ac0f4864c514ab07ed5c97e3a8edf976c058c1b9c14415700a"
+    },
+    {
+      "inputId": "affected-contracts",
+      "displayName": "design/types.md",
+      "sha256": "9fe12f19806bb30fb32fd421d0cfa41c9c7d9615ff018192551846f8661c31bb"
+    }
+  ],
+  "policy": {
+    "review": "required",
+    "execution": "mixed"
+  },
+  "workspace": {
+    "root": "/private/tmp/circle-compact-interaction/code",
+    "baseline": {
+      "path": "/private/tmp/circle-compact-interaction/code/.sync-engine/work/compact-interaction/2026-10-20T01-27-12Z-critic-contracts.baseline.json",
+      "sha256": "8ae17750e934d51808414d53d875898ab23d122ec06d09450076fe66c145ceab"
+    }
+  },
+  "design": {
+    "root": "/private/tmp/circle-compact-interaction/code/design",
+    "before": "5ef73c7d15e3d7b61af095d1134d7166da2eb20ef2557fe9e50115adff3c5388",
+    "beforeFiles": [
+      {
+        "path": "compositions/Circle.md",
+        "sha256": "2380274b934ec0b7de522a28cff60b90978a6f45bc04015548f9f6d3307764d6"
+      },
+      {
+        "path": "compositions/reusable/accounts.md",
+        "sha256": "b4c3fc51af033e41c525bdc848fcbe005365250e2f04eaf0bc1f9dec26af2cc2"
+      },
+      {
+        "path": "compositions/reusable/commons.md",
+        "sha256": "1231b51781afb5c08b02e790fce544b4db57be64dc13f86d36df5b59ac5b40f2"
+      },
+      {
+        "path": "concepts/Connecting.md",
+        "sha256": "7ecbf3749f80b89b533d99b2b369ad11fb7c942d08fbc74d68af76273e2dd7a6"
+      },
+      {
+        "path": "concepts/Federating.md",
+        "sha256": "fdd29a2154b9d7c68938d278eaada07e80779250ec03c16f3b0f8e2768c3b699"
+      },
+      {
+        "path": "concepts/Graphing.md",
+        "sha256": "c7fbb592e8c1400616fbd8c631a5b3c7253c7b309e485a623364b611723e23af"
+      },
+      {
+        "path": "concepts/Registering.md",
+        "sha256": "72e2f72dba60dc1c7def945510c7337ae1805d7d30fd757f6f5beac83d86e9cb"
+      },
+      {
+        "path": "concepts/Remembering.md",
+        "sha256": "ea9a33b8ce6bc1d87abd857d13fd736b03303665e83e76522ac121b63f4e8150"
+      },
+      {
+        "path": "concepts/Seeking.md",
+        "sha256": "c546bf46b09d4dd57675662837085b368739112e28b0f3b8ea71f37354a0a44a"
+      },
+      {
+        "path": "concepts/Sessioning.md",
+        "sha256": "b47a9125cadab0e938b6298ac2cd782d7592eefdbd76caa879d4c8366e0ef9bc"
+      },
+      {
+        "path": "types.md",
+        "sha256": "9fe12f19806bb30fb32fd421d0cfa41c9c7d9615ff018192551846f8661c31bb"
+      }
+    ]
+  },
+  "review": {
+    "subject": "design",
+    "digest": "5ef73c7d15e3d7b61af095d1134d7166da2eb20ef2557fe9e50115adff3c5388"
+  },
+  "relationship": {
+    "kind": "continuation",
+    "recordPath": "/private/tmp/circle-compact-interaction/code/.sync-engine/work/compact-interaction/2026-10-20T01-17-44Z-critic-contracts.record.json",
+    "targetHarness": "codex",
+    "targetAgentId": "/root/compact_review"
+  },
+  "status": "completed",
+  "result": "approve",
+  "agentId": "/root/compact_review",
+  "enforcement": "prompt-guided"
+}

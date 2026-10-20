@@ -1,0 +1,147 @@
+{
+  "state": "finalized",
+  "work": {
+    "slug": "mockup-refinement",
+    "path": "/private/tmp/circle-mockup-refinement/code/.sync-engine/work/mockup-refinement"
+  },
+  "role": "critic",
+  "phase": "contracts",
+  "execution": "delegated",
+  "independent": true,
+  "harness": "codex",
+  "timeoutSeconds": 1800,
+  "prompt": {
+    "path": "/private/tmp/circle-mockup-refinement/code/.sync-engine/work/mockup-refinement/2026-10-20T00-17-35Z-critic-contracts.prompt.md",
+    "sha256": "6f896db78af0bbe6dbf26fdd3d81d43ccd5188feca2e408704a30ead13f11675"
+  },
+  "capabilities": {
+    "path": "/private/tmp/circle-mockup-refinement/code/.sync-engine/work/mockup-refinement/2026-10-20T00-17-35Z-critic-contracts.capabilities.json",
+    "sha256": "514d10c27684b6062b56033331403294c743458e24bbf775323bf847cdeaceaa"
+  },
+  "grant": {
+    "readableAreas": [
+      {
+        "area": "design",
+        "path": "compositions/Circle.md"
+      },
+      {
+        "area": "design",
+        "path": "types.md"
+      },
+      {
+        "area": "application",
+        "path": "frontend/src/App.vue"
+      },
+      {
+        "area": "application",
+        "path": "frontend/src/assets/fonts/MadInk-License.txt"
+      },
+      {
+        "area": "application",
+        "path": "frontend/src/assets/fonts/Urbanist-OFL.txt"
+      },
+      {
+        "area": "application",
+        "path": "frontend/src/reusable/CommonsButton.vue"
+      },
+      {
+        "area": "application",
+        "path": "frontend/src/style.css"
+      }
+    ],
+    "writableAreas": [],
+    "toolKinds": [
+      "repository-read"
+    ],
+    "projectShell": "none",
+    "network": false,
+    "generatedOutput": false,
+    "longRunningProcesses": false
+  },
+  "response": {
+    "path": "/private/tmp/circle-mockup-refinement/code/.sync-engine/work/mockup-refinement/2026-10-20T00-17-35Z-critic-contracts.response.md",
+    "sha256": "9d9878167862de01748a77f8f4ca99935021cdc9403e551dc4eced20c9b47fa7",
+    "bytes": 1638
+  },
+  "retainedSources": [
+    {
+      "inputId": "brief",
+      "displayName": ".sync-engine/work/mockup-refinement/brief.md",
+      "sha256": "d61d8eea75b817456049e045044138957ed2a1da8027bbdc0053ffc90b8c52f7"
+    },
+    {
+      "inputId": "affected-contracts",
+      "displayName": "design/types.md",
+      "sha256": "9fe12f19806bb30fb32fd421d0cfa41c9c7d9615ff018192551846f8661c31bb"
+    }
+  ],
+  "policy": {
+    "review": "required",
+    "execution": "mixed"
+  },
+  "workspace": {
+    "root": "/private/tmp/circle-mockup-refinement/code",
+    "baseline": {
+      "path": "/private/tmp/circle-mockup-refinement/code/.sync-engine/work/mockup-refinement/2026-10-20T00-17-35Z-critic-contracts.baseline.json",
+      "sha256": "1eb8c03266282ba2189fa5af925cc803b24278bb2a61533ecc9434daf31753ae"
+    }
+  },
+  "design": {
+    "root": "/private/tmp/circle-mockup-refinement/code/design",
+    "before": "4be74e835a4131ffff0c692c28ed00c70c549f6bf3fd890f928886169e554af6",
+    "beforeFiles": [
+      {
+        "path": "compositions/Circle.md",
+        "sha256": "bf46d237d33a527da2a829629dcccc4fa8bae9c74176e3cb7be55253db10d7ea"
+      },
+      {
+        "path": "compositions/reusable/accounts.md",
+        "sha256": "b4c3fc51af033e41c525bdc848fcbe005365250e2f04eaf0bc1f9dec26af2cc2"
+      },
+      {
+        "path": "compositions/reusable/commons.md",
+        "sha256": "1231b51781afb5c08b02e790fce544b4db57be64dc13f86d36df5b59ac5b40f2"
+      },
+      {
+        "path": "concepts/Connecting.md",
+        "sha256": "52c141c2964fdd9a5dd07541ca33396fd8577599b7ed08614bde3a25a00b762c"
+      },
+      {
+        "path": "concepts/Federating.md",
+        "sha256": "fdd29a2154b9d7c68938d278eaada07e80779250ec03c16f3b0f8e2768c3b699"
+      },
+      {
+        "path": "concepts/Graphing.md",
+        "sha256": "c7fbb592e8c1400616fbd8c631a5b3c7253c7b309e485a623364b611723e23af"
+      },
+      {
+        "path": "concepts/Registering.md",
+        "sha256": "72e2f72dba60dc1c7def945510c7337ae1805d7d30fd757f6f5beac83d86e9cb"
+      },
+      {
+        "path": "concepts/Remembering.md",
+        "sha256": "ea9a33b8ce6bc1d87abd857d13fd736b03303665e83e76522ac121b63f4e8150"
+      },
+      {
+        "path": "concepts/Seeking.md",
+        "sha256": "d6c3ca6cad5e77e1a4fb43ad39c43836741c9c04d0ae57f6254ecb0b090bbfcc"
+      },
+      {
+        "path": "concepts/Sessioning.md",
+        "sha256": "b47a9125cadab0e938b6298ac2cd782d7592eefdbd76caa879d4c8366e0ef9bc"
+      },
+      {
+        "path": "types.md",
+        "sha256": "9fe12f19806bb30fb32fd421d0cfa41c9c7d9615ff018192551846f8661c31bb"
+      }
+    ]
+  },
+  "review": {
+    "subject": "design",
+    "digest": "4be74e835a4131ffff0c692c28ed00c70c549f6bf3fd890f928886169e554af6"
+  },
+  "status": "blocked",
+  "result": "blocked",
+  "agentId": "/root/mockup_review",
+  "enforcement": "prompt-guided"
+}

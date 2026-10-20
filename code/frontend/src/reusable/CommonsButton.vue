@@ -27,7 +27,7 @@ async function start() {
   </button>
 </template>
 
-<!-- Commons' orange, a shade darker so the light text has enough contrast. -->
+<!-- A darker vermilion retains the study palette with readable light text. -->
 <style scoped>
 .commons-button {
   display: flex;
@@ -38,15 +38,15 @@ async function start() {
   padding: 0 var(--space-4);
   border: 0;
   border-radius: var(--radius-md);
-  background: #b44900;
+  background: var(--action);
   color: #fefcf4;
   font-weight: 700;
 }
 .commons-button:hover:not(:disabled) {
-  background: #a03f00;
+  background: var(--action-hover);
 }
 .commons-button:focus-visible {
-  outline-color: #b44900;
+  outline-color: var(--blue);
 }
 .commons-button svg {
   border-radius: 7px;

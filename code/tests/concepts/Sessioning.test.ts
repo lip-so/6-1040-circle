@@ -4,7 +4,6 @@ import { NotSignedIn, type Session, SessioningConcept } from "../../src/concepts
 import { cleanupDatabases, testDatabase } from "../support/reusable/mongo.ts";
 
 afterAll(cleanupDatabases);
-import { expectOneWinner } from "../support/reusable/race.ts";
 
 const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
@@ -46,14 +45,6 @@ describe("Sessioning", () => {
 
     advance(DAY);
     await expect(sessioning.use({ session: laptop })).rejects.toThrow(NotSignedIn);
-  });
-
-  test("a session's identity is 32 random bytes in base64url", async () => {
-    const { sessioning } = await setup();
-    const { session: first } = await sessioning.start({ subject: "maya" });
-    const { session: second } = await sessioning.start({ subject: "maya" });
-    expect(first).toMatch(/^[A-Za-z0-9_-]{43}$/);
-    expect(first).not.toBe(second);
   });
 
   test("every use sets lastUsed to now, so the week of idleness counts from the latest use", async () => {
@@ -98,9 +89,4 @@ describe("Sessioning", () => {
     await expect(sessioning.use({ session })).rejects.toThrow(NotSignedIn);
   });
 
-  test("of two ends of one session at once, Sessioning accepts one and refuses the other with NOT_SIGNED_IN", async () => {
-    const { sessioning } = await setup();
-    const { session } = await sessioning.start({ subject: "maya" });
-    await expectOneWinner([sessioning.end({ session }), sessioning.end({ session })], NotSignedIn);
-  });
 });

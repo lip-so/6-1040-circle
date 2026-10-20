@@ -1,0 +1,1 @@
+Frontend: frontend/src/App.vue, frontend/src/style.css, frontend/src/reusable/*.vue; copied runtime assets: frontend/src/assets/circle/. Existing API client/generated interface remain authoritative. Existing interactions must be preserved.

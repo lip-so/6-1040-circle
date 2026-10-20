@@ -1,0 +1,1 @@
+src/concepts/Remembering.ts, src/concepts/Seeking.ts, src/concepts/Graphing.ts, src/concepts/graphing-text.ts, src/concepts/graphing-extraction.ts, src/concepts/openai-extractor.ts, src/compositions/Circle.ts, src/concepts.ts, src/assembly.ts, src/host/http.ts, src/main.ts, tests/concepts, tests/compositions, generated.config.ts. Use supplied grant for precise bounds.

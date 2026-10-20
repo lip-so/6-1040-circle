@@ -68,6 +68,129 @@ export type CircleWire = {
     };
     error: { error: AppWideError | "INVALID_INPUT" | "NOT_SIGNED_IN" };
   };
+  "/capture/transcribe": {
+    input: {
+      "audio": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["transcribe"]>[0], ["audio"]>>;
+      "mediaType": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["transcribe"]>[0], ["mediaType"]>>;
+      "session": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["use"]>[0], ["session"]>>;
+    };
+    output: {
+      "content": Jsonify<AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["transcribe"]>>, ["content"]>>;
+    };
+    error: { error: AppWideError | "INVALID_AUDIO" | "INVALID_INPUT" | "NOT_SIGNED_IN" };
+  };
+  "/claims/reject": {
+    input: {
+      "claim": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["reject"]>[0], ["claim"]>>;
+      "session": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["use"]>[0], ["session"]>>;
+    };
+    output: {
+      "suggestions": {
+        "connection": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["connection"]>>;
+        "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+        "description": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>[0], ["description"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["description"]>]>>;
+        "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["evidence"]>]>>;
+        "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["gaps"]>>;
+        "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
+        "need": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["need"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["need"]>]>>;
+        "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["reason"]>>;
+        "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
+        "sources": {
+          "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+          "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+          "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+          "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+        }[];
+        "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
+      }[];
+    };
+    error: { error: AppWideError | "CLAIM_REJECTION_UNAVAILABLE" | "EMPTY_EVIDENCE" | "EMPTY_REASON" | "EMPTY_SEARCH_DESCRIPTION" | "INVALID_INPUT" | "NOT_SIGNED_IN" };
+  };
+  "/claims/remove": {
+    input: {
+      "claim": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["remove"]>[0], ["claim"]>>;
+      "session": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["use"]>[0], ["session"]>>;
+    };
+    output: {
+      "suggestions": {
+        "connection": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["connection"]>>;
+        "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+        "description": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>[0], ["description"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["description"]>]>>;
+        "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["evidence"]>]>>;
+        "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["gaps"]>>;
+        "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
+        "need": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["need"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["need"]>]>>;
+        "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["reason"]>>;
+        "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
+        "sources": {
+          "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+          "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+          "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+          "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+        }[];
+        "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
+      }[];
+    };
+    error: { error: AppWideError | "EMPTY_EVIDENCE" | "EMPTY_REASON" | "EMPTY_SEARCH_DESCRIPTION" | "INVALID_INPUT" | "NOT_SIGNED_IN" };
+  };
+  "/claims/restore": {
+    input: {
+      "claim": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["restore"]>[0], ["claim"]>>;
+      "session": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["use"]>[0], ["session"]>>;
+    };
+    output: {
+      "suggestions": {
+        "connection": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["connection"]>>;
+        "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+        "description": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>[0], ["description"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["description"]>]>>;
+        "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["evidence"]>]>>;
+        "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["gaps"]>>;
+        "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
+        "need": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["need"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["need"]>]>>;
+        "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["reason"]>>;
+        "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
+        "sources": {
+          "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+          "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+          "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+          "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+        }[];
+        "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
+      }[];
+    };
+    error: { error: AppWideError | "CLAIM_RESTORE_UNAVAILABLE" | "EMPTY_EVIDENCE" | "EMPTY_REASON" | "EMPTY_SEARCH_DESCRIPTION" | "INVALID_INPUT" | "NOT_SIGNED_IN" };
+  };
+  "/memories/forget": {
+    input: {
+      "memory": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["forget"]>[0], ["memory"]>>;
+      "session": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["use"]>[0], ["session"]>>;
+    };
+    output: {
+      "deleted": true;
+    };
+    error: { error: AppWideError | "EMPTY_EVIDENCE" | "EMPTY_REASON" | "EMPTY_SEARCH_DESCRIPTION" | "FORGET_NOT_OWNED" | "INVALID_INPUT" | "NOT_SIGNED_IN" | "RETRACT_NOT_OWNED" };
+  };
+  "/memories/get": {
+    input: {
+      "memory": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_claims"]>[0], ["source"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_source"]>[0], ["source"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>]>>;
+      "session": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["use"]>[0], ["session"]>>;
+    };
+    output: {
+      "memory": {
+        "claims": {
+          "claim": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_claims"]>>>, ["claim"]>>;
+          "fromLabel": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_claims"]>>>, ["fromLabel"]>>;
+          "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_claims"]>>>, ["quote"]>>;
+          "relation": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_claims"]>>>, ["relation"]>>;
+          "toLabel": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_claims"]>>>, ["toLabel"]>>;
+          "usable": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_claims"]>>>, ["usable"]>>;
+        }[];
+        "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+        "memory": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>>;
+      };
+    };
+    error: { error: AppWideError | "INVALID_INPUT" | "NOT_FOUND" | "NOT_SIGNED_IN" };
+  };
   "/memories/list": {
     input: {
       "after": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_list"]>[0], ["after"]>>;
@@ -81,6 +204,18 @@ export type CircleWire = {
     };
     error: { error: AppWideError | "INVALID_INPUT" | "NOT_SIGNED_IN" };
   };
+  "/memories/reindex": {
+    input: {
+      "memory": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_record"]>[0], ["memory"]>>;
+      "session": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["use"]>[0], ["session"]>>;
+    };
+    output: {
+      "memory": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["ingest"]>[0], ["source"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_record"]>[0], ["memory"]>]>>;
+    } | {
+      "memory": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_record"]>[0], ["memory"]>>;
+    };
+    error: { error: AppWideError | "EMPTY_EVIDENCE" | "EMPTY_REASON" | "EMPTY_SEARCH_DESCRIPTION" | "EMPTY_SOURCE_CONTENT" | "INVALID_INPUT" | "NOT_FOUND" | "NOT_SIGNED_IN" | "SOURCE_NOT_OWNED" | "SOURCE_RETRACTED" | "STALE_SOURCE_REVISION" };
+  };
   "/memories/remember": {
     input: {
       "content": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["remember"]>[0], ["content"]>>;
@@ -88,9 +223,134 @@ export type CircleWire = {
       "submission": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["remember"]>[0], ["submission"]>>;
     };
     output: {
-      "memory": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["ingest"]>[0], ["source"]>>;
+      "memory": Jsonify<AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["remember"]>>, ["memory"]>>;
     };
-    error: { error: AppWideError | "EMPTY_CONTENT" | "EMPTY_SOURCE_CONTENT" | "INVALID_INPUT" | "NOT_SIGNED_IN" | "SOURCE_NOT_OWNED" | "SUBMISSION_CONFLICT" };
+    error: { error: AppWideError | "EMPTY_CONTENT" | "EMPTY_EVIDENCE" | "EMPTY_REASON" | "EMPTY_SEARCH_DESCRIPTION" | "EMPTY_SOURCE_CONTENT" | "INVALID_INPUT" | "NOT_SIGNED_IN" | "SOURCE_NOT_OWNED" | "SOURCE_RETRACTED" | "STALE_SOURCE_REVISION" | "SUBMISSION_CONFLICT" | "SUBMISSION_FORGOTTEN" };
+  };
+  "/memories/revise": {
+    input: {
+      "content": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["revise"]>[0], ["content"]>>;
+      "memory": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["revise"]>[0], ["memory"]>>;
+      "session": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["use"]>[0], ["session"]>>;
+    };
+    output: {
+      "memory": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["revise"]>[0], ["memory"]>>;
+    };
+    error: { error: AppWideError | "EMPTY_EVIDENCE" | "EMPTY_REASON" | "EMPTY_REVISION" | "EMPTY_SEARCH_DESCRIPTION" | "EMPTY_SOURCE_CONTENT" | "INVALID_INPUT" | "NOT_SIGNED_IN" | "REVISION_UNAVAILABLE" | "SOURCE_NOT_OWNED" | "SOURCE_RETRACTED" | "STALE_SOURCE_REVISION" };
+  };
+  "/needs/delete": {
+    input: {
+      "need": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["delete"]>[0], ["need"]>>;
+      "session": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["use"]>[0], ["session"]>>;
+    };
+    output: {
+      "deleted": true;
+    };
+    error: { error: AppWideError | "INVALID_INPUT" | "NOT_SIGNED_IN" };
+  };
+  "/needs/list": {
+    input: {
+      "session": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["use"]>[0], ["session"]>>;
+    };
+    output: {
+      "needs": {
+        "active": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_list"]>>>, ["active"]>>;
+        "description": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_list"]>>>, ["description"]>>;
+        "need": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_list"]>>>, ["need"]>>;
+      }[];
+    };
+    error: { error: AppWideError | "INVALID_INPUT" | "NOT_SIGNED_IN" };
+  };
+  "/needs/reopen": {
+    input: {
+      "need": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["reopen"]>[0], ["need"]>>;
+      "session": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["use"]>[0], ["session"]>>;
+    };
+    output: {
+      "results": {
+        "active": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>>>, ["active"]>>;
+        "description": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>>>, ["description"]>>;
+        "need": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["reopen"]>[0], ["need"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>[0], ["need"]>]>>;
+        "suggestions": {
+          "connection": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["connection"]>>;
+          "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+          "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["evidence"]>]>>;
+          "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["gaps"]>>;
+          "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
+          "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["reason"]>>;
+          "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
+          "sources": {
+            "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+            "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+            "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+            "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+          }[];
+          "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
+        }[];
+      };
+    };
+    error: { error: AppWideError | "EMPTY_EVIDENCE" | "EMPTY_REASON" | "EMPTY_SEARCH_DESCRIPTION" | "INVALID_INPUT" | "NEED_REOPEN_UNAVAILABLE" | "NOT_SIGNED_IN" };
+  };
+  "/needs/resolve": {
+    input: {
+      "need": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["resolve"]>[0], ["need"]>>;
+      "session": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["use"]>[0], ["session"]>>;
+    };
+    output: {
+      "results": {
+        "active": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>>>, ["active"]>>;
+        "description": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>>>, ["description"]>>;
+        "need": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["resolve"]>[0], ["need"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>[0], ["need"]>]>>;
+        "suggestions": {
+          "connection": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["connection"]>>;
+          "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+          "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["evidence"]>]>>;
+          "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["gaps"]>>;
+          "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
+          "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["reason"]>>;
+          "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
+          "sources": {
+            "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+            "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+            "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+            "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+          }[];
+          "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
+        }[];
+      };
+    };
+    error: { error: AppWideError | "INVALID_INPUT" | "NEED_RESOLUTION_UNAVAILABLE" | "NOT_SIGNED_IN" };
+  };
+  "/needs/revise": {
+    input: {
+      "description": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["revise"]>[0], ["description"]>>;
+      "need": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["revise"]>[0], ["need"]>>;
+      "session": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["use"]>[0], ["session"]>>;
+    };
+    output: {
+      "results": {
+        "active": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>>>, ["active"]>>;
+        "description": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>>>, ["description"]>>;
+        "need": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["revise"]>[0], ["need"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>[0], ["need"]>]>>;
+        "suggestions": {
+          "connection": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["connection"]>>;
+          "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+          "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["evidence"]>]>>;
+          "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["gaps"]>>;
+          "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
+          "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["reason"]>>;
+          "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
+          "sources": {
+            "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+            "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+            "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+            "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+          }[];
+          "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
+        }[];
+      };
+    };
+    error: { error: AppWideError | "EMPTY_EVIDENCE" | "EMPTY_NEED_REVISION" | "EMPTY_REASON" | "EMPTY_SEARCH_DESCRIPTION" | "INVALID_INPUT" | "NEED_REVISION_INACTIVE" | "NEED_REVISION_UNAVAILABLE" | "NOT_SIGNED_IN" };
   };
   "/needs/seek": {
     input: {
@@ -99,18 +359,136 @@ export type CircleWire = {
     };
     output: {
       "results": {
-        "description": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_get"]>>>, ["description"]>>;
-        "need": Jsonify<AllOf<[AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["seek"]>>, ["need"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["_get"]>[0], ["need"]>]>>;
+        "active": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>>>, ["active"]>>;
+        "description": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>>>, ["description"]>>;
+        "need": Jsonify<AllOf<[AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["seek"]>>, ["need"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>[0], ["need"]>]>>;
         "suggestions": {
+          "connection": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["connection"]>>;
           "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+          "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["evidence"]>]>>;
+          "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["gaps"]>>;
           "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
           "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["reason"]>>;
           "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
-          "target": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>>;
+          "sources": {
+            "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+            "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+            "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+            "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+          }[];
+          "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
         }[];
       };
     };
-    error: { error: AppWideError | "EMPTY_DESCRIPTION" | "INVALID_INPUT" | "NOT_SIGNED_IN" };
+    error: { error: AppWideError | "EMPTY_DESCRIPTION" | "EMPTY_EVIDENCE" | "EMPTY_REASON" | "EMPTY_SEARCH_DESCRIPTION" | "INVALID_INPUT" | "NOT_SIGNED_IN" };
+  };
+  "/suggestions/exclude": {
+    input: {
+      "connection": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Connecting"]["exclude"]>[0], ["connection"]>>;
+      "explanation": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Connecting"]["exclude"]>[0], ["explanation"]>>;
+      "session": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["use"]>[0], ["session"]>>;
+    };
+    output: {
+      "suggestions": {
+        "connection": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["connection"]>>;
+        "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+        "description": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>[0], ["description"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["description"]>]>>;
+        "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["evidence"]>]>>;
+        "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["gaps"]>>;
+        "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
+        "need": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["need"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["need"]>]>>;
+        "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["reason"]>>;
+        "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
+        "sources": {
+          "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+          "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+          "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+          "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+        }[];
+        "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
+      }[];
+    };
+    error: { error: AppWideError | "EXCLUDE_INELIGIBLE" | "EXCLUDE_REASON_TOO_LONG" | "EXCLUDE_UNAVAILABLE" | "INVALID_INPUT" | "NOT_FOUND" | "NOT_SIGNED_IN" };
+  };
+  "/suggestions/inspect": {
+    input: {
+      "connection": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Connecting"]["_get"]>[0], ["connection"]>>;
+      "session": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["use"]>[0], ["session"]>>;
+    };
+    output: {
+      "suggestion": {
+        "connection": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Connecting"]["_get"]>[0], ["connection"]>>;
+        "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+        "description": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>>>, ["description"]>>;
+        "eligible": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_get"]>>>, ["eligible"]>>;
+        "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_get"]>>>, ["evidence"]>]>>;
+        "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_get"]>>>, ["gaps"]>>;
+        "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
+        "need": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>[0], ["need"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_get"]>>>, ["need"]>]>>;
+        "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_get"]>>>, ["reason"]>>;
+        "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
+        "sources": {
+          "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+          "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+          "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+          "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+        }[];
+        "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_get"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
+      };
+    };
+    error: { error: AppWideError | "INVALID_INPUT" | "NOT_FOUND" | "NOT_SIGNED_IN" };
+  };
+  "/suggestions/list": {
+    input: {
+      "session": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["use"]>[0], ["session"]>>;
+    };
+    output: {
+      "suggestions": {
+        "connection": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["connection"]>>;
+        "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+        "description": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>[0], ["description"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["description"]>]>>;
+        "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["evidence"]>]>>;
+        "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["gaps"]>>;
+        "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
+        "need": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["need"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["need"]>]>>;
+        "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["reason"]>>;
+        "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
+        "sources": {
+          "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+          "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+          "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+          "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+        }[];
+        "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
+      }[];
+    };
+    error: { error: AppWideError | "INVALID_INPUT" | "NOT_SIGNED_IN" };
+  };
+  "/suggestions/refresh": {
+    input: {
+      "session": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["use"]>[0], ["session"]>>;
+    };
+    output: {
+      "suggestions": {
+        "connection": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["connection"]>>;
+        "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+        "description": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>[0], ["description"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["description"]>]>>;
+        "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["evidence"]>]>>;
+        "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["gaps"]>>;
+        "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
+        "need": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["need"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["need"]>]>>;
+        "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["reason"]>>;
+        "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
+        "sources": {
+          "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+          "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+          "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+          "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+        }[];
+        "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
+      }[];
+    };
+    error: { error: AppWideError | "EMPTY_EVIDENCE" | "EMPTY_REASON" | "EMPTY_SEARCH_DESCRIPTION" | "INVALID_INPUT" | "NOT_SIGNED_IN" };
   };
 };
 
@@ -157,6 +535,123 @@ export type CircleWireHttp = {
     };
     error: { error: HttpAppWideError | "INVALID_REQUEST" | "UNAUTHORIZED" };
   };
+  "/capture/transcribe": {
+    input: {
+      "audio": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["transcribe"]>[0], ["audio"]>>;
+      "mediaType": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["transcribe"]>[0], ["mediaType"]>>;
+    };
+    output: {
+      "content": Jsonify<AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["transcribe"]>>, ["content"]>>;
+    };
+    error: { error: HttpAppWideError | "INVALID_REQUEST" | "UNAUTHORIZED" };
+  };
+  "/claims/reject": {
+    input: {
+      "claim": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["reject"]>[0], ["claim"]>>;
+    };
+    output: {
+      "suggestions": {
+        "connection": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["connection"]>>;
+        "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+        "description": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>[0], ["description"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["description"]>]>>;
+        "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["evidence"]>]>>;
+        "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["gaps"]>>;
+        "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
+        "need": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["need"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["need"]>]>>;
+        "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["reason"]>>;
+        "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
+        "sources": {
+          "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+          "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+          "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+          "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+        }[];
+        "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
+      }[];
+    };
+    error: { error: HttpAppWideError | "INVALID_REQUEST" | "NOT_FOUND" | "UNAUTHORIZED" };
+  };
+  "/claims/remove": {
+    input: {
+      "claim": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["remove"]>[0], ["claim"]>>;
+    };
+    output: {
+      "suggestions": {
+        "connection": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["connection"]>>;
+        "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+        "description": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>[0], ["description"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["description"]>]>>;
+        "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["evidence"]>]>>;
+        "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["gaps"]>>;
+        "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
+        "need": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["need"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["need"]>]>>;
+        "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["reason"]>>;
+        "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
+        "sources": {
+          "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+          "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+          "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+          "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+        }[];
+        "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
+      }[];
+    };
+    error: { error: HttpAppWideError | "INVALID_REQUEST" | "UNAUTHORIZED" };
+  };
+  "/claims/restore": {
+    input: {
+      "claim": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["restore"]>[0], ["claim"]>>;
+    };
+    output: {
+      "suggestions": {
+        "connection": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["connection"]>>;
+        "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+        "description": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>[0], ["description"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["description"]>]>>;
+        "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["evidence"]>]>>;
+        "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["gaps"]>>;
+        "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
+        "need": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["need"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["need"]>]>>;
+        "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["reason"]>>;
+        "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
+        "sources": {
+          "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+          "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+          "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+          "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+        }[];
+        "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
+      }[];
+    };
+    error: { error: HttpAppWideError | "INVALID_REQUEST" | "NOT_FOUND" | "UNAUTHORIZED" };
+  };
+  "/memories/forget": {
+    input: {
+      "memory": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["forget"]>[0], ["memory"]>>;
+    };
+    output: {
+      "deleted": true;
+    };
+    error: { error: HttpAppWideError | "INVALID_REQUEST" | "NOT_FOUND" | "UNAUTHORIZED" };
+  };
+  "/memories/get": {
+    input: {
+      "memory": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_claims"]>[0], ["source"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_source"]>[0], ["source"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>]>>;
+    };
+    output: {
+      "memory": {
+        "claims": {
+          "claim": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_claims"]>>>, ["claim"]>>;
+          "fromLabel": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_claims"]>>>, ["fromLabel"]>>;
+          "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_claims"]>>>, ["quote"]>>;
+          "relation": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_claims"]>>>, ["relation"]>>;
+          "toLabel": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_claims"]>>>, ["toLabel"]>>;
+          "usable": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_claims"]>>>, ["usable"]>>;
+        }[];
+        "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+        "memory": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>>;
+      };
+    };
+    error: { error: HttpAppWideError | "INVALID_REQUEST" | "NOT_FOUND" | "UNAUTHORIZED" };
+  };
   "/memories/list": {
     input: {
       "after": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_list"]>[0], ["after"]>>;
@@ -169,15 +664,144 @@ export type CircleWireHttp = {
     };
     error: { error: HttpAppWideError | "INVALID_REQUEST" | "UNAUTHORIZED" };
   };
+  "/memories/reindex": {
+    input: {
+      "memory": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_record"]>[0], ["memory"]>>;
+    };
+    output: {
+      "memory": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["ingest"]>[0], ["source"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_record"]>[0], ["memory"]>]>>;
+    } | {
+      "memory": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_record"]>[0], ["memory"]>>;
+    };
+    error: { error: HttpAppWideError | "CONFLICT" | "FORBIDDEN" | "INVALID_REQUEST" | "NOT_FOUND" | "UNAUTHORIZED" };
+  };
   "/memories/remember": {
     input: {
       "content": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["remember"]>[0], ["content"]>>;
       "submission": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["remember"]>[0], ["submission"]>>;
     };
     output: {
-      "memory": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["ingest"]>[0], ["source"]>>;
+      "memory": Jsonify<AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["remember"]>>, ["memory"]>>;
     };
     error: { error: HttpAppWideError | "CONFLICT" | "FORBIDDEN" | "INVALID_REQUEST" | "UNAUTHORIZED" };
+  };
+  "/memories/revise": {
+    input: {
+      "content": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["revise"]>[0], ["content"]>>;
+      "memory": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["revise"]>[0], ["memory"]>>;
+    };
+    output: {
+      "memory": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["revise"]>[0], ["memory"]>>;
+    };
+    error: { error: HttpAppWideError | "CONFLICT" | "FORBIDDEN" | "INVALID_REQUEST" | "NOT_FOUND" | "UNAUTHORIZED" };
+  };
+  "/needs/delete": {
+    input: {
+      "need": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["delete"]>[0], ["need"]>>;
+    };
+    output: {
+      "deleted": true;
+    };
+    error: { error: HttpAppWideError | "INVALID_REQUEST" | "UNAUTHORIZED" };
+  };
+  "/needs/list": {
+    input: Record<string, never>;
+    output: {
+      "needs": {
+        "active": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_list"]>>>, ["active"]>>;
+        "description": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_list"]>>>, ["description"]>>;
+        "need": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_list"]>>>, ["need"]>>;
+      }[];
+    };
+    error: { error: HttpAppWideError | "INVALID_REQUEST" | "UNAUTHORIZED" };
+  };
+  "/needs/reopen": {
+    input: {
+      "need": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["reopen"]>[0], ["need"]>>;
+    };
+    output: {
+      "results": {
+        "active": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>>>, ["active"]>>;
+        "description": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>>>, ["description"]>>;
+        "need": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["reopen"]>[0], ["need"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>[0], ["need"]>]>>;
+        "suggestions": {
+          "connection": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["connection"]>>;
+          "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+          "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["evidence"]>]>>;
+          "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["gaps"]>>;
+          "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
+          "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["reason"]>>;
+          "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
+          "sources": {
+            "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+            "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+            "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+            "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+          }[];
+          "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
+        }[];
+      };
+    };
+    error: { error: HttpAppWideError | "INVALID_REQUEST" | "NOT_FOUND" | "UNAUTHORIZED" };
+  };
+  "/needs/resolve": {
+    input: {
+      "need": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["resolve"]>[0], ["need"]>>;
+    };
+    output: {
+      "results": {
+        "active": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>>>, ["active"]>>;
+        "description": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>>>, ["description"]>>;
+        "need": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["resolve"]>[0], ["need"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>[0], ["need"]>]>>;
+        "suggestions": {
+          "connection": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["connection"]>>;
+          "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+          "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["evidence"]>]>>;
+          "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["gaps"]>>;
+          "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
+          "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["reason"]>>;
+          "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
+          "sources": {
+            "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+            "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+            "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+            "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+          }[];
+          "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
+        }[];
+      };
+    };
+    error: { error: HttpAppWideError | "INVALID_REQUEST" | "NOT_FOUND" | "UNAUTHORIZED" };
+  };
+  "/needs/revise": {
+    input: {
+      "description": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["revise"]>[0], ["description"]>>;
+      "need": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["revise"]>[0], ["need"]>>;
+    };
+    output: {
+      "results": {
+        "active": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>>>, ["active"]>>;
+        "description": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>>>, ["description"]>>;
+        "need": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["revise"]>[0], ["need"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>[0], ["need"]>]>>;
+        "suggestions": {
+          "connection": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["connection"]>>;
+          "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+          "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["evidence"]>]>>;
+          "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["gaps"]>>;
+          "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
+          "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["reason"]>>;
+          "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
+          "sources": {
+            "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+            "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+            "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+            "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+          }[];
+          "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
+        }[];
+      };
+    };
+    error: { error: HttpAppWideError | "CONFLICT" | "INVALID_REQUEST" | "NOT_FOUND" | "UNAUTHORIZED" };
   };
   "/needs/seek": {
     input: {
@@ -185,16 +809,128 @@ export type CircleWireHttp = {
     };
     output: {
       "results": {
-        "description": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_get"]>>>, ["description"]>>;
-        "need": Jsonify<AllOf<[AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["seek"]>>, ["need"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["_get"]>[0], ["need"]>]>>;
+        "active": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>>>, ["active"]>>;
+        "description": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>>>, ["description"]>>;
+        "need": Jsonify<AllOf<[AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["seek"]>>, ["need"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>[0], ["need"]>]>>;
         "suggestions": {
+          "connection": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["connection"]>>;
           "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+          "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["evidence"]>]>>;
+          "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["gaps"]>>;
           "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
           "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["reason"]>>;
           "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
-          "target": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>>;
+          "sources": {
+            "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+            "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+            "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+            "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+          }[];
+          "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
         }[];
       };
+    };
+    error: { error: HttpAppWideError | "INVALID_REQUEST" | "UNAUTHORIZED" };
+  };
+  "/suggestions/exclude": {
+    input: {
+      "connection": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Connecting"]["exclude"]>[0], ["connection"]>>;
+      "explanation": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Connecting"]["exclude"]>[0], ["explanation"]>>;
+    };
+    output: {
+      "suggestions": {
+        "connection": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["connection"]>>;
+        "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+        "description": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>[0], ["description"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["description"]>]>>;
+        "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["evidence"]>]>>;
+        "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["gaps"]>>;
+        "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
+        "need": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["need"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["need"]>]>>;
+        "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["reason"]>>;
+        "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
+        "sources": {
+          "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+          "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+          "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+          "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+        }[];
+        "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
+      }[];
+    };
+    error: { error: HttpAppWideError | "CONFLICT" | "INVALID_REQUEST" | "NOT_FOUND" | "UNAUTHORIZED" };
+  };
+  "/suggestions/inspect": {
+    input: {
+      "connection": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Connecting"]["_get"]>[0], ["connection"]>>;
+    };
+    output: {
+      "suggestion": {
+        "connection": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Connecting"]["_get"]>[0], ["connection"]>>;
+        "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+        "description": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>>>, ["description"]>>;
+        "eligible": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_get"]>>>, ["eligible"]>>;
+        "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_get"]>>>, ["evidence"]>]>>;
+        "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_get"]>>>, ["gaps"]>>;
+        "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
+        "need": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Seeking"]["_record"]>[0], ["need"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_get"]>>>, ["need"]>]>>;
+        "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_get"]>>>, ["reason"]>>;
+        "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
+        "sources": {
+          "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+          "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+          "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+          "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+        }[];
+        "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_get"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
+      };
+    };
+    error: { error: HttpAppWideError | "INVALID_REQUEST" | "NOT_FOUND" | "UNAUTHORIZED" };
+  };
+  "/suggestions/list": {
+    input: Record<string, never>;
+    output: {
+      "suggestions": {
+        "connection": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["connection"]>>;
+        "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+        "description": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>[0], ["description"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["description"]>]>>;
+        "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["evidence"]>]>>;
+        "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["gaps"]>>;
+        "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
+        "need": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["need"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["need"]>]>>;
+        "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["reason"]>>;
+        "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
+        "sources": {
+          "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+          "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+          "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+          "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+        }[];
+        "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
+      }[];
+    };
+    error: { error: HttpAppWideError | "INVALID_REQUEST" | "UNAUTHORIZED" };
+  };
+  "/suggestions/refresh": {
+    input: Record<string, never>;
+    output: {
+      "suggestions": {
+        "connection": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["connection"]>>;
+        "content": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>>;
+        "description": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>[0], ["description"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["description"]>]>>;
+        "evidence": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>[0], ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["evidence"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["evidence"]>]>>;
+        "gaps": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["gaps"]>>;
+        "label": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["label"]>>;
+        "need": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["need"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Seeking"]["_active"]>>>, ["need"]>]>>;
+        "reason": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["reason"]>>;
+        "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["source"]>]>>;
+        "sources": {
+          "claim": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>[0], ["claim"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_members"]>>>, ["claim"]>]>>;
+          "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.computations)["sourceDigest"]["fn"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>>>, ["content"]>]>>;
+          "quote": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["quote"]>>;
+          "source": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_get"]>[0], ["memory"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_evidence"]>>>, ["source"]>]>>;
+        }[];
+        "target": Jsonify<AllOf<[AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Connecting"]["_suggestions"]>>>, ["target"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_trace"]>>>, ["target"]>]>>;
+      }[];
     };
     error: { error: HttpAppWideError | "INVALID_REQUEST" | "UNAUTHORIZED" };
   };

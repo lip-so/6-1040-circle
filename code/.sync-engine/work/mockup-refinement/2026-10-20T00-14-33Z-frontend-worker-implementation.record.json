@@ -1,0 +1,83 @@
+{
+  "state": "finalized",
+  "work": {
+    "slug": "mockup-refinement",
+    "path": "/private/tmp/circle-mockup-refinement/code/.sync-engine/work/mockup-refinement"
+  },
+  "role": "frontend-worker",
+  "phase": "implementation",
+  "execution": "delegated",
+  "independent": true,
+  "harness": "codex",
+  "timeoutSeconds": 1800,
+  "prompt": {
+    "path": "/private/tmp/circle-mockup-refinement/code/.sync-engine/work/mockup-refinement/2026-10-20T00-14-33Z-frontend-worker-implementation.prompt.md",
+    "sha256": "b81a3c86bbf7b22b063d957f2ab6e6a928720d673fc13c7e0d645fe952e7e375"
+  },
+  "capabilities": {
+    "path": "/private/tmp/circle-mockup-refinement/code/.sync-engine/work/mockup-refinement/2026-10-20T00-14-33Z-frontend-worker-implementation.capabilities.json",
+    "sha256": "1d90bae22f482665da86e2e075226efead4937d7deedf2666fd51ed6dda57beb"
+  },
+  "grant": {
+    "readableAreas": [
+      {
+        "area": "application",
+        "path": "frontend/src"
+      },
+      {
+        "area": "application",
+        "path": "generated/wire.ts"
+      }
+    ],
+    "writableAreas": [
+      {
+        "area": "owned-configuration",
+        "path": "frontend/node_modules/.tmp"
+      },
+      {
+        "area": "owned-frontend",
+        "path": "frontend/src"
+      }
+    ],
+    "toolKinds": [
+      "repository-read",
+      "repository-write"
+    ],
+    "projectShell": "project-validation",
+    "network": false,
+    "generatedOutput": false,
+    "longRunningProcesses": false
+  },
+  "response": {
+    "path": "/private/tmp/circle-mockup-refinement/code/.sync-engine/work/mockup-refinement/2026-10-20T00-14-33Z-frontend-worker-implementation.response.md",
+    "sha256": "f6a34b89762e70b3b10ef5d0c935eb4ece3b05385f59e2d7c8f5593fe18a8879",
+    "bytes": 973
+  },
+  "retainedSources": [
+    {
+      "inputId": "brief",
+      "displayName": ".sync-engine/work/mockup-refinement/brief.md",
+      "sha256": "d61d8eea75b817456049e045044138957ed2a1da8027bbdc0053ffc90b8c52f7"
+    },
+    {
+      "inputId": "public-interface",
+      "displayName": "generated/wire.ts",
+      "sha256": "d82e663cb74fb9533ad1350c70515b2862434c0340aa25328713cd991dab0cfd"
+    }
+  ],
+  "policy": {
+    "review": "required",
+    "execution": "mixed"
+  },
+  "workspace": {
+    "root": "/private/tmp/circle-mockup-refinement/code",
+    "baseline": {
+      "path": "/private/tmp/circle-mockup-refinement/code/.sync-engine/work/mockup-refinement/2026-10-20T00-14-33Z-frontend-worker-implementation.baseline.json",
+      "sha256": "0df26eec9501b3af90f113646a50f9b429a16ad7af3fffd1620d1949c97808f4"
+    }
+  },
+  "status": "completed",
+  "result": "complete",
+  "agentId": "/root/mockup_frontend",
+  "enforcement": "prompt-guided"
+}

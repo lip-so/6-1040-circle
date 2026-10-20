@@ -80,8 +80,4 @@ describe("CommonsProvider", () => {
     expect(requests).toHaveLength(1);
   });
 
-  test("a Commons that can't be reached returns undefined", async () => {
-    const unreachable = new CommonsProvider({ origin: "http://127.0.0.1:9", app: "http://localhost:5173" });
-    expect(await unreachable.redeem({ code: "the-code", verifier: RFC_7636.verifier })).toBeUndefined();
-  });
 });

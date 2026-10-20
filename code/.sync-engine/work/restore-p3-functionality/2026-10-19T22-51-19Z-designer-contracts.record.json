@@ -1,0 +1,214 @@
+{
+  "state": "finalized",
+  "work": {
+    "slug": "restore-p3-functionality",
+    "path": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality"
+  },
+  "role": "designer",
+  "phase": "contracts",
+  "execution": "delegated",
+  "independent": true,
+  "harness": "codex",
+  "timeoutSeconds": 1800,
+  "prompt": {
+    "path": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality/2026-10-19T22-51-19Z-designer-contracts.prompt.md",
+    "sha256": "039e96182826b7f235802e35afbe41610effad6c530bdc09509e692b1b88e503"
+  },
+  "capabilities": {
+    "path": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality/2026-10-19T22-51-19Z-designer-contracts.capabilities.json",
+    "sha256": "2d7dc97175bdc87473fcd7b623a75eff8c7dcbae0a589a6c90769dd6b7fac9e7"
+  },
+  "grant": {
+    "readableAreas": [
+      {
+        "area": "work-unit",
+        "path": "context"
+      },
+      {
+        "area": "application",
+        "path": "design"
+      },
+      {
+        "area": "application",
+        "path": "src/compositions/Circle.ts"
+      },
+      {
+        "area": "application",
+        "path": "src/concepts"
+      },
+      {
+        "area": "application",
+        "path": "src/concepts.ts"
+      }
+    ],
+    "writableAreas": [
+      {
+        "area": "assigned-design",
+        "path": "compositions/Circle.md"
+      },
+      {
+        "area": "assigned-design",
+        "path": "concepts/Connecting.md"
+      },
+      {
+        "area": "assigned-design",
+        "path": "concepts/Graphing.md"
+      },
+      {
+        "area": "assigned-design",
+        "path": "concepts/Remembering.md"
+      },
+      {
+        "area": "assigned-design",
+        "path": "concepts/Seeking.md"
+      },
+      {
+        "area": "assigned-design",
+        "path": "types.md"
+      }
+    ],
+    "toolKinds": [
+      "repository-read",
+      "repository-write"
+    ],
+    "projectShell": "project-validation",
+    "network": false,
+    "generatedOutput": false,
+    "longRunningProcesses": false
+  },
+  "response": {
+    "path": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality/2026-10-19T22-51-19Z-designer-contracts.response.md",
+    "sha256": "f4898d74be670f7f4099a64536ba6b603752d931d7741e49b77e040efdc753e6",
+    "bytes": 2828
+  },
+  "retainedSources": [
+    {
+      "inputId": "brief",
+      "displayName": ".sync-engine/work/restore-p3-functionality/brief.md",
+      "sha256": "bcf59d5fdc079c35b14566b7882592b737c77443f8a6d60dad606c557703a750"
+    },
+    {
+      "inputId": "resolved-findings",
+      "displayName": ".sync-engine/work/restore-p3-functionality/2026-10-19T22-48-38Z-critic-contracts.response.md",
+      "sha256": "8a8190aaa960ecfa6a1f6e6f2b23549944e0c3fd0e1f272f78fe88165e0b7325"
+    }
+  ],
+  "policy": {
+    "review": "required",
+    "execution": "mixed"
+  },
+  "workspace": {
+    "root": "/private/tmp/circle-p3-complete/code",
+    "baseline": {
+      "path": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality/2026-10-19T22-51-19Z-designer-contracts.baseline.json",
+      "sha256": "7ce3381cbba66bc34956cba14355e1e64ead1cdefa9e986be7230523213e766d"
+    }
+  },
+  "design": {
+    "root": "/private/tmp/circle-p3-complete/code/design",
+    "before": "ad310017625c94a1b41f1f722cfee224369957451e9d81a12d74899d5c582222",
+    "beforeFiles": [
+      {
+        "path": "compositions/Circle.md",
+        "sha256": "a94c9b002628488eba1f2051b734eac467694f71feb7456ad5f2a8cbd682a29c"
+      },
+      {
+        "path": "compositions/reusable/accounts.md",
+        "sha256": "b4c3fc51af033e41c525bdc848fcbe005365250e2f04eaf0bc1f9dec26af2cc2"
+      },
+      {
+        "path": "compositions/reusable/commons.md",
+        "sha256": "1231b51781afb5c08b02e790fce544b4db57be64dc13f86d36df5b59ac5b40f2"
+      },
+      {
+        "path": "concepts/Connecting.md",
+        "sha256": "44b206369bfa65773dd8110d6fe9de4caa7c5295592c09b0e79b913448201eb5"
+      },
+      {
+        "path": "concepts/Federating.md",
+        "sha256": "fdd29a2154b9d7c68938d278eaada07e80779250ec03c16f3b0f8e2768c3b699"
+      },
+      {
+        "path": "concepts/Graphing.md",
+        "sha256": "b47d25aef71e5ec7dcfb4b3673488f6d60593a1748b7ba249f6c7755b58180d8"
+      },
+      {
+        "path": "concepts/Registering.md",
+        "sha256": "72e2f72dba60dc1c7def945510c7337ae1805d7d30fd757f6f5beac83d86e9cb"
+      },
+      {
+        "path": "concepts/Remembering.md",
+        "sha256": "ea9a33b8ce6bc1d87abd857d13fd736b03303665e83e76522ac121b63f4e8150"
+      },
+      {
+        "path": "concepts/Seeking.md",
+        "sha256": "23a5b57e45ed51c2e9f3b12c71c8de2aa56e3e6058e6de916acf5bdba9d873cd"
+      },
+      {
+        "path": "concepts/Sessioning.md",
+        "sha256": "b47a9125cadab0e938b6298ac2cd782d7592eefdbd76caa879d4c8366e0ef9bc"
+      },
+      {
+        "path": "types.md",
+        "sha256": "9fe12f19806bb30fb32fd421d0cfa41c9c7d9615ff018192551846f8661c31bb"
+      }
+    ],
+    "after": "276ec4d115db0d7d3187ad7a312b730f402a893e91cf9951e2b4ca3f470c6d52",
+    "afterFiles": [
+      {
+        "path": "compositions/Circle.md",
+        "sha256": "03e87cad83b802793924769ff53db1758b428da06d89cadddb7848fc182441de"
+      },
+      {
+        "path": "compositions/reusable/accounts.md",
+        "sha256": "b4c3fc51af033e41c525bdc848fcbe005365250e2f04eaf0bc1f9dec26af2cc2"
+      },
+      {
+        "path": "compositions/reusable/commons.md",
+        "sha256": "1231b51781afb5c08b02e790fce544b4db57be64dc13f86d36df5b59ac5b40f2"
+      },
+      {
+        "path": "concepts/Connecting.md",
+        "sha256": "52c141c2964fdd9a5dd07541ca33396fd8577599b7ed08614bde3a25a00b762c"
+      },
+      {
+        "path": "concepts/Federating.md",
+        "sha256": "fdd29a2154b9d7c68938d278eaada07e80779250ec03c16f3b0f8e2768c3b699"
+      },
+      {
+        "path": "concepts/Graphing.md",
+        "sha256": "4a334044077dfcdfe42e730403a615f7339274d2ae8dc2e9758790b358480956"
+      },
+      {
+        "path": "concepts/Registering.md",
+        "sha256": "72e2f72dba60dc1c7def945510c7337ae1805d7d30fd757f6f5beac83d86e9cb"
+      },
+      {
+        "path": "concepts/Remembering.md",
+        "sha256": "ea9a33b8ce6bc1d87abd857d13fd736b03303665e83e76522ac121b63f4e8150"
+      },
+      {
+        "path": "concepts/Seeking.md",
+        "sha256": "eb31ebbe697c76224ef0b23808e05366c1054c9bc0144dff1a609cb6acee6def"
+      },
+      {
+        "path": "concepts/Sessioning.md",
+        "sha256": "b47a9125cadab0e938b6298ac2cd782d7592eefdbd76caa879d4c8366e0ef9bc"
+      },
+      {
+        "path": "types.md",
+        "sha256": "9fe12f19806bb30fb32fd421d0cfa41c9c7d9615ff018192551846f8661c31bb"
+      }
+    ]
+  },
+  "relationship": {
+    "kind": "continuation",
+    "recordPath": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality/2026-10-19T22-42-08Z-designer-contracts.record.json",
+    "targetHarness": "codex",
+    "targetAgentId": "/root/p3_designer"
+  },
+  "status": "completed",
+  "result": "complete",
+  "agentId": "/root/p3_designer",
+  "enforcement": "prompt-guided"
+}

@@ -1,0 +1,46 @@
+{
+  "readableAreas": [
+    {
+      "area": "application",
+      "path": "frontend/src"
+    },
+    {
+      "area": "application",
+      "path": "generated/wire.ts"
+    },
+    {
+      "area": "application",
+      "path": "src/memory-fields.ts"
+    }
+  ],
+  "writableAreas": [
+    {
+      "area": "owned-configuration",
+      "path": "frontend/node_modules/.tmp"
+    },
+    {
+      "area": "owned-frontend",
+      "path": "frontend/src/App.vue"
+    },
+    {
+      "area": "owned-frontend",
+      "path": "frontend/src/assets/articulated/motion.d.ts"
+    },
+    {
+      "area": "owned-frontend",
+      "path": "frontend/src/reusable"
+    },
+    {
+      "area": "owned-frontend",
+      "path": "frontend/src/style.css"
+    }
+  ],
+  "toolKinds": [
+    "repository-read",
+    "repository-write"
+  ],
+  "projectShell": "project-validation",
+  "network": false,
+  "generatedOutput": false,
+  "longRunningProcesses": false
+}

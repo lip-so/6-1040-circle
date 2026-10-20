@@ -1,0 +1,44 @@
+{
+  "readableAreas": [
+    {
+      "area": "design",
+      "path": "compositions/Circle.md"
+    },
+    {
+      "area": "design",
+      "path": "types.md"
+    },
+    {
+      "area": "application",
+      "path": "frontend/src/App.vue"
+    },
+    {
+      "area": "application",
+      "path": "frontend/src/assets/circle/motion.d.ts"
+    },
+    {
+      "area": "application",
+      "path": "frontend/src/assets/circle/motion.js"
+    },
+    {
+      "area": "application",
+      "path": "frontend/src/reusable/CircleFigure.vue"
+    },
+    {
+      "area": "application",
+      "path": "frontend/src/reusable/CommonsButton.vue"
+    },
+    {
+      "area": "application",
+      "path": "frontend/src/style.css"
+    }
+  ],
+  "writableAreas": [],
+  "toolKinds": [
+    "repository-read"
+  ],
+  "projectShell": "none",
+  "network": false,
+  "generatedOutput": false,
+  "longRunningProcesses": false
+}

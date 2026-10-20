@@ -1,0 +1,234 @@
+{
+  "state": "finalized",
+  "work": {
+    "slug": "restore-p3-functionality",
+    "path": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality"
+  },
+  "role": "designer",
+  "phase": "contracts",
+  "execution": "delegated",
+  "independent": true,
+  "harness": "codex",
+  "timeoutSeconds": 1800,
+  "prompt": {
+    "path": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality/2026-10-19T22-42-08Z-designer-contracts.prompt.md",
+    "sha256": "57d3fda4b45ab75a2f65d90df0774d7c6057780b20e6e808666418320141c9da"
+  },
+  "capabilities": {
+    "path": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality/2026-10-19T22-42-08Z-designer-contracts.capabilities.json",
+    "sha256": "2d7dc97175bdc87473fcd7b623a75eff8c7dcbae0a589a6c90769dd6b7fac9e7"
+  },
+  "grant": {
+    "readableAreas": [
+      {
+        "area": "work-unit",
+        "path": "context"
+      },
+      {
+        "area": "application",
+        "path": "design"
+      },
+      {
+        "area": "application",
+        "path": "src/compositions/Circle.ts"
+      },
+      {
+        "area": "application",
+        "path": "src/concepts"
+      },
+      {
+        "area": "application",
+        "path": "src/concepts.ts"
+      }
+    ],
+    "writableAreas": [
+      {
+        "area": "assigned-design",
+        "path": "compositions/Circle.md"
+      },
+      {
+        "area": "assigned-design",
+        "path": "concepts/Connecting.md"
+      },
+      {
+        "area": "assigned-design",
+        "path": "concepts/Graphing.md"
+      },
+      {
+        "area": "assigned-design",
+        "path": "concepts/Remembering.md"
+      },
+      {
+        "area": "assigned-design",
+        "path": "concepts/Seeking.md"
+      },
+      {
+        "area": "assigned-design",
+        "path": "types.md"
+      }
+    ],
+    "toolKinds": [
+      "repository-read",
+      "repository-write"
+    ],
+    "projectShell": "project-validation",
+    "network": false,
+    "generatedOutput": false,
+    "longRunningProcesses": false
+  },
+  "response": {
+    "path": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality/2026-10-19T22-42-08Z-designer-contracts.response.md",
+    "sha256": "4e07071c76b02b75ee2bdac2e9d2de3dc24981c2ee63bcc55666cf5b2eaf83c1",
+    "bytes": 5246
+  },
+  "retainedSources": [
+    {
+      "inputId": "brief",
+      "displayName": ".sync-engine/work/restore-p3-functionality/brief.md",
+      "sha256": "c1a41b3dd61f61c6e68aa0ace25cbd7f5d2e4e5a52b9cc7221495204042d3095"
+    },
+    {
+      "inputId": "affected-contracts",
+      "displayName": "design/compositions/Circle.md",
+      "sha256": "d711e22c9f332def882af57a3fb8c64cd8eceaca7e923c8d6a9b4239d642eadd"
+    },
+    {
+      "inputId": "affected-contracts",
+      "displayName": "design/concepts/Graphing.md",
+      "sha256": "baf3f0858a81d9c820c412bf4ac4b284bd6f7cb2253e5e07dae36fbeb04a87d3"
+    },
+    {
+      "inputId": "affected-contracts",
+      "displayName": "design/concepts/Remembering.md",
+      "sha256": "45a2ff7ce1b63b3dd3b3c08910fb88726d20d698686b37d811f3b5f75d442471"
+    },
+    {
+      "inputId": "affected-contracts",
+      "displayName": "design/concepts/Seeking.md",
+      "sha256": "6e48265bde19914ef7642bf8a5616b13e2429edb4b18a05b3304c0682936032c"
+    },
+    {
+      "inputId": "affected-contracts",
+      "displayName": "design/types.md",
+      "sha256": "d8079722d50f5149305dc0be2ff94dbf4a15777f8c6c54c7a15518a7eaf93261"
+    },
+    {
+      "inputId": "context",
+      "displayName": ".sync-engine/work/restore-p3-functionality/context/p1-concepts.md",
+      "sha256": "5965069be656c6a1c82b5864af97773a6069fcce676a5e2961845492258d6e14"
+    },
+    {
+      "inputId": "context",
+      "displayName": ".sync-engine/work/restore-p3-functionality/context/pitch.md",
+      "sha256": "e4515e95d94842b0f13e94529c9f14a4c976f8a4d4dc17b69b9c0f736b1b112e"
+    }
+  ],
+  "policy": {
+    "review": "required",
+    "execution": "mixed"
+  },
+  "workspace": {
+    "root": "/private/tmp/circle-p3-complete/code",
+    "baseline": {
+      "path": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality/2026-10-19T22-42-08Z-designer-contracts.baseline.json",
+      "sha256": "61cd2404a69fa4adba7051889d51a1ed348d0c9b11298ca367d2c8fac1f51b8e"
+    }
+  },
+  "design": {
+    "root": "/private/tmp/circle-p3-complete/code/design",
+    "before": "2274d0eb49d472e13d104087a05bbe3635c6501220811158e0338bfff283eb37",
+    "beforeFiles": [
+      {
+        "path": "compositions/Circle.md",
+        "sha256": "d711e22c9f332def882af57a3fb8c64cd8eceaca7e923c8d6a9b4239d642eadd"
+      },
+      {
+        "path": "compositions/reusable/accounts.md",
+        "sha256": "b4c3fc51af033e41c525bdc848fcbe005365250e2f04eaf0bc1f9dec26af2cc2"
+      },
+      {
+        "path": "compositions/reusable/commons.md",
+        "sha256": "1231b51781afb5c08b02e790fce544b4db57be64dc13f86d36df5b59ac5b40f2"
+      },
+      {
+        "path": "concepts/Federating.md",
+        "sha256": "fdd29a2154b9d7c68938d278eaada07e80779250ec03c16f3b0f8e2768c3b699"
+      },
+      {
+        "path": "concepts/Graphing.md",
+        "sha256": "baf3f0858a81d9c820c412bf4ac4b284bd6f7cb2253e5e07dae36fbeb04a87d3"
+      },
+      {
+        "path": "concepts/Registering.md",
+        "sha256": "72e2f72dba60dc1c7def945510c7337ae1805d7d30fd757f6f5beac83d86e9cb"
+      },
+      {
+        "path": "concepts/Remembering.md",
+        "sha256": "45a2ff7ce1b63b3dd3b3c08910fb88726d20d698686b37d811f3b5f75d442471"
+      },
+      {
+        "path": "concepts/Seeking.md",
+        "sha256": "6e48265bde19914ef7642bf8a5616b13e2429edb4b18a05b3304c0682936032c"
+      },
+      {
+        "path": "concepts/Sessioning.md",
+        "sha256": "b47a9125cadab0e938b6298ac2cd782d7592eefdbd76caa879d4c8366e0ef9bc"
+      },
+      {
+        "path": "types.md",
+        "sha256": "d8079722d50f5149305dc0be2ff94dbf4a15777f8c6c54c7a15518a7eaf93261"
+      }
+    ],
+    "after": "ad310017625c94a1b41f1f722cfee224369957451e9d81a12d74899d5c582222",
+    "afterFiles": [
+      {
+        "path": "compositions/Circle.md",
+        "sha256": "a94c9b002628488eba1f2051b734eac467694f71feb7456ad5f2a8cbd682a29c"
+      },
+      {
+        "path": "compositions/reusable/accounts.md",
+        "sha256": "b4c3fc51af033e41c525bdc848fcbe005365250e2f04eaf0bc1f9dec26af2cc2"
+      },
+      {
+        "path": "compositions/reusable/commons.md",
+        "sha256": "1231b51781afb5c08b02e790fce544b4db57be64dc13f86d36df5b59ac5b40f2"
+      },
+      {
+        "path": "concepts/Connecting.md",
+        "sha256": "44b206369bfa65773dd8110d6fe9de4caa7c5295592c09b0e79b913448201eb5"
+      },
+      {
+        "path": "concepts/Federating.md",
+        "sha256": "fdd29a2154b9d7c68938d278eaada07e80779250ec03c16f3b0f8e2768c3b699"
+      },
+      {
+        "path": "concepts/Graphing.md",
+        "sha256": "b47d25aef71e5ec7dcfb4b3673488f6d60593a1748b7ba249f6c7755b58180d8"
+      },
+      {
+        "path": "concepts/Registering.md",
+        "sha256": "72e2f72dba60dc1c7def945510c7337ae1805d7d30fd757f6f5beac83d86e9cb"
+      },
+      {
+        "path": "concepts/Remembering.md",
+        "sha256": "ea9a33b8ce6bc1d87abd857d13fd736b03303665e83e76522ac121b63f4e8150"
+      },
+      {
+        "path": "concepts/Seeking.md",
+        "sha256": "23a5b57e45ed51c2e9f3b12c71c8de2aa56e3e6058e6de916acf5bdba9d873cd"
+      },
+      {
+        "path": "concepts/Sessioning.md",
+        "sha256": "b47a9125cadab0e938b6298ac2cd782d7592eefdbd76caa879d4c8366e0ef9bc"
+      },
+      {
+        "path": "types.md",
+        "sha256": "9fe12f19806bb30fb32fd421d0cfa41c9c7d9615ff018192551846f8661c31bb"
+      }
+    ]
+  },
+  "status": "completed",
+  "result": "complete",
+  "agentId": "/root/p3_designer",
+  "enforcement": "prompt-guided"
+}

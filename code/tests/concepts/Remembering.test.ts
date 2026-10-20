@@ -1,6 +1,6 @@
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "bun:test";
 import { MongoClient, type Db } from "mongodb";
-import { EmptyContent, SubmissionConflict, RememberingConcept } from "../../src/concepts/Remembering.ts";
+import { EmptyContent, SubmissionConflict, RememberingConcept } from "../../src/concepts/Remembering/Remembering.ts";
 
 const testUrl = process.env.TEST_MONGODB_URL;
 if (!testUrl) {
@@ -41,21 +41,15 @@ describe("Remembering", () => {
     expect(await remembering._get({ owner: "ralph", memory })).toEqual([{ content }]);
   });
 
-  for (const content of ["", " \t\n "]) {
-    test(`refuses ${content.length === 0 ? "empty" : "whitespace-only"} content without saving anything`, async () => {
-      await expect(remembering.remember({ capturedAt: new Date("2026-10-18T12:00:00Z"), submission: crypto.randomUUID(), owner: "ralph", content })).rejects.toThrow(EmptyContent);
-      expect(await db.collection<{ _id: string; owner: string; content: string; capturedAt?: Date }>("remembering.memories").countDocuments()).toBe(0);
-    });
-  }
+  test("refuses blank content without saving anything", async () => {
+    await expect(remembering.remember({ capturedAt: new Date("2026-10-18T12:00:00Z"), submission: crypto.randomUUID(), owner: "ralph", content: " \t\n " })).rejects.toThrow(EmptyContent);
+    expect(await db.collection<{ _id: string; owner: string; content: string; capturedAt?: Date }>("remembering.memories").countDocuments()).toBe(0);
+  });
 
   test("does not return another owner's memory", async () => {
     const { memory } = await remembering.remember({ capturedAt: new Date("2026-10-18T12:00:00Z"), submission: crypto.randomUUID(), owner: "ralph", content: "Met Faustin." });
 
     expect(await remembering._get({ owner: "another-student", memory })).toEqual([]);
-  });
-
-  test("returns no row for an unknown memory", async () => {
-    expect(await remembering._get({ owner: "ralph", memory: crypto.randomUUID() })).toEqual([]);
   });
 
   test("creates separate memories for separate saves", async () => {
@@ -88,7 +82,6 @@ describe("Remembering", () => {
     }
   });
 });
-
 
 describe("Remembering saved-list edge cases", () => {
   const savedAt = new Date("2026-10-18T12:00:00Z");

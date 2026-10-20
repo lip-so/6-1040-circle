@@ -1,0 +1,38 @@
+{
+  "readableAreas": [
+    {
+      "area": "design",
+      "path": "compositions/Circle.md"
+    },
+    {
+      "area": "design",
+      "path": "concepts/Connecting.md"
+    },
+    {
+      "area": "design",
+      "path": "concepts/Seeking.md"
+    },
+    {
+      "area": "design",
+      "path": "types.md"
+    }
+  ],
+  "writableAreas": [
+    {
+      "area": "assigned-design",
+      "path": "compositions/Circle.md"
+    },
+    {
+      "area": "assigned-design",
+      "path": "concepts/Connecting.md"
+    }
+  ],
+  "toolKinds": [
+    "repository-read",
+    "repository-write"
+  ],
+  "projectShell": "project-validation",
+  "network": false,
+  "generatedOutput": false,
+  "longRunningProcesses": false
+}

@@ -8,7 +8,7 @@ This file preserves Sofia's decisions and gives future coding agents a starting 
 - Keep the MVP small and explicit. Implement what the agreed user journey needs; do not add speculative features, types, state, lifecycle actions, infrastructure, or extra documents just because an example has them.
 - For product flows that the specs and previous decisions do not define, **ask what should happen**. Continue independent work while waiting. Ordinary implementation details that have been specified in the md files do not need repeated confirmation.
 - Explain changes to types, meaning, actions, or boundaries instead of silently redesigning them.
-- Preserve manual edits. Use structured paragraphs for prose and short, casual notes in `design-log.md`. Append significant changes and their reasons; do NOT rewrite the history to make the process look linear.
+- Preserve manual edits. `desing-journal.md` is Sofia's own design journal: do not add agent notes or edit it unless she explicitly asks for changes to that file. Record agent work, verification, decisions, and remaining tasks in `agent-journal.md`. Keep those notes chronological and concise.
 - Explain exactly what changed and why, in plain language. Distinguish implementation, generated output, and verification. Do not say something is finished, deployed, or tested without evidence.
 - Keep the interface quiet and easy to skim. Avoid slogans, repeated explanations, unnecessary labels, decorative panels, and technical implementation details in the product UI.
 - Use the latest explicit user decision when older notes conflict. For example, the original fixed demo user was superseded by Commons sign-in and per-user ownership.
@@ -16,11 +16,21 @@ This file preserves Sofia's decisions and gives future coding agents a starting 
 
 ## Current scope
 
-Current journey: Commons sign-in → Remember an encounter → Find using a need → see a person, concise details, and the original note. Ralph/Faustin is the motivating example, not a hardcoded search result. The journey should work from an empty account. Do not erase existing user notes to manufacture an empty demo.
+Current journey: Commons sign-in → free-form typed/voice encounter → Find or return to an ongoing search → evidence-backed suggestions → inspect/correct notes or interpretations. Work from an empty account; never erase existing notes for a demo.
 
-Current app concepts are **Remembering, Seeking, Graphing**, plus the reused **Registering, Sessioning, and Federating** authentication concepts. Federating is instantiated as `CommonsFederating`. **Connecting is deferred**: dismissed/useful suggestion history is outside the agreed alpha. P1's larger design remains available for later work; it is not all implemented.
+Sofia explicitly requested restoring all functionality temporarily deferred for P2. Current concepts are **Remembering, Seeking, Graphing, Connecting**, plus reused **Registering, Sessioning, Federating** (instantiated as CommonsFederating). Need and goal mean one stored Seeking.Need; do not introduce a Goal type or a task dashboard.
 
-Also deferred: editing/deleting memories, contact links, voice, active/resolved need lifecycle, stored suggestion history, background refresh, cross-note graph paths, and identity merging by name. Do not expand these without a new request. Public deployment is separate from demonstrating the local P2 journey. The recording demonstrates use with narration; a code walkthrough is not a stated recording requirement.
+Restored scope includes note edit/delete/reindex, editable voice transcription, active/resolved/reopen/delete needs, stored Useful/Dismissed suggestion states, automatic reconsideration, safe directed cross-note paths, and claim ignore/restore/remove controls. Repeated descriptions reuse an ongoing need after case/whitespace normalization; preserve older duplicate records and keep resolved records separate.
+
+Permanent exclusions remain: password/demo-user auth, guessed encounter dates, person identity merging by name, graph dashboards, executed contact links, external outreach, and unrelated publishing/submission. OpenAI is the chosen provider; Sofia requested **simulated responses for validation for now**. Do not ask for the key again or claim live provider quality.
+
+## Sync-engine skill for P3
+
+Sofia explicitly requested the official sync-engine skill and its linked workflow for P3. The coordinator skill is installed at `~/.codex/skills/sync-engine/SKILL.md`; read its `references/workflow.md` before a bounded application change, and its `references/harnesses.md` before delegation. The matching package copy is at `code/node_modules/@mit-sdg/sync-engine-skill/skills/sync-engine/`; load one coordinator copy so the skill name is unambiguous.
+
+The CLI is a development dependency pinned to `@mit-sdg/sync-engine-skill@1.1.0`, matching the existing framework. From the repository root, `bun run skill --help` and `bun run skill <command> ...` run it with `code/` as the application root. Canonical design stays in `code/design/`; scoped work records belong in `code/.sync-engine/work/`. Do not bootstrap the repository root as a new application or upgrade framework packages as part of normal skill use.
+
+Use the P3 assignment and existing accepted design as context, select only useful workflow roles, and finish every prepared run before handing back. Keep Sofia's existing scope decisions, lean-test preference, and separate `agent-journal.md` notes; the skill does not authorize editing her design journal or adding suggested product features.
 
 ## Read these files first
 
@@ -30,14 +40,15 @@ Paths below are relative to the repository root.
 | --- | --- |
 | `design-docs/concepts.md` | Original/full P1 concept designs; preserve as the reference. |
 | `design-docs/p2-user-journey.md` | Current alpha journey, including guided memo entry. |
-| `design-log.md` | Casual chronological decisions, changes, challenges, and remaining work. Later decisions may supersede earlier plans. |
-| `code/design/concepts/` | Authored specifications for the six registered concepts. |
+| `desing-journal.md` | Sofia's user-authored design journal; read as context and do not edit without an explicit request. |
+| `agent-journal.md` | Agent implementation notes, verification results, and remaining work. |
+| `code/design/concepts/` | Authored specifications for the seven registered concepts. |
 | `code/design/types.md` | Concrete types, static concept instances, and external type bindings. |
 | `code/design/compositions/Circle.md` | Circle's authored flow/view/former/endpoint specification. |
 | `code/design/compositions/reusable/` | Reused accounts and Commons specifications. |
 | `code/src/concepts.ts` | Concept registrations and application-specific generic specializations. |
 | `code/src/assembly.ts` | Selected implementations, composition namespaces, and redaction. |
-| `code/src/compositions/Circle.ts` | Remember/Seek endpoints, `OwnedMemory` view, `NeedResults` former. |
+| `code/src/compositions/Circle.ts` | Authenticated endpoints, evidence views, result formers, and lifecycle/refresh reactions. |
 | `code/src/host/http.ts`, `code/src/main.ts` | HTTP policy/cookies/errors and server/static frontend/health. |
 | `code/src/memory-fields.ts` | Shared guided memo serialization and recognition. |
 | `code/frontend/src/App.vue` | Minimal Remember/Find UI. |
@@ -58,15 +69,16 @@ Paths below are relative to the repository root.
 
 ### Input, matching, and result formatting
 
-- **No LLM input processing for the alpha.** Sofia selected a local parser and then explicit entry boxes. Do not add a model, API key requirement, or hidden AI fallback. Broader language processing is future work.
+- **P2 used a local parser; P3 adds optional OpenAI extraction.** The runtime explicitly selects `GRAPHING_EXTRACTOR=local` (default) or `openai`. OpenAI requires server-only `OPENAI_API_KEY` and `OPENAI_GRAPH_MODEL`. Selecting OpenAI with missing settings fails startup; provider errors never silently fall back. The assembly itself stays independent of these environment settings so tools/tests cannot contact a model accidentally.
+- Graphing validates model structure, references, relation endpoints, literal labels, and complete positive quotes before atomic replacement. Explicit multiple people/KNOWS paths are supported. People remain source-local; only distinctive organization/topic identities may join notes. Generic organizations stay separate. Both extraction modes obey quote/Contact rules. Interpretation can still be wrong. No bulk external reindexing, automatic retry, or silent provider fallback. Failed extraction keeps the original; exact-content digest checks hide stale evidence.
 - The main page has a **Remember / Find** toggle; show one form at a time. Switching preserves an unsaved memo draft. A successful save returns to Find.
-- Remember fields: **Person**, **When**, **What they do**, **Contact**, **What you discussed**. Only Person is required. When accepts the user's date/context text; do not invent dates or resolve relative wording into a guessed date.
-- `writeMemoryFields` stores the fields as readable `Person:`, `When:`, `Does:`, `Discussed:` lines through the existing content API. It indents multiline continuations so a field value cannot become a different header. Keep the reader/writer shared and compatible; do not make users type magic parser phrases into guided fields.
-- Guided result cards use the entered values directly. Show the person and short **When / Does / Discussed** rows, with **Offers** only when supported. Missing encounter context is “Not recorded.” The original note is expandable.
+- Remember uses one free-form note with a subtle reminder of name, encounter context, work/discussion and optional contact. Voice appends editable transcription; saving remains deliberate. Keep literal dates/context without guessing instants. Switching Remember/Find preserves typed text and cancels pending audio; account changes clear both.
+- Legacy `writeMemoryFields` stores the fields as readable `Person:`, `When:`, `Does:`, `Discussed:` lines through the existing content API. It indents multiline continuations so a field value cannot become a different header. Keep the reader/writer shared and compatible; do not make users type magic parser phrases into guided fields.
+- Legacy guided result cards use the entered values directly. Show the person and short **When / Does / Discussed** rows, with **Offers** only when supported. Missing encounter context is “Not recorded.” The original note is expandable.
 - Older free-text notes still use the local TypeScript parser. It recognizes a bounded set of introductions, work/affiliation, research, discussion, and offer wording. Unsupported wording may yield no match; do not fabricate an extraction.
 - Talking about a subject does not establish expertise or employment. Founding a company does not establish current employment. Relevant experience does not mean hiring or availability. Keep `DISCUSSED`, `FOUNDED`, and `DESCRIBED_AS` meanings distinct.
 - Claims need quotes grounded in the source. Do not turn negated descriptions into positive facts. Hiring searches require explicit positive hiring evidence.
-- Matching is currently within one source note. Names alone never merge people across notes. Source-local identities and deterministic result ordering matter.
+- Matching follows directed supported acquaintance/organization paths across notes with conservative aliases, at most five graph candidates before current-original proof filtering. A shared topic never transfers another person's expertise. Every path claim, including intermediate notes, must pass owned-original digest validation. Names alone never merge people. Missing/currently invalid proof omits the whole suggestion.
 
 ### Ownership and failure behavior
 
@@ -75,12 +87,12 @@ Paths below are relative to the repository root.
 - Index only the memory the backend just saved and read back through its owner's query. There is no public “index arbitrary source” endpoint.
 - A graph source's owner is immutable, even when extraction produces zero claims. Re-ingestion replaces that source's graph atomically; it cannot transfer ownership.
 - If a memory or need was saved and downstream indexing/search fails, **keep the saved data and return an error**. No compensating deletion or automatic retry. Manual retries of the same draft reuse its token and memory identity; a conflicting text is refused.
-- Omit a match whose original source is missing or unreadable. This is a defensive integrity check, not permission to index or read another owner's data.
+- Omit a whole match if any path source is missing, rejected, unreadable, or has changed since indexing. This is a defensive integrity check, not permission to index or read another owner's data.
 - Keep secrets, session cookies, sign-in attempts, codes, verifiers, and private note contents out of unnecessary logs and reports. Do not paste `.env` values into chat or documentation.
 
 ## Backend implementation details to preserve
 
-The Circle HTTP routes are:
+Circle uses the complete endpoint inventory in `code/design/compositions/Circle.md` and generated `code/generated/wire.ts`. The original entry routes remain:
 
 - `POST /api/memories/remember`: session → owner → save memory with a per-draft submission token and engine-supplied capturedAt → read owned original → ingest graph → respond with memory identity. Success waits for indexing.
 - `POST /api/memories/list`: session → owner → a cursor page of owned memories. Show 20 rows and use the 21st as lookahead; continue after the last displayed memory.
@@ -113,7 +125,7 @@ The [Commons protocol](https://github.com/mit-sdg/commons/blob/main/DEPLOYMENT.m
 
 [ConceptBox](https://github.com/mit-sdg/conceptbox#copy-parts-into-your-app) is a reference, not Circle's feature list. Read a part's design, implementation, and tests together. Bring its required support files and adapt types to Circle. Register concept/spec/type bindings, register compositions in the assembly and generated design documents, then regenerate and check. Keep the engine and HTTP package versions aligned. Preserve attribution and the MIT license at `code/third-party/Conceptbox-LICENSE`.
 
-Circle has already reused the accounts/Commons compositions, Registering/Federating/Sessioning, provider, cookie/error policy patterns, and Vue sign-in pieces. Do not copy ConceptBox's password forms, storage/bucket setup, sharing/trash features, or agent stack without an actual Circle requirement. Its agent examples are future reference only; sending notes to a model would require revisiting the agreed behavior and consent.
+Circle has already reused the accounts/Commons compositions, Registering/Federating/Sessioning, provider, cookie/error policy patterns, and Vue sign-in pieces. Do not copy ConceptBox's password forms, storage/bucket setup, sharing/trash features, or agent stack without an actual Circle requirement. Its agent examples are reference material. The authorized provider flow sends only the configured note/recording payload; it does not authorize unrelated external lookups or outreach.
 
 ## Specifications, framework docs, and generated files
 
@@ -152,13 +164,14 @@ Use Bun and the existing lockfiles; do not switch package managers. On the check
 
 ## Verification and reporting
 
+- Sofia requested a lean test suite focused on top-priority behavior. Keep tests for each concept's principle/actions, ownership and sign-in boundaries, saved-data integrity, retries, evidence correctness, and the main journey. Prefer an existing effective regression test over adding a duplicate at another layer; do not add tests just for formatting variants, exact prompt wording, or implementation details.
 - Test a changed concept against its principle, persistence, refusals, and ownership; test composition across the real boundaries. Use meaningful regression cases, not tests that simply restate implementation details.
 - Mongo tests use `TEST_MONGODB_URL` and uniquely named temporary databases, dropping only those. Each file using `tests/support/reusable/mongo.ts` registers its cleanup hook; Bun's file-scoped hooks plus cached modules make a single imported global hook insufficient.
 - If overriding a concept action in a failure test, preserve its named function identity, e.g. `async function ingest()`. An anonymous replacement can fail action discovery before reaching the intended test.
 - Check cookie/owner/source injection, two-user separation, blank inputs, missing originals, and save-then-downstream-failure behavior when those paths change. Provider tests use a local stand-in, not someone else's real Commons account.
 - For UI work, check the real flow, loading/errors, draft preservation, no-refresh updates, and original-note display. Distinguish mocked-provider tests from real browser Commons sign-in.
 - Run relevant checks and generation when needed. A documentation-only edit does not require another full Mongo/browser test run. Report what was actually run and any unresolved warning.
-- Update `design-log.md` briefly after significant work: what changed, why, what was checked, and what remains. Keep it casual. Update this file when an important standing decision changes.
+- Update `agent-journal.md` briefly after significant work: what changed, why, what was checked, and what remains. Never put these agent notes in Sofia's `desing-journal.md`. Update this file when an important standing decision changes.
 
 ### Dated status, not a standing guarantee
 
@@ -196,3 +209,22 @@ Verified this addition with 89 passing tests, backend/Vue checks, and a frontend
 ## Optional contact field
 
 Sofia requested contact information such as a phone number or LinkedIn URL. Keep one optional Contact text field, stored in the original memo and displayed on both saved and matching cards. Read old four-field memos too. Contact text is not used for graph relationships or subject matching. No new concept, endpoint, external lookup, or automatic link execution is needed.
+
+## P3 restoration invariants
+
+- All legacy needs without `active` are active; list them with quick Resolved controls. Use Looking for/search language in the interface. Repeated normalized exact descriptions reuse an active identity; do not merge paraphrases or delete older duplicates.
+- Remembering owns monotone revisions and metadata-only forgotten tombstones. Old save tokens cannot resurrect deleted text. Graphing records exact-content digests/source revisions and retraction tombstones. Legacy graph rows without digest metadata require an explicit reindex.
+- Cross-concept effects remain in the portable DSL. `Graphing._members` enumerates every supplied claim identity, including missing ones; InvalidEvidence/ValidEvidence prove the ENTIRE evidence set. Never silently discard only a missing intermediate quote.
+- Requested-posture InvalidateBeforeIndex resets active suggestions before provider work. Successful graph changes refresh active needs; note/goal changes do not require a page reload. Offer refresh preserves handled status; goal revision deliberately clears it.
+- The production HTTP host wraps all API invocations, including reads/auth, in one FIFO that waits for handler completion AND application.whenIdle(). It releases after faults/refusals. Provider calls delay later API calls until bounded timeout. One application process is the supported beta deployment; direct roots must be serialized by their caller.
+- `/memories/get` returns `{memory:{memory,content,claims}}`. Missing/foreign items produce the same HTTP404 `{error:"NOT_FOUND"}`. Owner-filtered idempotent remove/delete actions safely ignore absent/foreign identities; no foreign data changes.
+- Transcription uses injected server providers, 4 MiB decoded audio/6 MiB JSON transport limits, supported MIME/base64 validation, bounded timeouts, and no automatic retry or stored recording. Credentials remain server-only. Frontend permission/cancellation/account scopes stop tracks and discard stale replies.
+- The coordinator follows the installed sync-engine workflow. Completed canonical design has independent contract review; UI is implemented and checked by the coordinator. Record current verification in agent-journal.md, preserving entries from other concurrent work. Never edit Sofia's design journal.
+
+## Latest UI decisions October 19, 2026
+
+These supersede earlier restored controls and the intermediate feedback-removal decision. Replace Useful/Dismiss/Remove suggestion functionality entirely with an ellipsis menu → Do not recommend → optional explanation. Connecting owns durable exact-target exclusions across ALL searches for that owner. Reasons are private recommendation-policy context, never shared across users or written into notes/extraction. Do not merge same-name people. Remove old status actions/endpoints; ignore legacy stored statuses. Reset/clear/need lifecycle cannot erase exclusions. OpenAI-mode policy can veto supported graph candidates using only this owner's context; local mode keeps deterministic exclusions without model calls. No model training/shared conversations. Validate with simulated providers.
+
+No Look again, New search, manual Retry indexing, or What Circle understood disclosure. Search arrow always runs seek. Encounter edit pen sits beside Close; delete bin stays far right with confirmation. Keep full original note inspection and evidence-backed suggestions. Remember/Find switch has stable page position across mode changes and mobile layouts.
+
+Use Handlee display font and Urbanist body, compact centered forms without working question headings, photo-free continuous dancing SVG figures with pause/reduced motion and smooth fade, latest-four searches with focusable collapsible inline results, compact vertical colored contact cards without avatars. Keep all user notes and font/art archives. Agent notes belong only in agent-journal.md, never the personal design journal.

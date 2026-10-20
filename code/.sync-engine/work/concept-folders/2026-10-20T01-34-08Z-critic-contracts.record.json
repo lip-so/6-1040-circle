@@ -1,0 +1,164 @@
+{
+  "state": "finalized",
+  "work": {
+    "slug": "concept-folders",
+    "path": "/Users/sofia/6-1040-circle/code/.sync-engine/work/concept-folders"
+  },
+  "role": "critic",
+  "phase": "contracts",
+  "execution": "delegated",
+  "independent": true,
+  "harness": "codex",
+  "timeoutSeconds": 1800,
+  "prompt": {
+    "path": "/Users/sofia/6-1040-circle/code/.sync-engine/work/concept-folders/2026-10-20T01-34-08Z-critic-contracts.prompt.md",
+    "sha256": "e0a0e5e7e86bc42632f40f464471d7da8c308b438143f92e2236eaea7380e9e1"
+  },
+  "capabilities": {
+    "path": "/Users/sofia/6-1040-circle/code/.sync-engine/work/concept-folders/2026-10-20T01-34-08Z-critic-contracts.capabilities.json",
+    "sha256": "fc3d714ea406c5ff8a8491dee928dcecba5f57420b1012d27f1233e371066572"
+  },
+  "grant": {
+    "readableAreas": [
+      {
+        "area": "design",
+        "path": "compositions"
+      },
+      {
+        "area": "design",
+        "path": "concepts"
+      },
+      {
+        "area": "design",
+        "path": "types.md"
+      },
+      {
+        "area": "application",
+        "path": "frontend/src/App.vue"
+      },
+      {
+        "area": "application",
+        "path": "frontend/src/memory-summary.ts"
+      },
+      {
+        "area": "application",
+        "path": "src/assembly.ts"
+      },
+      {
+        "area": "application",
+        "path": "src/concepts"
+      },
+      {
+        "area": "application",
+        "path": "src/concepts.ts"
+      },
+      {
+        "area": "application",
+        "path": "src/main.ts"
+      },
+      {
+        "area": "application",
+        "path": "tests"
+      }
+    ],
+    "writableAreas": [],
+    "toolKinds": [
+      "repository-read"
+    ],
+    "projectShell": "none",
+    "network": false,
+    "generatedOutput": false,
+    "longRunningProcesses": false
+  },
+  "response": {
+    "path": "/Users/sofia/6-1040-circle/code/.sync-engine/work/concept-folders/2026-10-20T01-34-08Z-critic-contracts.response.md",
+    "sha256": "c696b83a8ee159a76aabdee6e6936e2d3e5bc8b041d054d9c2b0acbe3c3919bd",
+    "bytes": 2012
+  },
+  "retainedSources": [
+    {
+      "inputId": "brief",
+      "displayName": ".sync-engine/work/concept-folders/brief.md",
+      "sha256": "c626065fefa8932302162d67e3957b3c150bb152fce7128571c6f413b4fdd47f"
+    },
+    {
+      "inputId": "affected-contracts",
+      "displayName": "design/types.md",
+      "sha256": "9fe12f19806bb30fb32fd421d0cfa41c9c7d9615ff018192551846f8661c31bb"
+    },
+    {
+      "inputId": "context",
+      "displayName": ".sync-engine/work/concept-folders/relocation-report.md",
+      "sha256": "07ea0a36d56209f28bee5d5e5ff429663e628bdd4a600a4d1e53d3e35e427bf1"
+    }
+  ],
+  "policy": {
+    "review": "required",
+    "execution": "mixed"
+  },
+  "workspace": {
+    "root": "/Users/sofia/6-1040-circle/code",
+    "baseline": {
+      "path": "/Users/sofia/6-1040-circle/code/.sync-engine/work/concept-folders/2026-10-20T01-34-08Z-critic-contracts.baseline.json",
+      "sha256": "6490bda5bcfd7e0f6f7423e4a67f1a6ff86afd1f59b434802f0a31057c7de261"
+    }
+  },
+  "design": {
+    "root": "/Users/sofia/6-1040-circle/code/design",
+    "before": "5ef73c7d15e3d7b61af095d1134d7166da2eb20ef2557fe9e50115adff3c5388",
+    "beforeFiles": [
+      {
+        "path": "compositions/Circle.md",
+        "sha256": "2380274b934ec0b7de522a28cff60b90978a6f45bc04015548f9f6d3307764d6"
+      },
+      {
+        "path": "compositions/reusable/accounts.md",
+        "sha256": "b4c3fc51af033e41c525bdc848fcbe005365250e2f04eaf0bc1f9dec26af2cc2"
+      },
+      {
+        "path": "compositions/reusable/commons.md",
+        "sha256": "1231b51781afb5c08b02e790fce544b4db57be64dc13f86d36df5b59ac5b40f2"
+      },
+      {
+        "path": "concepts/Connecting.md",
+        "sha256": "7ecbf3749f80b89b533d99b2b369ad11fb7c942d08fbc74d68af76273e2dd7a6"
+      },
+      {
+        "path": "concepts/Federating.md",
+        "sha256": "fdd29a2154b9d7c68938d278eaada07e80779250ec03c16f3b0f8e2768c3b699"
+      },
+      {
+        "path": "concepts/Graphing.md",
+        "sha256": "c7fbb592e8c1400616fbd8c631a5b3c7253c7b309e485a623364b611723e23af"
+      },
+      {
+        "path": "concepts/Registering.md",
+        "sha256": "72e2f72dba60dc1c7def945510c7337ae1805d7d30fd757f6f5beac83d86e9cb"
+      },
+      {
+        "path": "concepts/Remembering.md",
+        "sha256": "ea9a33b8ce6bc1d87abd857d13fd736b03303665e83e76522ac121b63f4e8150"
+      },
+      {
+        "path": "concepts/Seeking.md",
+        "sha256": "c546bf46b09d4dd57675662837085b368739112e28b0f3b8ea71f37354a0a44a"
+      },
+      {
+        "path": "concepts/Sessioning.md",
+        "sha256": "b47a9125cadab0e938b6298ac2cd782d7592eefdbd76caa879d4c8366e0ef9bc"
+      },
+      {
+        "path": "types.md",
+        "sha256": "9fe12f19806bb30fb32fd421d0cfa41c9c7d9615ff018192551846f8661c31bb"
+      }
+    ]
+  },
+  "review": {
+    "subject": "design",
+    "digest": "5ef73c7d15e3d7b61af095d1134d7166da2eb20ef2557fe9e50115adff3c5388"
+  },
+  "status": "completed",
+  "result": "approve",
+  "agentId": "/root/concept_folder_review",
+  "enforcement": "prompt-guided"
+}

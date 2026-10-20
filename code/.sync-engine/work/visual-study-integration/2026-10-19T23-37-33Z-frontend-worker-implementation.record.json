@@ -1,0 +1,97 @@
+{
+  "state": "finalized",
+  "work": {
+    "slug": "visual-study-integration",
+    "path": "/private/tmp/circle-visual-study/code/.sync-engine/work/visual-study-integration"
+  },
+  "role": "frontend-worker",
+  "phase": "implementation",
+  "execution": "delegated",
+  "independent": true,
+  "harness": "codex",
+  "timeoutSeconds": 1800,
+  "prompt": {
+    "path": "/private/tmp/circle-visual-study/code/.sync-engine/work/visual-study-integration/2026-10-19T23-37-33Z-frontend-worker-implementation.prompt.md",
+    "sha256": "5076e190319b85b10ec0e96cd3648faf6ae799135da5bb828912b7361a2859be"
+  },
+  "capabilities": {
+    "path": "/private/tmp/circle-visual-study/code/.sync-engine/work/visual-study-integration/2026-10-19T23-37-33Z-frontend-worker-implementation.capabilities.json",
+    "sha256": "fef1e1b3eec4371e2d8bc678e32ab4e43eeadec11fd6bd11b0a4e73314c9286d"
+  },
+  "grant": {
+    "readableAreas": [
+      {
+        "area": "work-unit",
+        "path": "assets-readme.md"
+      },
+      {
+        "area": "work-unit",
+        "path": "visual-study.md"
+      },
+      {
+        "area": "application",
+        "path": "frontend/src"
+      },
+      {
+        "area": "application",
+        "path": "generated/wire.ts"
+      }
+    ],
+    "writableAreas": [
+      {
+        "area": "owned-frontend",
+        "path": "frontend/src"
+      }
+    ],
+    "toolKinds": [
+      "repository-read",
+      "repository-write"
+    ],
+    "projectShell": "project-validation",
+    "network": false,
+    "generatedOutput": false,
+    "longRunningProcesses": false
+  },
+  "response": {
+    "path": "/private/tmp/circle-visual-study/code/.sync-engine/work/visual-study-integration/2026-10-19T23-37-33Z-frontend-worker-implementation.response.md",
+    "sha256": "ad499be505be7190337e7bb8fb2cc6d7a2f86306675936c2ef96f04f482682da",
+    "bytes": 1184
+  },
+  "retainedSources": [
+    {
+      "inputId": "brief",
+      "displayName": ".sync-engine/work/visual-study-integration/brief.md",
+      "sha256": "56c7f1c92a77c150779663606fed00d81b5a8b59c36e43597c369fcde24ceb82"
+    },
+    {
+      "inputId": "public-interface",
+      "displayName": "generated/wire.ts",
+      "sha256": "d82e663cb74fb9533ad1350c70515b2862434c0340aa25328713cd991dab0cfd"
+    },
+    {
+      "inputId": "context",
+      "displayName": ".sync-engine/work/visual-study-integration/assets-readme.md",
+      "sha256": "f279f34ca278037d21b7ffe5cc750361eb7fdc6b2f74e8705116815ba7a5b6b3"
+    },
+    {
+      "inputId": "context",
+      "displayName": ".sync-engine/work/visual-study-integration/visual-study.md",
+      "sha256": "071f2eb4be34d83c099d8b2940788c694b699ae8da02cf0fb016ef5808a0c716"
+    }
+  ],
+  "policy": {
+    "review": "required",
+    "execution": "mixed"
+  },
+  "workspace": {
+    "root": "/private/tmp/circle-visual-study/code",
+    "baseline": {
+      "path": "/private/tmp/circle-visual-study/code/.sync-engine/work/visual-study-integration/2026-10-19T23-37-33Z-frontend-worker-implementation.baseline.json",
+      "sha256": "32b4195b254aaf57895f83630fd5be26a5b2ba4ba7faaf2c82f19ba5f21cb5f9"
+    }
+  },
+  "status": "completed",
+  "result": "complete",
+  "agentId": "/root/visual_frontend",
+  "enforcement": "prompt-guided"
+}

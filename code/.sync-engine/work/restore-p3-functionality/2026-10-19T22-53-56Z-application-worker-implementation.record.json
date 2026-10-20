@@ -1,0 +1,285 @@
+{
+  "state": "finalized",
+  "work": {
+    "slug": "restore-p3-functionality",
+    "path": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality"
+  },
+  "role": "application-worker",
+  "phase": "implementation",
+  "execution": "delegated",
+  "independent": true,
+  "harness": "codex",
+  "timeoutSeconds": 1800,
+  "prompt": {
+    "path": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality/2026-10-19T22-53-56Z-application-worker-implementation.prompt.md",
+    "sha256": "ee836e87169468753b29cb5cbbed7d53b38655be432f411f40c7d68883c164fb"
+  },
+  "capabilities": {
+    "path": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality/2026-10-19T22-53-56Z-application-worker-implementation.capabilities.json",
+    "sha256": "19532a42386f95588f7238acdf9cbb3fd3d453da05e48a768a3819f56a2a151e"
+  },
+  "grant": {
+    "readableAreas": [
+      {
+        "area": "work-unit",
+        "path": "context"
+      },
+      {
+        "area": "application",
+        "path": "design"
+      },
+      {
+        "area": "application",
+        "path": "generated.config.ts"
+      },
+      {
+        "area": "application",
+        "path": "package.json"
+      },
+      {
+        "area": "application",
+        "path": "src"
+      },
+      {
+        "area": "application",
+        "path": "tests"
+      },
+      {
+        "area": "application",
+        "path": "tsconfig.json"
+      }
+    ],
+    "writableAreas": [
+      {
+        "area": "owned-concept",
+        "path": "src/concepts"
+      },
+      {
+        "area": "owned-integration",
+        "path": "src/assembly.ts"
+      },
+      {
+        "area": "owned-integration",
+        "path": "src/compositions/Circle.ts"
+      },
+      {
+        "area": "owned-integration",
+        "path": "src/compositions/inputs.ts"
+      },
+      {
+        "area": "owned-integration",
+        "path": "src/concepts.ts"
+      },
+      {
+        "area": "owned-integration",
+        "path": "src/host"
+      },
+      {
+        "area": "owned-integration",
+        "path": "src/main.ts"
+      },
+      {
+        "area": "owned-integration",
+        "path": "src/proof.ts"
+      },
+      {
+        "area": "owned-configuration",
+        "path": ".env.example"
+      },
+      {
+        "area": "owned-configuration",
+        "path": "generated"
+      },
+      {
+        "area": "owned-configuration",
+        "path": "generated.config.ts"
+      },
+      {
+        "area": "owned-test",
+        "path": "tests/compositions"
+      },
+      {
+        "area": "owned-test",
+        "path": "tests/concepts"
+      },
+      {
+        "area": "owned-test",
+        "path": "tests/host"
+      },
+      {
+        "area": "owned-test",
+        "path": "tests/providers"
+      }
+    ],
+    "toolKinds": [
+      "repository-read",
+      "repository-write"
+    ],
+    "projectShell": "project-validation",
+    "network": true,
+    "generatedOutput": true,
+    "longRunningProcesses": false
+  },
+  "response": {
+    "path": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality/2026-10-19T22-53-56Z-application-worker-implementation.response.md",
+    "sha256": "2cccdb1398c61a3f8c8c8b6af56936998cdfe1c909fb71ae13b20b1985a91f40",
+    "bytes": 2750
+  },
+  "retainedSources": [
+    {
+      "inputId": "brief",
+      "displayName": ".sync-engine/work/restore-p3-functionality/brief.md",
+      "sha256": "c89384fa66d44724944befbdb1a33a2c74b85233c3b3160b46138b95a4dd6a38"
+    },
+    {
+      "inputId": "types",
+      "displayName": "design/types.md",
+      "sha256": "9fe12f19806bb30fb32fd421d0cfa41c9c7d9615ff018192551846f8661c31bb"
+    },
+    {
+      "inputId": "compositions",
+      "displayName": "design/compositions/Circle.md",
+      "sha256": "03e87cad83b802793924769ff53db1758b428da06d89cadddb7848fc182441de"
+    },
+    {
+      "inputId": "concept-specifications",
+      "displayName": "design/concepts/Connecting.md",
+      "sha256": "52c141c2964fdd9a5dd07541ca33396fd8577599b7ed08614bde3a25a00b762c"
+    },
+    {
+      "inputId": "concept-specifications",
+      "displayName": "design/concepts/Graphing.md",
+      "sha256": "4a334044077dfcdfe42e730403a615f7339274d2ae8dc2e9758790b358480956"
+    },
+    {
+      "inputId": "concept-specifications",
+      "displayName": "design/concepts/Remembering.md",
+      "sha256": "ea9a33b8ce6bc1d87abd857d13fd736b03303665e83e76522ac121b63f4e8150"
+    },
+    {
+      "inputId": "concept-specifications",
+      "displayName": "design/concepts/Seeking.md",
+      "sha256": "eb31ebbe697c76224ef0b23808e05366c1054c9bc0144dff1a609cb6acee6def"
+    },
+    {
+      "inputId": "concept-public-surfaces",
+      "displayName": "src/concepts/Graphing.ts",
+      "sha256": "56d1399334bae8ea4a6776a8ef4f60f58e3019ea8d0cb51c83f31643b4385c44"
+    },
+    {
+      "inputId": "concept-public-surfaces",
+      "displayName": "src/concepts/Remembering.ts",
+      "sha256": "c90ad67cd4ca452f560515ee0b72db063b0fac1e4d680c6aee632ba2e520590f"
+    },
+    {
+      "inputId": "concept-public-surfaces",
+      "displayName": "src/concepts/Seeking.ts",
+      "sha256": "0adbddc15577554f64d745e597e46f8c5d94679a62cc1d41b42c3c48ce09b371"
+    },
+    {
+      "inputId": "existing-wiring",
+      "displayName": "src/assembly.ts",
+      "sha256": "633c0458c21fb58d9fb3f9a99a041418e1359464b4aa4d0dd1fc9b23e9b5bad5"
+    },
+    {
+      "inputId": "existing-wiring",
+      "displayName": "src/compositions/Circle.ts",
+      "sha256": "e9c4d4543b64827c126aa597faa7ff2fa51b9924ced7238fc8e8784f460ede4c"
+    },
+    {
+      "inputId": "existing-wiring",
+      "displayName": "src/concepts.ts",
+      "sha256": "3dc2586a9ac565b55a4e7b79e0c2ff41e5959c4016de87e56cbbe1f5bcf981d9"
+    },
+    {
+      "inputId": "public-references",
+      "displayName": "node_modules/@mit-sdg/sync-engine-http/README.md",
+      "sha256": "ddf144f9ef654cfbdb18f1d72558ef28db4b6fe6914a99c8fd3ecf2df8a5f35c"
+    },
+    {
+      "inputId": "public-references",
+      "displayName": "node_modules/@mit-sdg/sync-engine/docs/user/guide/read-construction.md",
+      "sha256": "f10dd31a99fbcd8015f1bb7ec07aa6549bcfd249f70e1010abc1a43d50526743"
+    },
+    {
+      "inputId": "public-references",
+      "displayName": "node_modules/@mit-sdg/sync-engine/docs/user/reference/public-api.md",
+      "sha256": "0e4c88adc1d078b1a5ae887ff315ed26f164d0b59080e62a5d4b03f0eae3b17f"
+    },
+    {
+      "inputId": "public-references",
+      "displayName": "node_modules/@mit-sdg/sync-engine/docs/user/reference/semantics.md",
+      "sha256": "5a9de1084b95e1431450365bfafe08013f65fcbd215742839b484e857f06f50f"
+    },
+    {
+      "inputId": "context",
+      "displayName": ".sync-engine/work/restore-p3-functionality/context/provider.md",
+      "sha256": "1d265f3c2be67c09f2e609a45211ddfde731c88fdaa6f4fd974222e89cb737f1"
+    }
+  ],
+  "policy": {
+    "review": "required",
+    "execution": "mixed"
+  },
+  "workspace": {
+    "root": "/private/tmp/circle-p3-complete/code",
+    "baseline": {
+      "path": "/private/tmp/circle-p3-complete/code/.sync-engine/work/restore-p3-functionality/2026-10-19T22-53-56Z-application-worker-implementation.baseline.json",
+      "sha256": "42d33fd4c757b6df80c7001d7d3d07751fa23453526a4a464ceb27e1f31d99e4"
+    }
+  },
+  "design": {
+    "root": "/private/tmp/circle-p3-complete/code/design",
+    "before": "276ec4d115db0d7d3187ad7a312b730f402a893e91cf9951e2b4ca3f470c6d52",
+    "beforeFiles": [
+      {
+        "path": "compositions/Circle.md",
+        "sha256": "03e87cad83b802793924769ff53db1758b428da06d89cadddb7848fc182441de"
+      },
+      {
+        "path": "compositions/reusable/accounts.md",
+        "sha256": "b4c3fc51af033e41c525bdc848fcbe005365250e2f04eaf0bc1f9dec26af2cc2"
+      },
+      {
+        "path": "compositions/reusable/commons.md",
+        "sha256": "1231b51781afb5c08b02e790fce544b4db57be64dc13f86d36df5b59ac5b40f2"
+      },
+      {
+        "path": "concepts/Connecting.md",
+        "sha256": "52c141c2964fdd9a5dd07541ca33396fd8577599b7ed08614bde3a25a00b762c"
+      },
+      {
+        "path": "concepts/Federating.md",
+        "sha256": "fdd29a2154b9d7c68938d278eaada07e80779250ec03c16f3b0f8e2768c3b699"
+      },
+      {
+        "path": "concepts/Graphing.md",
+        "sha256": "4a334044077dfcdfe42e730403a615f7339274d2ae8dc2e9758790b358480956"
+      },
+      {
+        "path": "concepts/Registering.md",
+        "sha256": "72e2f72dba60dc1c7def945510c7337ae1805d7d30fd757f6f5beac83d86e9cb"
+      },
+      {
+        "path": "concepts/Remembering.md",
+        "sha256": "ea9a33b8ce6bc1d87abd857d13fd736b03303665e83e76522ac121b63f4e8150"
+      },
+      {
+        "path": "concepts/Seeking.md",
+        "sha256": "eb31ebbe697c76224ef0b23808e05366c1054c9bc0144dff1a609cb6acee6def"
+      },
+      {
+        "path": "concepts/Sessioning.md",
+        "sha256": "b47a9125cadab0e938b6298ac2cd782d7592eefdbd76caa879d4c8366e0ef9bc"
+      },
+      {
+        "path": "types.md",
+        "sha256": "9fe12f19806bb30fb32fd421d0cfa41c9c7d9615ff018192551846f8661c31bb"
+      }
+    ]
+  },
+  "status": "blocked",
+  "result": "blocked",
+  "agentId": "/root/p3_backend",
+  "enforcement": "prompt-guided"
+}

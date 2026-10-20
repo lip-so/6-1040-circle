@@ -1,0 +1,34 @@
+{
+  "readableAreas": [
+    {
+      "area": "work-unit",
+      "path": "assets-readme.md"
+    },
+    {
+      "area": "work-unit",
+      "path": "visual-study.md"
+    },
+    {
+      "area": "application",
+      "path": "frontend/src"
+    },
+    {
+      "area": "application",
+      "path": "generated/wire.ts"
+    }
+  ],
+  "writableAreas": [
+    {
+      "area": "owned-frontend",
+      "path": "frontend/src"
+    }
+  ],
+  "toolKinds": [
+    "repository-read",
+    "repository-write"
+  ],
+  "projectShell": "project-validation",
+  "network": false,
+  "generatedOutput": false,
+  "longRunningProcesses": false
+}

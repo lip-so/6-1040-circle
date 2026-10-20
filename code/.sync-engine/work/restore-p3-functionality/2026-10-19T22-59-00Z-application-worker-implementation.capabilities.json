@@ -1,0 +1,102 @@
+{
+  "readableAreas": [
+    {
+      "area": "work-unit",
+      "path": "context"
+    },
+    {
+      "area": "application",
+      "path": "design"
+    },
+    {
+      "area": "application",
+      "path": "generated.config.ts"
+    },
+    {
+      "area": "application",
+      "path": "package.json"
+    },
+    {
+      "area": "application",
+      "path": "src"
+    },
+    {
+      "area": "application",
+      "path": "tests"
+    },
+    {
+      "area": "application",
+      "path": "tsconfig.json"
+    }
+  ],
+  "writableAreas": [
+    {
+      "area": "owned-concept",
+      "path": "src/concepts"
+    },
+    {
+      "area": "owned-integration",
+      "path": "src/assembly.ts"
+    },
+    {
+      "area": "owned-integration",
+      "path": "src/compositions/Circle.ts"
+    },
+    {
+      "area": "owned-integration",
+      "path": "src/compositions/inputs.ts"
+    },
+    {
+      "area": "owned-integration",
+      "path": "src/concepts.ts"
+    },
+    {
+      "area": "owned-integration",
+      "path": "src/host"
+    },
+    {
+      "area": "owned-integration",
+      "path": "src/main.ts"
+    },
+    {
+      "area": "owned-integration",
+      "path": "src/proof.ts"
+    },
+    {
+      "area": "owned-configuration",
+      "path": ".env.example"
+    },
+    {
+      "area": "owned-configuration",
+      "path": "generated"
+    },
+    {
+      "area": "owned-configuration",
+      "path": "generated.config.ts"
+    },
+    {
+      "area": "owned-test",
+      "path": "tests/compositions"
+    },
+    {
+      "area": "owned-test",
+      "path": "tests/concepts"
+    },
+    {
+      "area": "owned-test",
+      "path": "tests/host"
+    },
+    {
+      "area": "owned-test",
+      "path": "tests/providers"
+    }
+  ],
+  "toolKinds": [
+    "repository-read",
+    "repository-write"
+  ],
+  "projectShell": "project-validation",
+  "network": true,
+  "generatedOutput": true,
+  "longRunningProcesses": false
+}

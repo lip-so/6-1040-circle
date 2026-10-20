@@ -1,0 +1,30 @@
+{
+  "readableAreas": [
+    {
+      "area": "application",
+      "path": "frontend/src"
+    },
+    {
+      "area": "application",
+      "path": "generated/wire.ts"
+    }
+  ],
+  "writableAreas": [
+    {
+      "area": "owned-configuration",
+      "path": "frontend/node_modules/.tmp"
+    },
+    {
+      "area": "owned-frontend",
+      "path": "frontend/src"
+    }
+  ],
+  "toolKinds": [
+    "repository-read",
+    "repository-write"
+  ],
+  "projectShell": "project-validation",
+  "network": false,
+  "generatedOutput": false,
+  "longRunningProcesses": false
+}

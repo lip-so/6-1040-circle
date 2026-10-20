@@ -1,0 +1,203 @@
+{
+  "state": "finalized",
+  "work": {
+    "slug": "compact-interaction",
+    "path": "/private/tmp/circle-compact-interaction/code/.sync-engine/work/compact-interaction"
+  },
+  "role": "designer",
+  "phase": "contracts",
+  "execution": "delegated",
+  "independent": true,
+  "harness": "codex",
+  "timeoutSeconds": 1800,
+  "prompt": {
+    "path": "/private/tmp/circle-compact-interaction/code/.sync-engine/work/compact-interaction/2026-10-20T01-19-21Z-designer-contracts.prompt.md",
+    "sha256": "9fac05003b04d01d4948fb82ea8c0b5485de60e3c64dce20a05b8ccb05d4ee1d"
+  },
+  "capabilities": {
+    "path": "/private/tmp/circle-compact-interaction/code/.sync-engine/work/compact-interaction/2026-10-20T01-19-21Z-designer-contracts.capabilities.json",
+    "sha256": "bf1eefc9e23449a707ee9a1060f773eae325f7651bcc6140ebab88573f750a68"
+  },
+  "grant": {
+    "readableAreas": [
+      {
+        "area": "design",
+        "path": "compositions/Circle.md"
+      },
+      {
+        "area": "design",
+        "path": "concepts/Connecting.md"
+      },
+      {
+        "area": "design",
+        "path": "concepts/Seeking.md"
+      },
+      {
+        "area": "design",
+        "path": "types.md"
+      }
+    ],
+    "writableAreas": [
+      {
+        "area": "assigned-design",
+        "path": "compositions/Circle.md"
+      },
+      {
+        "area": "assigned-design",
+        "path": "concepts/Connecting.md"
+      }
+    ],
+    "toolKinds": [
+      "repository-read",
+      "repository-write"
+    ],
+    "projectShell": "project-validation",
+    "network": false,
+    "generatedOutput": false,
+    "longRunningProcesses": false
+  },
+  "response": {
+    "path": "/private/tmp/circle-compact-interaction/code/.sync-engine/work/compact-interaction/2026-10-20T01-19-21Z-designer-contracts.response.md",
+    "sha256": "b40ee4be7aac3834cdffd4905f1c91c0a845bc6ff76e7a97fdeb46def67cd511",
+    "bytes": 1004
+  },
+  "retainedSources": [
+    {
+      "inputId": "brief",
+      "displayName": ".sync-engine/work/compact-interaction/brief.md",
+      "sha256": "9896c7d2e6406a0e2c856593ca93911b0c29f4f1cacab3d448cf9855f9442c05"
+    },
+    {
+      "inputId": "affected-contracts",
+      "displayName": "design/compositions/Circle.md",
+      "sha256": "c37424814a9a5d463c56a648001020dcb98ecb1bf4d7494ed40375e006366b34"
+    },
+    {
+      "inputId": "affected-contracts",
+      "displayName": "design/concepts/Connecting.md",
+      "sha256": "52c141c2964fdd9a5dd07541ca33396fd8577599b7ed08614bde3a25a00b762c"
+    },
+    {
+      "inputId": "affected-contracts",
+      "displayName": "design/concepts/Seeking.md",
+      "sha256": "c546bf46b09d4dd57675662837085b368739112e28b0f3b8ea71f37354a0a44a"
+    },
+    {
+      "inputId": "affected-contracts",
+      "displayName": "design/types.md",
+      "sha256": "9fe12f19806bb30fb32fd421d0cfa41c9c7d9615ff018192551846f8661c31bb"
+    }
+  ],
+  "policy": {
+    "review": "required",
+    "execution": "mixed"
+  },
+  "workspace": {
+    "root": "/private/tmp/circle-compact-interaction/code",
+    "baseline": {
+      "path": "/private/tmp/circle-compact-interaction/code/.sync-engine/work/compact-interaction/2026-10-20T01-19-21Z-designer-contracts.baseline.json",
+      "sha256": "4e2e4f3fd5d54154a6e4b853c3ec4589ece2b2d577ad3eb6c9a9c2795f873ca1"
+    }
+  },
+  "design": {
+    "root": "/private/tmp/circle-compact-interaction/code/design",
+    "before": "cc576571db53b3d729f783ba1ccc580ae4ede56bb062a08a4551913dc7417050",
+    "beforeFiles": [
+      {
+        "path": "compositions/Circle.md",
+        "sha256": "c37424814a9a5d463c56a648001020dcb98ecb1bf4d7494ed40375e006366b34"
+      },
+      {
+        "path": "compositions/reusable/accounts.md",
+        "sha256": "b4c3fc51af033e41c525bdc848fcbe005365250e2f04eaf0bc1f9dec26af2cc2"
+      },
+      {
+        "path": "compositions/reusable/commons.md",
+        "sha256": "1231b51781afb5c08b02e790fce544b4db57be64dc13f86d36df5b59ac5b40f2"
+      },
+      {
+        "path": "concepts/Connecting.md",
+        "sha256": "52c141c2964fdd9a5dd07541ca33396fd8577599b7ed08614bde3a25a00b762c"
+      },
+      {
+        "path": "concepts/Federating.md",
+        "sha256": "fdd29a2154b9d7c68938d278eaada07e80779250ec03c16f3b0f8e2768c3b699"
+      },
+      {
+        "path": "concepts/Graphing.md",
+        "sha256": "c7fbb592e8c1400616fbd8c631a5b3c7253c7b309e485a623364b611723e23af"
+      },
+      {
+        "path": "concepts/Registering.md",
+        "sha256": "72e2f72dba60dc1c7def945510c7337ae1805d7d30fd757f6f5beac83d86e9cb"
+      },
+      {
+        "path": "concepts/Remembering.md",
+        "sha256": "ea9a33b8ce6bc1d87abd857d13fd736b03303665e83e76522ac121b63f4e8150"
+      },
+      {
+        "path": "concepts/Seeking.md",
+        "sha256": "c546bf46b09d4dd57675662837085b368739112e28b0f3b8ea71f37354a0a44a"
+      },
+      {
+        "path": "concepts/Sessioning.md",
+        "sha256": "b47a9125cadab0e938b6298ac2cd782d7592eefdbd76caa879d4c8366e0ef9bc"
+      },
+      {
+        "path": "types.md",
+        "sha256": "9fe12f19806bb30fb32fd421d0cfa41c9c7d9615ff018192551846f8661c31bb"
+      }
+    ],
+    "after": "a524ac3f74e50865d9a0dd43470cd07a2966fb1fd72d40a77cd58259d3d3a83e",
+    "afterFiles": [
+      {
+        "path": "compositions/Circle.md",
+        "sha256": "8c6a6ca228bccd138de7c16604a63cfb3313bd900a69cb3fbe2c35b9ac6b4c90"
+      },
+      {
+        "path": "compositions/reusable/accounts.md",
+        "sha256": "b4c3fc51af033e41c525bdc848fcbe005365250e2f04eaf0bc1f9dec26af2cc2"
+      },
+      {
+        "path": "compositions/reusable/commons.md",
+        "sha256": "1231b51781afb5c08b02e790fce544b4db57be64dc13f86d36df5b59ac5b40f2"
+      },
+      {
+        "path": "concepts/Connecting.md",
+        "sha256": "7ecbf3749f80b89b533d99b2b369ad11fb7c942d08fbc74d68af76273e2dd7a6"
+      },
+      {
+        "path": "concepts/Federating.md",
+        "sha256": "fdd29a2154b9d7c68938d278eaada07e80779250ec03c16f3b0f8e2768c3b699"
+      },
+      {
+        "path": "concepts/Graphing.md",
+        "sha256": "c7fbb592e8c1400616fbd8c631a5b3c7253c7b309e485a623364b611723e23af"
+      },
+      {
+        "path": "concepts/Registering.md",
+        "sha256": "72e2f72dba60dc1c7def945510c7337ae1805d7d30fd757f6f5beac83d86e9cb"
+      },
+      {
+        "path": "concepts/Remembering.md",
+        "sha256": "ea9a33b8ce6bc1d87abd857d13fd736b03303665e83e76522ac121b63f4e8150"
+      },
+      {
+        "path": "concepts/Seeking.md",
+        "sha256": "c546bf46b09d4dd57675662837085b368739112e28b0f3b8ea71f37354a0a44a"
+      },
+      {
+        "path": "concepts/Sessioning.md",
+        "sha256": "b47a9125cadab0e938b6298ac2cd782d7592eefdbd76caa879d4c8366e0ef9bc"
+      },
+      {
+        "path": "types.md",
+        "sha256": "9fe12f19806bb30fb32fd421d0cfa41c9c7d9615ff018192551846f8661c31bb"
+      }
+    ]
+  },
+  "status": "completed",
+  "result": "complete",
+  "agentId": "/root/recommendation_design",
+  "enforcement": "prompt-guided"
+}

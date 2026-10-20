@@ -1,0 +1,44 @@
+{
+  "readableAreas": [
+    {
+      "area": "design",
+      "path": "compositions/Circle.md"
+    },
+    {
+      "area": "design",
+      "path": "concepts/Seeking.md"
+    },
+    {
+      "area": "design",
+      "path": "types.md"
+    },
+    {
+      "area": "application",
+      "path": "frontend/src"
+    },
+    {
+      "area": "application",
+      "path": "src/compositions/Circle.ts"
+    },
+    {
+      "area": "application",
+      "path": "src/concepts/Seeking.ts"
+    },
+    {
+      "area": "application",
+      "path": "tests/compositions/authenticated-flows.test.ts"
+    },
+    {
+      "area": "application",
+      "path": "tests/concepts/Seeking.test.ts"
+    }
+  ],
+  "writableAreas": [],
+  "toolKinds": [
+    "repository-read"
+  ],
+  "projectShell": "none",
+  "network": false,
+  "generatedOutput": false,
+  "longRunningProcesses": false
+}

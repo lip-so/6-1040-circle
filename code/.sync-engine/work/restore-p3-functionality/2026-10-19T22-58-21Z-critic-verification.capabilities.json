@@ -1,0 +1,20 @@
+{
+  "readableAreas": [
+    {
+      "area": "work-unit",
+      "path": "context"
+    },
+    {
+      "area": "application",
+      "path": "design"
+    }
+  ],
+  "writableAreas": [],
+  "toolKinds": [
+    "repository-read"
+  ],
+  "projectShell": "project-validation",
+  "network": false,
+  "generatedOutput": false,
+  "longRunningProcesses": false
+}
