@@ -1,0 +1,444 @@
+# Role and objective
+
+Work unit `remove-connections`; role `critic`; phase `verification`.
+
+# Critic verification
+
+Verify only the supplied finding or routed-blocker IDs against the revised candidate and their direct effects. Mark each ID resolved, unresolved, or directly regressed.
+
+Do not restart holistic review, add unrelated findings, edit the candidate, or infer missing context.
+
+# Access
+
+Root: "/private/tmp/circle-remove-connections/code". The short native message explicitly authorizes reading this prompt file; all assignment context is inline below. This is already a compiled role assignment: do not load a skill, workflow, harness guide, or another instruction file.
+
+- Read: `design:compositions` ("/private/tmp/circle-remove-connections/code/design/compositions"), `design:concepts` ("/private/tmp/circle-remove-connections/code/design/concepts"), `design:types.md` ("/private/tmp/circle-remove-connections/code/design/types.md").
+- Write: none.
+- Tools: `repository-read`.
+- Shell: `none`; network: no; generated output: no; long-running processes: no.
+
+Inspect only listed files or directories. In coordinator simulation, this grant binds the coordinator itself; broader coordinator access and prior discovery are unavailable to the assignment. Project checks may transitively read other project files, but do not inspect them yourself. Use supplied or task-named package-owned public documentation; do not browse package trees. Never inspect package `dist`, framework internals, caches, sibling applications, or undeclared declarations. Exclude `.git`, `.sync-engine` except this prompt, harness/skill configuration, agent traces, parent directories, and unrelated generated output. Ask for context instead of searching outside the grant. Generated files come only from granted commands. Never grantable: `git-mutation`, `dependency-installation`, `framework-internals`, `workflow-management`, `skill-cli-invocation`, `delegation-or-handoff`.
+
+# Guidance
+
+No additional guidance for this phase.
+
+# Context
+
+## Verification task
+
+**.sync-engine/work/remove-connections/verification-task.md**
+
+Verify only RC-01 through RC-04 from your retained review. Changes: Entities now explicitly bind source and ingest reuses entities only within owner+source; Remembering.forget erases capturedAt as well as content; composition explicitly blocks removal until any pending search response settles, in both disabled state and handler guard; the new endpoint names INVALID_REQUEST, NOT_SIGNED_IN, MEMORY_NOT_FOUND and their public meanings/mappings. Do not discover new findings, edit files or inspect implementation. Return Verdict and status of each retained finding.
+
+## Brief
+
+**.sync-engine/work/remove-connections/brief.md**
+
+Unchanged from the prior same-agent context.
+
+## Original finding or routed blocker IDs
+
+**.sync-engine/work/remove-connections/2026-10-20T02-39-46Z-critic-contracts.response.md**
+
+## Verdict
+
+Revise
+
+## Assessments
+
+| Obligation | Trigger → closing reaction | Visible success / false interval | Acknowledgement / retry / recovery | Duplicate-effect risk |
+|---|---|---|---|---|
+| Owned removal | Authenticated memory request → `Circle.Forget` | Unknown and foreign memories share `MEMORY_NOT_FOUND`; no effects before ownership enforcement | `Remembering.forget` accepts the same owned identity repeatedly | Controlled |
+| Original erasure | Owned forget → `Remembering.forget` | Content disappears atomically; owner and identity remain | Completes before graph withdrawal; same-memory retry succeeds | Controlled; retained timestamp exceeds the stated marker scope |
+| Evidence erasure | Original removed → `Graphing.withdraw` | Claims and quotes are removed; source joins hide the original during the intervening interval | Success waits for withdrawal; failure remains an error with manual same-memory retry | Tombstone retry is sound; entity erasure scope is unresolved |
+| Same-name isolation | Remove one memory → withdraw that source | Other encounter identities must remain intact | Original identity is separate from name and content | Entity reuse leaves preservation of other sources ambiguous |
+| Stale work | Old save or delayed ingest → owning action | Removed saves refuse `SUBMISSION_CONFLICT`; withdrawn sources refuse `SOURCE_WITHDRAWN` | Both owners recognize retained identities; no automatic retry | Controlled by declared tombstone invariants |
+| Shared removal UI | Labeled red basket → removal request | Recent and search rows update without reload; failed removal retains Retry | Account changes invalidate removal responses; list replies are invalidated | Pending search replies are not explicitly covered |
+| Boundary selection | Memory plus host session → authenticated endpoint | Session authority cannot be supplied as a request claim | Correct effect ordering; malformed/extra-input refusal codes remain unspecified | No duplicate internal reaction |
+
+Executable inventory: six static instances; endpoints/reactions `Circle.Remember`, `Circle.Seek`, `Circle.ListMemories`, and `Circle.Forget`; view `Circle.OwnedMemory`; formers `Circle.SavedMemories` and `Circle.NeedResults`. All have matching typed links, and each endpoint has one matching path. No new internal reaction or computation is implied by the removal flow.
+
+## Findings
+
+- **RC-01 — Entity erasure and same-source isolation are underspecified.** `Graphing.withdraw` erases “source-local entities,” but Entities have no declared source relationship, and ingest may reuse entities across sources. The contract therefore does not determine which entity labels disappear or how other sources retain their entities. Resolve this scope so withdrawal guarantees evidence erasure without damaging another encounter.
+
+- **RC-02 — Removed memories retain more than the approved markers.** `forget` erases only content, leaving `capturedAt` on the removed memory. The brief permits only owner/identity removal markers. Align the removal transition with that retention requirement.
+
+- **RC-03 — A pending search response can restore a removed suggestion.** The UI contract invalidates pending list replies and late removal responses, but does not address a search already underway when removal begins. Specify the outcome for such a reply so completed removal cannot be visually undone.
+
+- **RC-04 — New boundary refusals lack stable codes.** The Forget endpoint rejects malformed identities and extra request claims without declaring their refusal codes and meanings. “Host policy” leaves the newly required visible refusal behavior unsettled.
+
+## Revised candidate context
+
+**design/compositions/Circle.md**
+
+# Circle
+
+All reads use the user returned by `Sessioning.use` for the browser session. A request cannot supply an owner
+or ask Graphing to index an arbitrary source identity.
+
+The [saved memories](former:Circle.SavedMemories) read `Remembering._list` directly,
+preserving its order. The [list endpoint](reaction:Circle.ListMemories) authenticates
+first and supplies that owner. It accepts only a cursor, never a user identity.
+It returns at most 21 memories: 20 visible encounters and one lookahead row for
+Load more. A cursor is resolved only within that owner's notes. Pagination never
+loads another user's data and remains stable when newer notes arrive.
+
+The [owned-memory view](view:Circle.OwnedMemory) reads a note through
+`Remembering._get(owner, memory)`. Ownership is part of the database query;
+the view does not load another owner's note and filter its content afterward.
+
+The [need results](former:Circle.NeedResults) first read the owner's saved need
+through `Seeking._get`, then read `Graphing._trace` with that same owner. Each
+suggestion contains the person's target identity, label, source identity,
+explanation, and original note content. It includes a suggestion only when the
+owned-memory view can read the source under that same owner. Missing or
+unreadable source notes are omitted, as agreed. No matches gives an empty list.
+The trace query's ordering is preserved.
+
+The [remember endpoint](reaction:Circle.Remember) resolves the session first,
+saves the note, then reads the saved note through the owned-memory view before
+passing its returned memory identity and exact content to Graphing. The browser
+supplies content and a UUID submission token; it cannot supply an owner, timestamp,
+or source to index. The engine's `now(capturedAt)` supplies the save time, independently
+of the user's free-text encounter date. The request
+returns the memory identity after indexing succeeds, so an immediately following
+search can use it.
+
+The frontend retains a submission token when retrying the same draft after a
+lost response or indexing failure. Remembering atomically reuses the existing
+memory for that owner and token; a conflicting text is refused. A retry may run
+indexing again for that same source, without duplicating the original note.
+New successful saves and edited drafts get new tokens. There is no automatic retry.
+
+The [seek endpoint](reaction:Circle.Seek) resolves the session, saves the need
+for that user, then forms its results under the same user. It accepts only the
+need description. The response contains `results` with the need, description,
+and suggestions described above.
+
+Both write endpoints require a valid session before saving anything. Extra request
+fields, including owner and source, are refused. Blank text uses the concept's
+specified refusal. If indexing or forming results fails after saving, the saved
+note or need stays in MongoDB and the request returns an error, as agreed.
+There is no rollback or automatic retry.
+
+The Recent people section uses one card per memory, as chosen. Two different
+people with the same name, or repeated encounters with one person, remain separate.
+Cards show recorded context and an expandable original note; old unparsed notes
+use “Saved encounter” rather than a guessed person. Optional fields remain optional.
+Long labels wrap and previews are limited to two lines; the complete note stays
+available. The optional Contact field accepts a phone number, LinkedIn URL, or
+other contact text and is shown on saved and matching cards. It stays in the
+owner's original memo, using the existing content API; old four-field memos
+remain readable. Contact values are displayed as text, without guessing phone
+formats or interpreting arbitrary text as executable links. Editing and automatic identity merging remain deferred.
+
+The list distinguishes loading, a failed request with Retry, and a genuinely empty
+account. It refreshes after save attempts, so a saved note remains visible when
+indexing failed, and on returning to the tab after rechecking the account.
+Account changes and sign-out clear displayed data and invalidate pending replies.
+An older response cannot repopulate cleared data or replace a newer list request.
+This protects the UI; it does not cancel a backend action already accepted.
+
+```endpoints
+Circle.Remember at /memories/remember
+Circle.Seek at /needs/seek
+Circle.ListMemories at /memories/list
+```
+
+## Removing a connection
+
+A connection row represents one saved encounter, not a merged person. The red basket in its top-right corner invokes the [forget endpoint](reaction:Circle.Forget) for that memory identity. The basket is a separately labeled control outside the disclosure summary; it does not open or close the row. The same control is available for search results. Removing one source never removes a same-name encounter with another identity.
+
+The endpoint accepts only memory and the session supplied by the host. Sessioning.use resolves owner before effects; Remembering.forget enforces ownership atomically. A missing memory and another owner's memory have the same MEMORY_NOT_FOUND refusal. Malformed identities and extra owner/source claims refuse INVALID_REQUEST, meaning the request is not the supported memory-only input. A missing or expired host-injected session refuses NOT_SIGNED_IN, meaning authentication is required; a body credential cannot replace the session cookie. Missing and foreign memory identities refuse MEMORY_NOT_FOUND, meaning no encounter is available to this owner. The host maps these to INVALID_REQUEST, UNAUTHORIZED and NOT_FOUND respectively.
+
+After Remembering.forget erases the owned original and retains its removal identity, Graphing.withdraw erases that source's evidence and retains its owner and withdrawal identity. The endpoint acknowledges success only after both actions finish. No separate reaction duplicates these effects. The false interval is between removing the original and withdrawing evidence: source joins omit the removed original immediately. No rollback or automatic retry is promised. If withdrawal fails, the endpoint returns an error; the client keeps the same memory identity and offers Retry removal. Repeating forget for an already removed owned memory succeeds, allowing the graph step to finish. Unknown or foreign removals cannot create graph tombstones because Remembering refuses first. Withdrawn graph sources refuse delayed ingestion, and the original save token refuses to recreate a removed encounter.
+
+The frontend disables conflicting save/search/removal actions while the request is pending. Removal cannot begin during a pending search: both the basket disabled state and the removal handler enforce this guard, and search settles its response before allowing removal. Conversely search cannot begin during removal, so an older pending search response cannot restore a removed suggestion. On success it invalidates pending list replies, removes every displayed row and suggestion for that source, and refreshes the list without reloading the page. On an uncertain failure it clears any displayed suggestions for that source and refreshes the list, preserving Retry removal even if the original has already disappeared. Account changes clear pending removal state and invalidate late responses. A list request started before a removal cannot restore its removed row.
+
+```endpoints
+Circle.Forget at /memories/forget
+```
+
+**design/concepts/Graphing.md**
+
+# Graphing
+
+## Purpose
+
+Make relationships in saved accounts retrievable together with the evidence supporting them.
+
+## Principle
+
+If a source reports that a user met a person who works on AI hardware and discussed systems engineering, tracing a need for systems engineering work can return that person, an explanation, and the supporting source. Withdrawing that source erases its extracted facts and stops it from contributing matches, including after a delayed ingest attempt.
+
+## Types
+
+```types
+external User
+external Source
+
+EntityKind is SELF or PERSON or ORGANIZATION or TOPIC or OPPORTUNITY
+RelationKind is MET or KNOWS or MEMBER_OF or WORKS_ON or RESEARCHES or INTERNED_AT or OFFERS or SOMETIMES_HOSTS or BASED_IN or DISCUSSED or FOUNDED or DESCRIBED_AS
+```
+
+## State
+
+```state
+a set of Sources with
+  an owner User
+
+a set of Withdrawn Sources
+
+Rule: a withdrawn source keeps its owner and identity but no entities, claims or supporting quotes. Its evidence cannot be ingested again.
+
+a set of Entities with
+  an owner User
+  a source Source
+  a kind EntityKind
+  a label String
+
+a set of Claims with
+  an owner User
+  a from Entity
+  a relation RelationKind
+  a to Entity
+  a source Source
+  a quote String
+```
+
+## Actions
+
+```actions
+ingest(owner: User, source: Source, content: String) : returns ()
+  where content is blank (empty or whitespace-only)
+  then
+    refuses EMPTY_SOURCE_CONTENT "Source content must not be blank."
+  where content is not blank and source is in Sources and source.owner is not owner
+  then
+    refuses SOURCE_NOT_OWNED "The source belongs to another user."
+  where content is not blank and source is in Withdrawn and source.owner is owner
+  then
+    refuses SOURCE_WITHDRAWN "The source was withdrawn."
+  where content is not blank and (source is not in Sources or (source.owner is owner and source is not in Withdrawn))
+  then
+    add source to Sources with owner if it is not already present
+    replace the claims for source with claims supported by content
+    create or reuse entities only within this owner and source; never share entities between sources, even when their names match
+    give every new claim owner, source, and a supporting quote from content
+    use DISCUSSED for conversational topics and FOUNDED for founding a company; do not treat either as employment or expertise
+    for the local MVP, recognize one named person per note using introductions or a named profile, with positive affiliation, work, research, discussion, and offer statements
+    also recognize guided memories containing Person, When, Does, and Discussed fields; take the explicit person name as written, record Does as DESCRIBED_AS and Discussed as DISCUSSED, and keep When as source context without treating it as a subject relationship
+    optional Contact text stays in the supporting source; do not create relationships or searchable subject terms from phone numbers or profile URLs
+    do not infer employment or expertise from a discussion; leave a negated Does or Discussed field unindexed
+    leave unsupported or negated relationship statements unindexed
+    returns
+
+withdraw(owner: User, source: Source) : returns ()
+  where source is in Sources and source.owner is not owner
+  then
+    refuses SOURCE_NOT_OWNED "The source belongs to another user."
+  where source is not in Sources or source.owner is owner
+  then
+    add source to Sources with owner if it is not already present
+    add source to Withdrawn if it is not already present
+    erase all source-local entities, claims and supporting quotes for source
+    keep source owner and identity to block delayed ingestion; repeated withdrawal succeeds
+    returns
+```
+
+## Queries
+
+```queries
+_trace(owner: User, description: String) : many (target: Entity, label: String, source: Source, reason: String)
+  Return people relevant to description, using only owner's entities and claims from sources outside Withdrawn.
+  Each row identifies a person, their label, one supporting source, and an explanation justified by that source's claims.
+  Match normalized subject terms within one source at a time, including supported aliases such as engineer/engineering and artificial intelligence/AI.
+  Require all substantive search terms to match that source's entity labels or explicit research relationships. Hiring searches require an explicit positive hiring statement.
+  Combining paths across sources and interpreting negative search requirements are deferred; return no rows for negative queries.
+  Do not invent relationships or imply an opportunity exists when the source only establishes relevance.
+  Return one row per matching person and source, ordered by label, target identity, and source identity.
+  Return no rows for a blank description or no supported match.
+```
+
+**design/concepts/Remembering.md**
+
+# Remembering
+
+## Purpose
+
+Prevent the context of an encounter from being lost before the user has a reason to revisit it.
+
+## Principle
+
+If a user records an encounter in their own words, they can later retrieve that account and recover what they discussed. If they remove that encounter, its original text is erased and cannot be retrieved or recreated by retrying the old save.
+
+## Types
+
+```types
+external User
+```
+
+## State
+
+```state
+a set of Memories with
+  an owner User
+  an optional content String
+  an optional capturedAt DateTime
+
+a set of Removed Memories
+
+Rule: only Memories outside Removed have content. Removing an encounter erases its content while retaining its owner and identity to reject stale save retries.
+Rule: new memories use an identity derived from owner and submission. Names and note text are not identities. A different submission creates a separate encounter, even for the same person or the same text.
+Rule: older memories may have no capturedAt; do not invent their save times.
+Rule: guided memo content may include optional contact information such as a phone number or LinkedIn URL. Keep it with the original account; existing memories without it remain valid.
+```
+
+## Actions
+
+```actions
+remember(owner: User, content: String, submission: String, capturedAt: DateTime) : returns (memory: Memory)
+  where content is blank (empty or whitespace-only)
+  then
+    refuses EMPTY_CONTENT "Encounter content must not be blank."
+  where content is not blank and owner and submission identify an existing memory that is in Removed or has different content
+  then
+    refuses SUBMISSION_CONFLICT "This save token cannot be reused for this encounter."
+  where content is not blank and owner and submission identify an existing memory outside Removed with the same content
+  then
+    keep that memory and leave its content and capturedAt unchanged
+    returns memory
+  where content is not blank and owner and submission do not identify an existing memory
+  then
+    create a memory with owner, the exact supplied content, and capturedAt
+    returns memory
+
+forget(owner: User, memory: Memory) : returns ()
+  where memory is not in Memories or memory.owner is not owner
+  then
+    refuses MEMORY_NOT_FOUND "Encounter not found."
+  where memory is in Memories and memory.owner is owner
+  then
+    add memory to Removed if it is not already present
+    erase memory.content and memory.capturedAt
+    keep its owner and identity so repeated removal succeeds and an old save cannot recreate it
+    returns
+```
+
+## Queries
+
+```queries
+_get(owner: User, memory: Memory) : optional (content: String)
+  Return the content if memory exists, belongs to owner, and is not in Removed.
+  Return no row otherwise.
+
+_list(owner: User, after: String) : many (memory: Memory, content: String)
+  Read only owner's memories outside Removed, including notes that have no graph matches or failed indexing.
+  An empty after starts at the beginning; otherwise continue after that owned memory.
+  Return no rows if a nonempty cursor is missing, removed, or is not owned by owner.
+  Order by capturedAt descending, with memory identity ascending to break ties. Memories without a capturedAt follow dated saves, ordered by identity; their actual save order is unknown.
+  Return at most 21 rows. The frontend displays 20 and uses the extra row to detect another page, continuing after the last displayed memory.
+  Cursor paging keeps older rows reachable when a newer memory is inserted between page requests.
+  Return no rows for an empty page. Never merge matching names or identical content.
+```
+
+## Retained review guidance
+
+**node_modules/@mit-sdg/sync-engine-skill/skills/sync-engine/prompts/guidance/design/boundary.md**
+
+# What a design says about its boundary
+
+An endpoint takes one request and produces one answer. Endpoints are the only way into
+the application, and every caller reaches them the same way, regardless of caller.
+
+Say what a caller supplies, what comes back, and every refusal with a stable code and its
+meaning. Each selected endpoint separately declares its exact `endpoint(...)` pathname in
+an `endpoints` fence. Do not put transport rendering in behavioral prose or that fence: no
+methods, status codes, headers, exit codes, or projected external routes.
+
+When two refusals have to be indistinguishable to a caller, say that as behaviour.
+
+A concept needing the current time or a generated identifier says so in its prose and
+takes it as an action input; it never reaches for a clock. Composition binds one instant
+per flow and passes it in, so no concept reports the time.
+
+**node_modules/@mit-sdg/sync-engine-skill/skills/sync-engine/prompts/guidance/design/contracts.md**
+
+# Contract design and review
+
+Use the supplied decomposition as boundary authority; without one, use the brief and affected approved contracts. Preserve accepted obligation IDs and their trigger, closing reaction, false interval, retry identity, and recovery.
+
+## Concepts own complete mechanisms
+
+Purpose names one mechanism and rules out a plausible alternative. Principle gives a short event-ordered story with real actors and values. State describes observable identity, relations, lifecycle, order, multiplicity, and invariants—not storage. External identities remain opaque and peer facts are never interpreted locally.
+
+For every action, settle:
+
+- inputs and returned identity;
+- successful state transition;
+- each expected refusal and the unchanged post-refusal state;
+- repetition or deduplication behavior;
+- lifecycle stage, deletion, expiry, and repair when applicable; and
+- the owner action that enforces each race-sensitive or security-critical invariant.
+
+A refusal has no partial effect. Repetition must succeed again, return the prior result, or refuse. Deduplication requires an operation identity accepted and checked atomically by the owner; a trace correlation ID is not enough.
+
+Queries have no effects. State `one`, `optional`, or `many`, the empty or unknown case, and stable ordering for `many`. Do not invent CRUD symmetry or expose storage operations that are not part of the mechanism.
+
+## Composition coordinates without stealing authority
+
+Composition owns cross-concept policy, coordination, boundary adaptation, and recovery—not concept invariants. For each visible flow, state:
+
+- actor and authenticated authority;
+- requested resource and authorization condition;
+- enforcement point;
+- visible success and refusals;
+- effect owner;
+- ordering of required effects relative to acknowledgement; and
+- material partial-failure and recovery behavior.
+
+Request data is a claim, not authentication. Reject bypassable authorization, duplicate effect ownership, required work deferred after visible success when it can be lost, compensation without an available owner action, and claims of atomic or exactly-once behavior across independent owners.
+
+For each obligation, verify that the trigger can occur, the closing reaction owns the intended effect, the owner accepts the retry identity, the false interval matches visible behavior, and recovery can run from an available action. This applies to synchronously awaited endpoint steps as well as deferred reactions. Never assume rollback between owners or exactly-once network delivery. Choose and state a realizable server-side acknowledgement boundary rather than adding protocol state solely to model whether a client received bytes.
+
+## Select every executable explicitly
+
+Inventory each selected static instance, endpoint, internal reaction, view, former, and computation. Give every executable declaration one exact typed link, and put all concrete types and instances needed by a new application in `design/types.md`. Each endpoint additionally needs exactly one matching `Declaration.Identity at /path` entry. The module, group, declaration, and pathname must agree.
+
+A computation is a pure derivation of its declared inputs, such as normalization, a generated identifier, the current instant, or deciding whether an optional input was supplied. Anything read from concept state belongs in a query, view, or former, never a computation. Declare every computation the composition prose implies before review, including one for each optional-input branch. Implementation blocks on a missing declaration rather than inventing one.
+
+An endpoint-linked reaction may own the full coordination required before its answer. Add a separate internal reaction only for intentionally distinct deferred or independently triggered behavior. Do not duplicate one effect in both declarations.
+
+Contracts specify behavior, ownership, acknowledgement, and failure—not framework stages, trigger syntax, binding flow, host methods, status codes, or storage layout.
+
+**node_modules/@mit-sdg/sync-engine-skill/skills/sync-engine/prompts/guidance/design/ssf-reading.md**
+
+# Reading Simple State Form
+
+State fences are declarations, not storage. Read them for what they promise:
+
+- `a set of Items` and `a seq of Items` introduce identities; a `seq` also fixes order.
+- A plain set holds every individual of its type in the state: with `a set of Users with
+a reputation Number`, every User anywhere in the concept has a reputation, whether
+  User is owned or external. An external type's set introduces no identity.
+- `a set of Completed Items` classifies members of `Items`, and `a set of Late Completed
+Items` members of `Completed Items`. A subset declares no second collection and no
+  identity, subsets may overlap, and `a reviewer Verified User` holds only members of
+  `Verified Users`.
+- `an Author` is the field `author`; the type names a field written without a name.
+- `an optional owner Person` may be absent. Collections never carry `optional`; empty
+  means absent, so a set that must reject duplicates cannot also promise to detect them.
+- `a Settings` has exactly one member.
+- `alias WorkItem for Items` renames one declaration; it adds nothing.
+- A `Rule:` line is prose the checker keeps verbatim and proves nothing.
+
+Which side declares a relation implies no storage, navigation, or ownership.
+
+# Result
+
+Unless the task requests another format, return these headings in order. Omit progress narration.
+
+- `## Verdict` — required. First line is exactly `Approve`, `Revise`, or `Blocked`.
+- `## Findings` — required. Stable findings or routed blockers resolved/unresolved; direct regressions or none.

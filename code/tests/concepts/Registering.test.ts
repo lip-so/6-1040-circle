@@ -3,6 +3,7 @@ import { afterAll, describe, expect, test } from "bun:test";
 import {
   InvalidUsername,
   RegisteringConcept,
+  type User,
   UsernameTaken,
 } from "../../src/concepts/Registering/Registering.ts";
 import { cleanupDatabases, testDatabase } from "../support/reusable/mongo.ts";
@@ -39,6 +40,13 @@ describe("Registering", () => {
     }
   });
 
+  test("usernames are case-sensitive, so `Maya` is a different username from `maya`", async () => {
+    const { registering } = await setup();
+    const { user: maya } = await registering.register({ username: "maya" });
+    const { user: other } = await registering.register({ username: "Maya" });
+    expect(other).not.toBe(maya);
+  });
+
   test("of two registrations of one username at once, one succeeds and the other is refused with USERNAME_TAKEN", async () => {
     const { registering } = await setup();
     await expectOneWinner(
@@ -47,4 +55,9 @@ describe("Registering", () => {
     );
   });
 
+  test("_username and _byUsername return no row for an unknown user or username", async () => {
+    const { registering } = await setup();
+    expect(await registering._username({ user: "missing" as User })).toEqual([]);
+    expect(await registering._byUsername({ username: "nobody" })).toEqual([]);
+  });
 });

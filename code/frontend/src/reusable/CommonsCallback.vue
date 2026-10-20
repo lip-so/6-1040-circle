@@ -42,7 +42,7 @@ async function choose() {
 </script>
 
 <template>
-  <form v-if="choosing" class="card form-card" @submit.prevent="choose">
+  <form v-if="choosing" class="form-card" @submit.prevent="choose">
     <h1>Choose a username</h1>
     <label class="field">
       Username
@@ -50,9 +50,9 @@ async function choose() {
       <span class="hint">3 to 32 letters, digits, _ or -</span>
     </label>
     <p v-if="error" class="refusal" role="alert">{{ error }}</p>
-    <button type="submit" class="button primary large" :disabled="working">Continue</button>
+    <button type="submit" class="button primary" :disabled="working">Continue</button>
   </form>
-  <p v-else class="card form-card waiting"><CommonsMark :size="32" />Signing in with Commons…</p>
+  <p v-else class="form-card"><CommonsMark :size="32" />Signing in with Commons…</p>
 </template>
 
 <style scoped>

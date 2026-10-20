@@ -1,0 +1,1 @@
+PB-01 repaired: original/count bounds refuse before effects; a structured limit discovered after organization is an ordinary processing error retaining completed organization, before selection. Graphing and Circle updated consistently.

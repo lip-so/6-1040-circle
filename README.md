@@ -53,19 +53,18 @@ Project decisions and progress are recorded in the [design journal](desing-journ
 
 [User journey](design-docs/user-journey.md) follows Ralph from meeting Faustin -> saving the encounter -> Circle resurfacing that connection when Ralph’s goals change.
 
-## P2: Alpha implementation
-
-This section describes the submitted P2 snapshot. Current functionality is documented under P3 below.
+## Current implementation
 
 The alpha covers only core functionality, nothing fancy yet:
 
 - sign in through Commons
 - save an encounter
-- find a relevant person when a need comes up with keywords (LLM indexing to be added)
+- find relevant saved people using private, source-linked LLM recall
+- remove a saved encounter and its searchable evidence with the red basket
 
-**Remember** has five fields: Person, When, What they do, Contact, and What you discussed. Only Person is required. **Find** returns matching people with short details and their original notes.
+**Remember** accepts a typed note or a voice recording. Stop recording to get editable text, then Save to preserve the exact original and organize it into a structured contact card. **Find** selects matching saved cards with supporting quotes and their original notes. A missing name stays “Unnamed encounter.”
 
-The two forms share a **Remember / Find toggle**.
+The two forms share a **Remember / Find toggle**. Contacts appear as plain white name rows; expand one to read the recorded details and original note. The red basket asks for confirmation; Cancel/Escape leaves it unchanged and Remove deletes that encounter from both Recent people and search results. Same-name encounters remain separate. Failed removal offers Retry removal; old save retries cannot recreate a removed encounter. Artwork moves only while hovered, and Save stays centered.
 
 
 | Part                                       | Files                                                                                                                                                                            |
@@ -84,9 +83,9 @@ The MVP implements Remembering, Seeking, and Graphing + the reused authenticatio
 
 Each user's notes, needs, and graph are scoped to their authenticated account to prevent security issues.
 
-Graphing uses a local TypeScript parser and keyword matching; there is no LLM processing in this alpha.
+Graphing stores one validated JSON contact record per original in MongoDB. Each fact has literal source evidence. Only the authenticated user’s current records enter an OpenAI request; no shared provider conversation is used. The model selects source IDs and fact indexes, and the server reads the actual owned cards and originals. Strict schemas, a pinned model and stored query/corpus results make repeated searches stable; model relevance can still be imperfect.
 
-Connecting's dismissed/useful suggestion history and broader language understanding are deferred.
+Connecting’s dismissed/useful suggestion history, identity merging and cross-note fact transfer remain deferred.
 
 **[Screen recording](https://www.loom.com/share/1795afb2bf8446a7be5abd993374e1d6).**
 
@@ -99,7 +98,7 @@ bun install --cwd code
 bun install --cwd code/frontend
 ```
 
-If you do not already have `code/.env`, create it from [code/.env.example](code/.env.example). Set `MONGODB_URL` for the app and `TEST_MONGODB_URL` for the tests. For this local run, use `PUBLIC_ORIGIN=http://localhost:3000` and `COMMONS_ORIGIN=https://class.mit-sdg.dev`.
+If you do not already have `code/.env`, create it from [code/.env.example](code/.env.example). Set `MONGODB_URL` for the app and `TEST_MONGODB_URL` for the tests. Add `OPENAI_API_KEY` locally in `code/.env` (server only; never commit it). Optional model overrides are shown in the example. For this local run, use `PUBLIC_ORIGIN=http://localhost:3000` and `COMMONS_ORIGIN=https://class.mit-sdg.dev`.
 
 Build and start the app:
 
@@ -117,77 +116,11 @@ bun run check
 bun run test
 ```
 
-MongoDB tests create and remove uniquely named temporary databases using `TEST_MONGODB_URL`.
+MongoDB tests create and remove uniquely named temporary databases using `TEST_MONGODB_URL`. They inject explicit test providers and do not send user data to OpenAI. To exercise real extraction, retrieval, caching, isolation and removal with synthetic data only, run `bun run --cwd code check:brain`.
 
-The tests focus on each concept's core behavior, sign-in and ownership boundaries,
-preserving saved data, retry safety, evidence correctness, and the main save/search
-journey. Repeated examples and lower-priority formatting checks are omitted.
 
-## P3: Restored functionality
+The current version extends the P2 foundation with the explicitly requested text/voice processing and LLM Find. Urbanist/Handlee, plain white rows, hover artwork, centered Save and confirmed removal remain. Older guided notes remain readable and are organized on their owner’s next search. Note editing, saved-search lifecycle and recommendation preferences are deferred.
 
-Circle now implements Remembering, Seeking, Graphing, and Connecting, alongside
-Commons sign-in. Remember uses one free-form note with a gentle reminder of useful
-details. Voice input returns editable text and never saves automatically. Existing
-guided notes remain readable and editable.
+Voice is limited to two minutes and 4 MiB. Recordings are sent for transcription but are not persisted by Circle; transcripts are saved only on explicit Save. Text is limited to 20,000 characters, search to 2,000 characters, and complete search memory to 256 originals/256 KiB. Oversized memory fails explicitly rather than silently truncating; structured overflow after organization preserves completed records and fails before selection.
 
-Find keeps ongoing searches across visits. Repeating the same description (ignoring
-case and whitespace) reuses an ongoing search. Every legacy need is ongoing until
-resolved; **Resolved** is next to each search. Searches can be edited, reopened, or
-deleted. There is one Need type; goal is another word for that same record.
-
-Notes can be edited, deleted, inspected, and explicitly reindexed. Claim corrections
-leave the original words unchanged. Suggestions update after note and claim changes,
-include every supporting source quote, and retain Useful/Dismissed responses across
-refreshes. Safe directed paths can span notes through distinctive organization/topic
-identities. People with the same name in separate encounters stay separate. Search
-uses conservative aliases and graph paths; unsupported meaning can still yield no
-match. Discussion and possible hosting never establish expertise or a current opening.
-
-### OpenAI configuration
-
-Keep these values server-side in `code/.env`:
-
-```dotenv
-GRAPHING_EXTRACTOR=openai
-OPENAI_API_KEY=your-server-side-key
-OPENAI_GRAPH_MODEL=gpt-4.1-mini
-OPENAI_TRANSCRIBE_MODEL=gpt-transcribe
-```
-
-`GRAPHING_EXTRACTOR=local` is the default and uses the local parser. Selecting OpenAI
-indexing without its key/model fails startup; provider failures never silently fall
-back. Voice transcription uses the server key and configured transcription model.
-Never put a key in a frontend `VITE_` variable or commit it. This change does not
-replace an existing `.env`.
-
-Indexing sends the supplied note to the [Responses API with structured output](https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=responses)
-and `store: false`. Legacy guided Contact fields are excluded; free-form text has no
-separate Contact boundary. The server does not send session/account identities,
-other notes, or the existing graph. Validation checks structure, references, literal
-labels, and full source quotes; it cannot prove the model interpreted a statement
-correctly. The original note remains the authority.
-
-Voice sends only the recording to the [file transcription API](https://developers.openai.com/api/docs/guides/speech-to-text).
-Browser recordings stop at two minutes or 4 MiB; the API accepts bounded supported
-audio, and the app does not persist recordings. Cancelled or account-stale replies
-cannot add text to a draft.
-
-### Failure and recovery
-
-Saved originals survive indexing/search errors. Retry an unchanged save with the
-same token to avoid duplication, or use **Retry indexing** on an encounter. Edits
-invalidate old evidence immediately; deleting a note withdraws its evidence and
-blocks an old save retry from resurrecting it. Legacy graph rows without current
-digest metadata require an explicit reindex before supporting new suggestions.
-There is no automatic external reindexing of existing notes.
-
-The deployed API uses one complete-settlement FIFO per server process, including
-reads. Provider requests can delay later calls until their bounded timeout. This
-beta requires one application process; independent processes or direct root callers
-need their own admission coordination. It does not promise distributed transactions
-or automatic replay.
-
-Provider checks for this restoration use simulated responses, as Sofia requested.
-See [agent-journal.md](agent-journal.md) for verification and the retained/deleted
-test inventory. The earlier [indexing-only test output](code/tests/output/p3-indexing.txt)
-is a historical snapshot, not evidence for the full restoration.
+Provider failures preserve saved originals and needs; a same-draft retry reuses its save token. Missing provider configuration fails processing explicitly. Removing an encounter erases its original and structured evidence and clears the user’s cached selections; content-free identity markers reject stale saves/ingestion. Success waits for original erasure and evidence withdrawal. No existing user data is deleted as test setup.

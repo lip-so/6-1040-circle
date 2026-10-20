@@ -1,0 +1,1 @@
+Review the scoped Graphing/Circle clarifications against the brief: canonical full name evidence, literal Does activity versus discussion, optional date, equal text/voice controls. Existing boundaries, per-user isolation and strict full fact evidence must remain intact. Read only, report actionable semantic defects.

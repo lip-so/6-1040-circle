@@ -1,6 +1,6 @@
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "bun:test";
 import { MongoClient, type Db } from "mongodb";
-import { EmptyContent, SubmissionConflict, RememberingConcept } from "../../src/concepts/Remembering/Remembering.ts";
+import { EmptyContent, MemoryNotFound, SubmissionConflict, RememberingConcept } from "../../src/concepts/Remembering.ts";
 
 const testUrl = process.env.TEST_MONGODB_URL;
 if (!testUrl) {
@@ -41,15 +41,21 @@ describe("Remembering", () => {
     expect(await remembering._get({ owner: "ralph", memory })).toEqual([{ content }]);
   });
 
-  test("refuses blank content without saving anything", async () => {
-    await expect(remembering.remember({ capturedAt: new Date("2026-10-18T12:00:00Z"), submission: crypto.randomUUID(), owner: "ralph", content: " \t\n " })).rejects.toThrow(EmptyContent);
-    expect(await db.collection<{ _id: string; owner: string; content: string; capturedAt?: Date }>("remembering.memories").countDocuments()).toBe(0);
-  });
+  for (const content of ["", " \t\n "]) {
+    test(`refuses ${content.length === 0 ? "empty" : "whitespace-only"} content without saving anything`, async () => {
+      await expect(remembering.remember({ capturedAt: new Date("2026-10-18T12:00:00Z"), submission: crypto.randomUUID(), owner: "ralph", content })).rejects.toThrow(EmptyContent);
+      expect(await db.collection<{ _id: string; owner: string; content: string; capturedAt?: Date }>("remembering.memories").countDocuments()).toBe(0);
+    });
+  }
 
   test("does not return another owner's memory", async () => {
     const { memory } = await remembering.remember({ capturedAt: new Date("2026-10-18T12:00:00Z"), submission: crypto.randomUUID(), owner: "ralph", content: "Met Faustin." });
 
     expect(await remembering._get({ owner: "another-student", memory })).toEqual([]);
+  });
+
+  test("returns no row for an unknown memory", async () => {
+    expect(await remembering._get({ owner: "ralph", memory: crypto.randomUUID() })).toEqual([]);
   });
 
   test("creates separate memories for separate saves", async () => {
@@ -82,6 +88,7 @@ describe("Remembering", () => {
     }
   });
 });
+
 
 describe("Remembering saved-list edge cases", () => {
   const savedAt = new Date("2026-10-18T12:00:00Z");
@@ -134,4 +141,23 @@ describe("Remembering saved-list edge cases", () => {
     expect([...seen].sort()).toEqual(originals.map(row => row.memory).sort());
     expect(seen).not.toContain(newer.memory);
   });
+});
+
+
+test("forget erases an owned original, keeps other same-name encounters and rejects stale retries", async () => {
+  const input = { owner: "ralph", content: "Met Alex.", submission: crypto.randomUUID(), capturedAt: new Date() };
+  const { memory } = await remembering.remember(input);
+  const other = await remembering.remember({ ...input, submission: crypto.randomUUID() });
+  await expect(remembering.forget({ owner: "someone-else", memory })).rejects.toThrow(MemoryNotFound);
+  await expect(remembering.forget({ owner: input.owner, memory: "missing" })).rejects.toThrow(MemoryNotFound);
+  expect(await remembering._get({ owner: input.owner, memory })).toEqual([{ content: input.content }]);
+  await Promise.all([remembering.forget({ owner: input.owner, memory }), remembering.forget({ owner: input.owner, memory })]);
+  expect(await remembering._get({ owner: input.owner, memory })).toEqual([]);
+  expect(await remembering._list({ owner: input.owner, after: "" })).toEqual([{ memory: other.memory, content: input.content }]);
+  expect(await remembering._list({ owner: input.owner, after: memory })).toEqual([]);
+  const marker = await db.collection<{ _id: string; owner: string; removed?: true }>("remembering.memories").findOne({ _id: memory });
+  expect(marker).toEqual({ _id: memory, owner: input.owner, removed: true });
+  const fresh = new RememberingConcept(db);
+  await expect(fresh.remember(input)).rejects.toThrow(SubmissionConflict);
+  await expect(fresh.remember({ ...input, content: "Changed original" })).rejects.toThrow(SubmissionConflict);
 });

@@ -1,0 +1,1 @@
+Review the changed Graphing, Remembering, Circle and type contracts for the brief. Check per-user isolation, source-linked evidence, determinism/cache/deletion races and text/voice behavior. Report only actionable semantic defects in the changed design. Do not edit files.

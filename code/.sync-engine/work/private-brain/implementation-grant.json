@@ -1,0 +1,40 @@
+{
+  "readableAreas": [
+    {
+      "area": "design",
+      "path": "compositions"
+    },
+    {
+      "area": "design",
+      "path": "concepts"
+    },
+    {
+      "area": "design",
+      "path": "types.md"
+    },
+    {
+      "area": "application",
+      "path": "frontend/src"
+    },
+    {
+      "area": "application",
+      "path": "scripts/check-brain.ts"
+    },
+    {
+      "area": "application",
+      "path": "src"
+    },
+    {
+      "area": "application",
+      "path": "tests"
+    }
+  ],
+  "writableAreas": [],
+  "toolKinds": [
+    "repository-read"
+  ],
+  "projectShell": "project-validation",
+  "network": false,
+  "generatedOutput": false,
+  "longRunningProcesses": false
+}

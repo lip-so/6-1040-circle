@@ -1,0 +1,127 @@
+{
+  "state": "finalized",
+  "work": {
+    "slug": "private-brain",
+    "path": "/private/tmp/circle-private-brain/code/.sync-engine/work/private-brain"
+  },
+  "role": "critic",
+  "phase": "contracts",
+  "execution": "delegated",
+  "independent": true,
+  "harness": "codex",
+  "timeoutSeconds": 1800,
+  "prompt": {
+    "path": "/private/tmp/circle-private-brain/code/.sync-engine/work/private-brain/2026-10-20T03-08-41Z-critic-contracts.prompt.md",
+    "sha256": "451093338de3cae0e13032ce9393c6aa483fcd56e3653a179317cd15a16f1076"
+  },
+  "capabilities": {
+    "path": "/private/tmp/circle-private-brain/code/.sync-engine/work/private-brain/2026-10-20T03-08-41Z-critic-contracts.capabilities.json",
+    "sha256": "d7cf3660e4b9a27975c910d26dbf5ec2b6f9684d8995b1beff878b70c33e26ce"
+  },
+  "grant": {
+    "readableAreas": [
+      {
+        "area": "design",
+        "path": "compositions"
+      },
+      {
+        "area": "design",
+        "path": "concepts"
+      },
+      {
+        "area": "design",
+        "path": "types.md"
+      }
+    ],
+    "writableAreas": [],
+    "toolKinds": [
+      "repository-read"
+    ],
+    "projectShell": "none",
+    "network": false,
+    "generatedOutput": false,
+    "longRunningProcesses": false
+  },
+  "response": {
+    "path": "/private/tmp/circle-private-brain/code/.sync-engine/work/private-brain/2026-10-20T03-08-41Z-critic-contracts.response.md",
+    "sha256": "763a01f89e527db674cf08e5c53f99581400f8c3a4381f99b69b9359a2899d64",
+    "bytes": 2987
+  },
+  "retainedSources": [
+    {
+      "inputId": "brief",
+      "displayName": ".sync-engine/work/private-brain/brief.md",
+      "sha256": "be238597fce586c23eb9603d65afb51ba52405892ffae823a9281c75bf6bd853"
+    },
+    {
+      "inputId": "context",
+      "displayName": "design/types.md",
+      "sha256": "d8079722d50f5149305dc0be2ff94dbf4a15777f8c6c54c7a15518a7eaf93261"
+    }
+  ],
+  "policy": {
+    "review": "required",
+    "execution": "mixed"
+  },
+  "workspace": {
+    "root": "/private/tmp/circle-private-brain/code",
+    "baseline": {
+      "path": "/private/tmp/circle-private-brain/code/.sync-engine/work/private-brain/2026-10-20T03-08-41Z-critic-contracts.baseline.json",
+      "sha256": "063b5138b81703d94368dff22fa9613d10bbffeaccb5c37f5629512d27a5ac30"
+    }
+  },
+  "design": {
+    "root": "/private/tmp/circle-private-brain/code/design",
+    "before": "233a76468ccd38182d51255b2c94b2e714cb7224777b265841fd8ac9943cfe36",
+    "beforeFiles": [
+      {
+        "path": "compositions/Circle.md",
+        "sha256": "cb4b1d352621147b91283ffaea7a6d4e6c395b09ef94d91f679de9e2688a5e99"
+      },
+      {
+        "path": "compositions/reusable/accounts.md",
+        "sha256": "b4c3fc51af033e41c525bdc848fcbe005365250e2f04eaf0bc1f9dec26af2cc2"
+      },
+      {
+        "path": "compositions/reusable/commons.md",
+        "sha256": "1231b51781afb5c08b02e790fce544b4db57be64dc13f86d36df5b59ac5b40f2"
+      },
+      {
+        "path": "concepts/Federating.md",
+        "sha256": "fdd29a2154b9d7c68938d278eaada07e80779250ec03c16f3b0f8e2768c3b699"
+      },
+      {
+        "path": "concepts/Graphing.md",
+        "sha256": "f0ca84e4461f7df4a541650f0e4f635eb9fd7ac0805fb023883c5b250f1a7bb9"
+      },
+      {
+        "path": "concepts/Registering.md",
+        "sha256": "72e2f72dba60dc1c7def945510c7337ae1805d7d30fd757f6f5beac83d86e9cb"
+      },
+      {
+        "path": "concepts/Remembering.md",
+        "sha256": "0c7cfd9a9ce4e9dbe47e409611c5697af750e9542fe614d3442a00cbf66b8f07"
+      },
+      {
+        "path": "concepts/Seeking.md",
+        "sha256": "6e48265bde19914ef7642bf8a5616b13e2429edb4b18a05b3304c0682936032c"
+      },
+      {
+        "path": "concepts/Sessioning.md",
+        "sha256": "b47a9125cadab0e938b6298ac2cd782d7592eefdbd76caa879d4c8366e0ef9bc"
+      },
+      {
+        "path": "types.md",
+        "sha256": "d8079722d50f5149305dc0be2ff94dbf4a15777f8c6c54c7a15518a7eaf93261"
+      }
+    ]
+  },
+  "review": {
+    "subject": "design",
+    "digest": "233a76468ccd38182d51255b2c94b2e714cb7224777b265841fd8ac9943cfe36"
+  },
+  "status": "completed",
+  "result": "revise",
+  "agentId": "/root/brain_contract_review",
+  "enforcement": "prompt-guided"
+}

@@ -1,0 +1,122 @@
+{
+  "state": "finalized",
+  "work": {
+    "slug": "name-evidence-fix",
+    "path": "/private/tmp/circle-private-brain/code/.sync-engine/work/name-evidence-fix"
+  },
+  "role": "critic",
+  "phase": "contracts",
+  "execution": "delegated",
+  "independent": true,
+  "harness": "codex",
+  "timeoutSeconds": 1800,
+  "prompt": {
+    "path": "/private/tmp/circle-private-brain/code/.sync-engine/work/name-evidence-fix/2026-10-20T03-31-02Z-critic-contracts.prompt.md",
+    "sha256": "916a5942420e030cffbaf48d6f9ba6b522710b9234ed0558db03a9a5c627995b"
+  },
+  "capabilities": {
+    "path": "/private/tmp/circle-private-brain/code/.sync-engine/work/name-evidence-fix/2026-10-20T03-31-02Z-critic-contracts.capabilities.json",
+    "sha256": "d7cf3660e4b9a27975c910d26dbf5ec2b6f9684d8995b1beff878b70c33e26ce"
+  },
+  "grant": {
+    "readableAreas": [
+      {
+        "area": "design",
+        "path": "compositions"
+      },
+      {
+        "area": "design",
+        "path": "concepts"
+      },
+      {
+        "area": "design",
+        "path": "types.md"
+      }
+    ],
+    "writableAreas": [],
+    "toolKinds": [
+      "repository-read"
+    ],
+    "projectShell": "none",
+    "network": false,
+    "generatedOutput": false,
+    "longRunningProcesses": false
+  },
+  "response": {
+    "path": "/private/tmp/circle-private-brain/code/.sync-engine/work/name-evidence-fix/2026-10-20T03-31-02Z-critic-contracts.response.md",
+    "sha256": "3c6b230fb0cdde97aabb7e6880a9dbcc2d87610a143153f1ad071fd5fff75766",
+    "bytes": 2661
+  },
+  "retainedSources": [
+    {
+      "inputId": "brief",
+      "displayName": ".sync-engine/work/name-evidence-fix/brief.md",
+      "sha256": "5cf4122d877bdebb73bc34fdb686dc635e5caefd50674b3d69236289fdb5f451"
+    }
+  ],
+  "policy": {
+    "review": "required",
+    "execution": "mixed"
+  },
+  "workspace": {
+    "root": "/private/tmp/circle-private-brain/code",
+    "baseline": {
+      "path": "/private/tmp/circle-private-brain/code/.sync-engine/work/name-evidence-fix/2026-10-20T03-31-02Z-critic-contracts.baseline.json",
+      "sha256": "0373de7242f8a709a8835493c45ae9283991f52411085908b015712fc52d89e0"
+    }
+  },
+  "design": {
+    "root": "/private/tmp/circle-private-brain/code/design",
+    "before": "5afbb2d9ca872bcd84867779f28588367405530474b9ebca8aa02f26201c93f4",
+    "beforeFiles": [
+      {
+        "path": "compositions/Circle.md",
+        "sha256": "b0dbb2aad84d1f3db73b839dd9d520a85c8190704b049ea8dd6c340b2af54c57"
+      },
+      {
+        "path": "compositions/reusable/accounts.md",
+        "sha256": "b4c3fc51af033e41c525bdc848fcbe005365250e2f04eaf0bc1f9dec26af2cc2"
+      },
+      {
+        "path": "compositions/reusable/commons.md",
+        "sha256": "1231b51781afb5c08b02e790fce544b4db57be64dc13f86d36df5b59ac5b40f2"
+      },
+      {
+        "path": "concepts/Federating.md",
+        "sha256": "fdd29a2154b9d7c68938d278eaada07e80779250ec03c16f3b0f8e2768c3b699"
+      },
+      {
+        "path": "concepts/Graphing.md",
+        "sha256": "2a437889b2d43b6a5918f3f58a3c9d5466c6d8629ad157359fdab98dc0fc53dc"
+      },
+      {
+        "path": "concepts/Registering.md",
+        "sha256": "72e2f72dba60dc1c7def945510c7337ae1805d7d30fd757f6f5beac83d86e9cb"
+      },
+      {
+        "path": "concepts/Remembering.md",
+        "sha256": "0c7cfd9a9ce4e9dbe47e409611c5697af750e9542fe614d3442a00cbf66b8f07"
+      },
+      {
+        "path": "concepts/Seeking.md",
+        "sha256": "6e48265bde19914ef7642bf8a5616b13e2429edb4b18a05b3304c0682936032c"
+      },
+      {
+        "path": "concepts/Sessioning.md",
+        "sha256": "b47a9125cadab0e938b6298ac2cd782d7592eefdbd76caa879d4c8366e0ef9bc"
+      },
+      {
+        "path": "types.md",
+        "sha256": "d8079722d50f5149305dc0be2ff94dbf4a15777f8c6c54c7a15518a7eaf93261"
+      }
+    ]
+  },
+  "review": {
+    "subject": "design",
+    "digest": "5afbb2d9ca872bcd84867779f28588367405530474b9ebca8aa02f26201c93f4"
+  },
+  "status": "completed",
+  "result": "approve",
+  "agentId": "/root/name_evidence_review",
+  "enforcement": "prompt-guided"
+}

@@ -1,0 +1,127 @@
+{
+  "state": "finalized",
+  "work": {
+    "slug": "remove-connections",
+    "path": "/private/tmp/circle-remove-connections/code/.sync-engine/work/remove-connections"
+  },
+  "role": "critic",
+  "phase": "contracts",
+  "execution": "delegated",
+  "independent": true,
+  "harness": "codex",
+  "timeoutSeconds": 1800,
+  "prompt": {
+    "path": "/private/tmp/circle-remove-connections/code/.sync-engine/work/remove-connections/2026-10-20T02-39-46Z-critic-contracts.prompt.md",
+    "sha256": "23c57acf7ddf9a0e57314c558d2b7c552b9e4787eec270f78439375e4ae5ac03"
+  },
+  "capabilities": {
+    "path": "/private/tmp/circle-remove-connections/code/.sync-engine/work/remove-connections/2026-10-20T02-39-46Z-critic-contracts.capabilities.json",
+    "sha256": "d7cf3660e4b9a27975c910d26dbf5ec2b6f9684d8995b1beff878b70c33e26ce"
+  },
+  "grant": {
+    "readableAreas": [
+      {
+        "area": "design",
+        "path": "compositions"
+      },
+      {
+        "area": "design",
+        "path": "concepts"
+      },
+      {
+        "area": "design",
+        "path": "types.md"
+      }
+    ],
+    "writableAreas": [],
+    "toolKinds": [
+      "repository-read"
+    ],
+    "projectShell": "none",
+    "network": false,
+    "generatedOutput": false,
+    "longRunningProcesses": false
+  },
+  "response": {
+    "path": "/private/tmp/circle-remove-connections/code/.sync-engine/work/remove-connections/2026-10-20T02-39-46Z-critic-contracts.response.md",
+    "sha256": "df3d9c5d357c463a0607eb0f518ea796d3cd86cdd1873a1dc7a1a45252c5845e",
+    "bytes": 3681
+  },
+  "retainedSources": [
+    {
+      "inputId": "brief",
+      "displayName": ".sync-engine/work/remove-connections/brief.md",
+      "sha256": "e6d641cf39bc8ac78c2e3143fd9a75c927a7bc4683c41629e5e246093c807589"
+    },
+    {
+      "inputId": "affected-contracts",
+      "displayName": "design/types.md",
+      "sha256": "d8079722d50f5149305dc0be2ff94dbf4a15777f8c6c54c7a15518a7eaf93261"
+    }
+  ],
+  "policy": {
+    "review": "required",
+    "execution": "mixed"
+  },
+  "workspace": {
+    "root": "/private/tmp/circle-remove-connections/code",
+    "baseline": {
+      "path": "/private/tmp/circle-remove-connections/code/.sync-engine/work/remove-connections/2026-10-20T02-39-46Z-critic-contracts.baseline.json",
+      "sha256": "8748ac2b213579a8fc625be1a3e3f6fc4a1e3af46966101182717d39bd0bd214"
+    }
+  },
+  "design": {
+    "root": "/private/tmp/circle-remove-connections/code/design",
+    "before": "cf37d579725e8b079e170c0805c5a49ed3296211656d1f6e6389ccdfd3285976",
+    "beforeFiles": [
+      {
+        "path": "compositions/Circle.md",
+        "sha256": "e7de3a30e4e0d16a2eef63dae51671ff3b8365c5d7f4f335baa0c682ea6c49b7"
+      },
+      {
+        "path": "compositions/reusable/accounts.md",
+        "sha256": "b4c3fc51af033e41c525bdc848fcbe005365250e2f04eaf0bc1f9dec26af2cc2"
+      },
+      {
+        "path": "compositions/reusable/commons.md",
+        "sha256": "1231b51781afb5c08b02e790fce544b4db57be64dc13f86d36df5b59ac5b40f2"
+      },
+      {
+        "path": "concepts/Federating.md",
+        "sha256": "fdd29a2154b9d7c68938d278eaada07e80779250ec03c16f3b0f8e2768c3b699"
+      },
+      {
+        "path": "concepts/Graphing.md",
+        "sha256": "a2c1f4311e54f60f9306d111d8b0ee7b0fbd12be89261a9945fd59be7f1a0fbb"
+      },
+      {
+        "path": "concepts/Registering.md",
+        "sha256": "72e2f72dba60dc1c7def945510c7337ae1805d7d30fd757f6f5beac83d86e9cb"
+      },
+      {
+        "path": "concepts/Remembering.md",
+        "sha256": "c0d41e21beb886aea9769ac0c8e6f495b0f2a6ea708c16667e793a1074d22d4f"
+      },
+      {
+        "path": "concepts/Seeking.md",
+        "sha256": "6e48265bde19914ef7642bf8a5616b13e2429edb4b18a05b3304c0682936032c"
+      },
+      {
+        "path": "concepts/Sessioning.md",
+        "sha256": "b47a9125cadab0e938b6298ac2cd782d7592eefdbd76caa879d4c8366e0ef9bc"
+      },
+      {
+        "path": "types.md",
+        "sha256": "d8079722d50f5149305dc0be2ff94dbf4a15777f8c6c54c7a15518a7eaf93261"
+      }
+    ]
+  },
+  "review": {
+    "subject": "design",
+    "digest": "cf37d579725e8b079e170c0805c5a49ed3296211656d1f6e6389ccdfd3285976"
+  },
+  "status": "completed",
+  "result": "revise",
+  "agentId": "/root/removal_contract_review",
+  "enforcement": "prompt-guided"
+}

@@ -151,4 +151,20 @@ describe("Federating", () => {
     expect(await federating._user(second)).toEqual([{ user: "sam-user" }]);
   });
 
+  test("_linkable is true only for a confirmed, unexpired attempt whose subject is unlinked, and link still links after expiry", async () => {
+    const { federating, approved, advance } = await setup();
+    const sams = await approved();
+    expect(await federating._linkable(sams)).toEqual({ linkable: false });
+    await federating.finish(sams);
+    expect(await federating._linkable(sams)).toEqual({ linkable: true });
+
+    advance(10 * MINUTE);
+    expect(await federating._linkable(sams)).toEqual({ linkable: false });
+    expect(await federating.link({ attempt: sams.attempt, user: "sam-user" })).toEqual({ user: "sam-user" });
+
+    const again = await approved();
+    await federating.finish(again);
+    expect(await federating._linkable(again)).toEqual({ linkable: false });
+    expect(await federating._linkable({ attempt: "unknown" as Attempt })).toEqual({ linkable: false });
+  });
 });

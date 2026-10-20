@@ -1,18 +1,18 @@
 import { afterAll, afterEach, describe, expect, test } from "bun:test";
+import { MongoClient, type Db } from "mongodb";
+import { RememberingConcept, SubmissionConflict } from "../../src/concepts/Remembering.ts";
 import { createGateway } from "@mit-sdg/sync-engine/boundary";
 import { createHttpHandler } from "@mit-sdg/sync-engine-http/handler";
 import { writeMemoryFields } from "../../src/memory-fields.ts";
 import { assembleApplication } from "../../src/assembly.ts";
 import { MemoryProvider, type Identity } from "../../src/concepts/Federating/provider.ts";
-import { GraphingConcept } from "../../src/concepts/Graphing/Graphing.ts";
-import type { EncounterExtractor } from "../../src/concepts/Graphing/graphing-extraction.ts";
-import { OpenAIEncounterExtractor } from "../../src/concepts/Graphing/openai-extractor.ts";
-import { serializeApi } from "../../src/host/admission.ts";
-import type { Transcriber } from "../../src/concepts/Remembering/transcription.ts";
+import { GraphingConcept } from "../../src/concepts/Graphing.ts";
 import { circleHttpPolicy } from "../../src/host/http.ts";
 import { cleanupDatabases, testDatabase } from "../support/reusable/mongo.ts";
 
 afterAll(cleanupDatabases);
+
+import { FixtureBrain } from "../support/brain.ts";
 
 const ORIGIN = "http://localhost:3000";
 const SAM = { subject: "commons-sam", username: "sam" };
@@ -21,14 +21,31 @@ const NOTE = "Met Faustin, founder of an AI-chip startup. We talked about system
 const applications: ReturnType<typeof assembleApplication>[] = [];
 afterEach(async () => { for (const app of applications.splice(0)) await app.beginDrain(); });
 
-async function setup(failure?: "trace", extractor?: EncounterExtractor, transcriber?: Transcriber) {
-  const database = await testDatabase();
+async function setup(failure?: "ingest" | "trace" | "ingest-once" | "withdraw-once", databaseOverride?: Db) {
+  const database = databaseOverride ?? await testDatabase();
   const commons = new MemoryProvider();
-  const graph = new GraphingConcept(database, extractor);
-  if (failure === "trace") graph._trace = async function _trace() { throw new Error("search unavailable"); };
-  const application = assembleApplication(database, { commons, transcriber, instances: { Graphing: graph } });
+  const graph = new GraphingConcept(database, new FixtureBrain());
+  if (failure === "ingest-once") {
+    const original = graph.ingest.bind(graph);
+    let failed = false;
+    graph.ingest = async function ingest(input) {
+      if (!failed) { failed = true; throw new Error("index unavailable"); }
+      return original(input);
+    };
+  }
+  if (failure === "ingest") graph.ingest = async function ingest() { throw new Error("index unavailable"); };
+  if (failure === "trace") graph.recall = async function recall() { throw new Error("search unavailable"); };
+  if (failure === "withdraw-once") {
+    const original = graph.withdraw.bind(graph);
+    let failed = false;
+    graph.withdraw = async function withdraw(input) {
+      if (!failed) { failed = true; throw new Error("withdrawal unavailable"); }
+      return original(input);
+    };
+  }
+  const application = assembleApplication(database, { commons, transcriber: { async transcribe() { return "Met Mira. We discussed ocean sensors."; } }, instances: { Graphing: graph } });
   applications.push(application);
-  const handle = serializeApi(createHttpHandler({ application, gateway: createGateway({ application }), policy: circleHttpPolicy(ORIGIN) }), () => application.whenIdle());
+  const handle = createHttpHandler({ application, gateway: createGateway({ application }), policy: circleHttpPolicy(ORIGIN) });
 
   // Cookie handling follows Conceptbox's signing-in-http test. Each browser
   // retains only its own credentials, exactly as the HTTP adapter issues them.
@@ -58,55 +75,10 @@ async function setup(failure?: "trace", extractor?: EncounterExtractor, transcri
     }
     return { jar, post, signIn };
   }
-  return { database, commons, browser };
+  return { database, commons, browser, application };
 }
 
 describe("Circle authenticated flows", () => {
-  test("OpenAI indexing keeps a saved note on provider failure, retries the same identity, and searches only its owner's validated graph", async () => {
-    const sent: unknown[] = [];
-    const content = writeMemoryFields({ person: "Mira", when: "Yesterday", does: "Research focuses on ocean sensors", discussed: "", contact: "private@example.edu" });
-    const extractor = new OpenAIEncounterExtractor({
-      apiKey: "test-key", model: "test-model",
-      fetch: (async (_address, init) => {
-        sent.push(JSON.parse(init!.body as string));
-        if (sent.length === 1 || sent.length === 3) return new Response("unavailable", { status: 503 });
-        return Response.json({ status: "completed", output: [{ type: "message", content: [{ type: "output_text", text: JSON.stringify({
-          entities: [{ key: "self", kind: "SELF", label: "You" }, { key: "p", kind: "PERSON", label: "Mira" }, { key: "t", kind: "TOPIC", label: "ocean sensors" }],
-          claims: [{ from: "self", relation: "MET", to: "p", quote: "Person: Mira" }, { from: "p", relation: "RESEARCHES", to: "t", quote: "Does: Research focuses on ocean sensors" }],
-        }) }] }] });
-      }) as typeof fetch,
-    });
-    const { browser, database } = await setup(undefined, extractor);
-    const sam = browser(), leo = browser();
-    const owner = await sam.signIn(SAM);
-    const submission = crypto.randomUUID();
-    expect(await sam.post("/memories/remember", { content, submission })).toMatchObject({ status: 500 });
-    const original = await database.collection("remembering.memories").findOne({ owner });
-    expect(original).toMatchObject({ content });
-    expect(await database.collection("graphing.sources").countDocuments()).toBe(0);
-    expect(await sam.post("/memories/list", { after: "" })).toMatchObject({
-      status: 200, body: { memories: [{ memory: original!._id, content }] },
-    });
-    expect(sent).toHaveLength(1);
-    const saved = await sam.post("/memories/remember", { content, submission });
-    expect(saved).toMatchObject({ status: 200, body: { memory: original!._id } });
-    expect(await database.collection("remembering.memories").countDocuments({ owner })).toBe(1);
-    expect(sent).toHaveLength(2);
-    expect(JSON.stringify(sent)).not.toContain("private@example.edu");
-    expect(await sam.post("/memories/remember", { content: "Different note", submission })).toMatchObject({ status: 409 });
-    expect(await sam.post("/needs/seek", { description: "ocean sensors research" })).toMatchObject({
-      status: 200, body: { results: { suggestions: [{ label: "Mira", source: saved.body.memory, content }] } },
-    });
-    expect(await sam.post("/memories/reindex", { memory: saved.body.memory })).toMatchObject({ status: 500 });
-    expect(await database.collection("connecting.connections").countDocuments({ eligible: true })).toBe(0);
-    expect(await sam.post("/suggestions/list")).toMatchObject({ status: 200, body: { suggestions: [] } });
-    await leo.signIn(LEO);
-    expect(await leo.post("/needs/seek", { description: "ocean sensors research" })).toMatchObject({ status: 200, body: { results: { suggestions: [] } } });
-    await sam.post("/auth/logout");
-    expect(await sam.post("/memories/remember", { content })).toMatchObject({ status: 401 });
-    expect(sent).toHaveLength(3);
-  });
-
   test("Commons sign-in, save, index, search, original note, and sign-out work from an empty database", async () => {
     const { browser, database } = await setup();
     const sam = browser();
@@ -121,6 +93,20 @@ describe("Circle authenticated flows", () => {
     expect(await sam.post("/auth/logout")).toMatchObject({ status: 200 });
     expect(sam.jar.has("__Host-circle-session")).toBe(false);
     expect(await sam.post("/needs/seek", { description: "systems engineering" })).toMatchObject({ status: 401 });
+  });
+
+  test("a guided memo keeps its entered fields through save, indexing, and an owned search", async () => {
+    const { browser, database } = await setup();
+    const sam = browser();
+    const owner = await sam.signIn(SAM);
+    const content = writeMemoryFields({ person: "mira chen", when: "October 16, 2026", does: "Marine biologist", discussed: "Ocean sensors", contact: "https://www.linkedin.com/in/mira-example" });
+    const saved = await sam.post("/memories/remember", { content });
+    expect(saved.status).toBe(200);
+    expect(await database.collection("remembering.memories").findOne({ owner })).toMatchObject({ content });
+    expect(await sam.post("/memories/list", { after: "" })).toMatchObject({ status: 200, body: { memories: [{ content }] } });
+    expect(await sam.post("/needs/seek", { description: "ocean sensors" })).toMatchObject({
+      status: 200, body: { results: { suggestions: [{ label: "mira chen", source: saved.body.memory, content }] } },
+    });
   });
 
   test("two signed-in users get only their own notes and graph, including the same person's name", async () => {
@@ -162,6 +148,14 @@ describe("Circle authenticated flows", () => {
     expect(await sam.post("/needs/seek", { description: "systems" })).toMatchObject({ status: 401 });
     expect(await database.collection("remembering.memories").countDocuments()).toBe(0);
     expect(await database.collection("seeking.needs").countDocuments()).toBe(0);
+  });
+
+  test("indexing failure keeps the original note and returns an error", async () => {
+    const { browser, database } = await setup("ingest");
+    const sam = browser();
+    const owner = await sam.signIn(SAM);
+    expect(await sam.post("/memories/remember", { content: NOTE })).toMatchObject({ status: 500 });
+    expect(await database.collection("remembering.memories").findOne({ owner })).toMatchObject({ content: NOTE });
   });
 
   test("search failure keeps the saved need and returns an error", async () => {
@@ -223,6 +217,7 @@ describe("Circle authenticated flows", () => {
   });
 });
 
+
 describe("Saved people HTTP edge cases", () => {
   test("listing authenticates first, rejects owner/timestamp input, and never returns another user's notes", async () => {
     const { browser } = await setup();
@@ -243,75 +238,146 @@ describe("Saved people HTTP edge cases", () => {
     expect(await sam.post("/memories/list", { after: "" })).toMatchObject({ status: 401 });
   });
 
+  test("a note remains visible after indexing failure and a manual retry does not duplicate it", async () => {
+    const { browser, database } = await setup("ingest-once");
+    const sam = browser();
+    await sam.signIn(SAM);
+    const input = { content: NOTE, submission: crypto.randomUUID() };
+    expect(await sam.post("/memories/remember", input)).toMatchObject({ status: 500 });
+    const listed = await sam.post("/memories/list", { after: "" });
+    expect(listed.body.memories).toHaveLength(1);
+    expect(listed.body.memories[0].content).toBe(NOTE);
+    const retry = await sam.post("/memories/remember", input);
+    expect(retry).toMatchObject({ status: 200, body: { memory: listed.body.memories[0].memory } });
+    expect(await database.collection("remembering.memories").countDocuments()).toBe(1);
+    expect(await database.collection("graphing.sources").countDocuments()).toBe(1);
+    expect(await sam.post("/memories/remember", { ...input, content: "Different note" })).toMatchObject({ status: 409 });
+  });
 });
 
 
-test("ongoing lookups rediscover evidence; global private exclusions persist across searches and resolution", async () => {
-  const { browser, database } = await setup(); const sam = browser(); await sam.signIn(SAM);
-  expect(await sam.post("/suggestions/refresh")).toMatchObject({ status: 200, body: { suggestions: [] } });
-  const looked = await sam.post("/needs/seek", { description: "robotics research" });
-  const need = looked.body.results.need;
-  const otherNeed = (await sam.post("/needs/seek", { description: "quantum computing" })).body.results.need;
-  expect(await sam.post("/suggestions/refresh")).toMatchObject({ status: 200, body: { suggestions: [] } });
-  expect((await sam.post("/needs/seek", { description: "robotics research" })).body.results.need).toBe(need);
-  const first = await sam.post("/memories/remember", { content: "Met Toni. Toni belongs to Improbable AI Lab." });
-  const second = await sam.post("/memories/remember", { content: "Improbable AI Lab researches robotics." });
-  const listed = await sam.post("/suggestions/list");
-  expect(listed).toMatchObject({ status: 200, body: { suggestions: [{ need, label: "Toni" }] } });
-  expect(new Set(listed.body.suggestions[0].sources.map((row: {source:string}) => row.source))).toEqual(new Set([first.body.memory, second.body.memory]));
-  const details = await sam.post("/memories/get", { memory: second.body.memory });
-  const claim = details.body.memory.claims.find((row: {relation:string}) => row.relation === "RESEARCHES").claim;
-  expect(await sam.post("/claims/reject", { claim })).toMatchObject({ status: 200, body: { suggestions: [] } });
-  expect(await sam.post("/claims/restore", { claim })).toMatchObject({ status: 200, body: { suggestions: [{ need }] } });
-  const connection = listed.body.suggestions[0].connection;
-  await database.collection("connecting.connections").updateOne({ _id: connection }, { $push: { evidence: "missing-proof" } } as never);
-  expect(await sam.post("/suggestions/inspect", { connection })).toMatchObject({ status: 404 });
-  expect(await sam.post("/suggestions/list")).toMatchObject({ status: 200, body: { suggestions: [] } });
-  expect(await sam.post("/suggestions/refresh")).toMatchObject({ status: 200, body: { suggestions: [{ need }] } });
-  const leo = browser(); await leo.signIn(LEO);
-  expect(await leo.post("/suggestions/exclude", { connection, explanation: "" })).toMatchObject({ status: 404 });
-  expect(await leo.post("/suggestions/exclude", { connection: "a".repeat(64), explanation: "" })).toMatchObject({ status: 404 });
-  expect(await sam.post("/suggestions/exclude", { connection, explanation: "x".repeat(1001) })).toMatchObject({ status: 400 });
-  expect(await sam.post("/suggestions/exclude", { connection, explanation: "", owner: "leo" })).toMatchObject({ status: 400 });
-  for (const path of ["/suggestions/use", "/suggestions/dismiss", "/suggestions/remove"]) expect((await sam.post(path, { connection })).status).not.toBe(200);
-  const another = await sam.post("/needs/seek", { description: "robotics" });
-  expect(another.body.results.suggestions).toHaveLength(1);
-  expect(await sam.post("/suggestions/exclude", { connection, explanation: "Interests changed" })).toMatchObject({ status: 200, body: { suggestions: [] } });
-  expect(await sam.post("/suggestions/inspect", { connection })).toMatchObject({ status: 404 });
-  expect(await sam.post("/suggestions/list")).toMatchObject({ status: 200, body: { suggestions: [] } });
-  expect(await sam.post("/needs/seek", { description: "robotics research" })).toMatchObject({ status: 200, body: { results: { need, suggestions: [] } } });
-  expect(await sam.post("/needs/revise", { need, description: "robotics research" })).toMatchObject({ status: 200, body: { results: { suggestions: [] } } });
-  expect(await sam.post("/needs/resolve", { need })).toMatchObject({ status: 200, body: { results: { active: false, suggestions: [] } } });
-  expect(await sam.post("/needs/reopen", { need })).toMatchObject({ status: 200, body: { results: { active: true, suggestions: [] } } });
-  await sam.post("/auth/logout"); await sam.signIn(SAM);
-  expect(await sam.post("/needs/seek", { description: "robotics research" })).toMatchObject({ status: 200, body: { results: { suggestions: [] } } });
-  await sam.post("/needs/delete", { need: another.body.results.need });
-  await database.collection("remembering.memories").updateOne({ _id: second.body.memory }, { $set: { content: "Changed without reindexing" } });
-  expect(await sam.post("/suggestions/list")).toMatchObject({ status: 200, body: { suggestions: [] } });
-  expect(await sam.post("/needs/delete", { need })).toMatchObject({ status: 200, body: { deleted: true } });
-  expect(await sam.post("/needs/delete", { need })).toMatchObject({ status: 200 });
-  expect(await sam.post("/needs/delete", { need: otherNeed })).toMatchObject({ status: 200 });
-  expect(await sam.post("/needs/list")).toMatchObject({ status: 200, body: { needs: [] } });
+describe("Connection removal", () => {
+  test("the authenticated basket route removes one encounter and its evidence, never another owner's or same-name encounter", async () => {
+    const { browser, database } = await setup();
+    const sam = browser(), leo = browser(), anonymous = browser();
+    const owner = await sam.signIn(SAM);
+    await leo.signIn(LEO);
+    const input = { content: NOTE, submission: crypto.randomUUID() };
+    const first = await sam.post("/memories/remember", input);
+    const second = await sam.post("/memories/remember", { content: NOTE });
+    const memory = first.body.memory;
+    expect(await anonymous.post("/memories/forget", { memory })).toMatchObject({ status: 401 });
+    expect(await anonymous.post("/memories/forget", { memory, session: sam.jar.get("__Host-circle-session") })).toMatchObject({ status: 401 });
+    expect(await leo.post("/memories/forget", { memory })).toMatchObject({ status: 404, body: { error: "NOT_FOUND" } });
+    expect(await sam.post("/memories/forget", { memory: "a".repeat(64) })).toMatchObject({ status: 404, body: { error: "NOT_FOUND" } });
+    for (const body of [{ memory, owner }, { memory, source: memory }, { memory: "not a memory" }, { memory: 123 }, {}]) {
+      expect(await sam.post("/memories/forget", body)).toMatchObject({ status: 400 });
+    }
+    expect(await sam.post("/memories/forget", { memory })).toMatchObject({ status: 200, body: {} });
+    expect(await sam.post("/memories/forget", { memory })).toMatchObject({ status: 200, body: {} });
+    expect((await sam.post("/memories/list", { after: "" })).body.memories.map((row: any) => row.memory)).toEqual([second.body.memory]);
+    expect((await sam.post("/needs/seek", { description: "systems engineering" })).body.results.suggestions.map((row: any) => row.source)).toEqual([second.body.memory]);
+    expect(await sam.post("/memories/remember", input)).toMatchObject({ status: 409 });
+    expect(await database.collection("remembering.memories").findOne({ _id: memory })).toEqual({ _id: memory, owner, removed: true });
+    expect(await database.collection("graphing.sources").findOne({ _id: memory })).toEqual({ _id: memory, owner, withdrawn: true });
+    await sam.post("/auth/logout");
+    expect(await sam.post("/memories/forget", { memory: second.body.memory })).toMatchObject({ status: 401 });
+  });
+
+  test("failed withdrawal hides the removed original and same-memory retry finishes cleanup", async () => {
+    const { browser, database } = await setup("withdraw-once");
+    const sam = browser();
+    await sam.signIn(SAM);
+    const input = { content: NOTE, submission: crypto.randomUUID() };
+    const memory = (await sam.post("/memories/remember", input)).body.memory;
+    expect(await sam.post("/memories/forget", { memory })).toMatchObject({ status: 500 });
+    expect((await sam.post("/memories/list", { after: "" })).body.memories).toEqual([]);
+    expect((await sam.post("/needs/seek", { description: "systems engineering" })).body.results.suggestions).toEqual([]);
+    expect(await sam.post("/memories/remember", input)).toMatchObject({ status: 409 });
+    expect(await sam.post("/memories/forget", { memory })).toMatchObject({ status: 200 });
+    expect(await database.collection("graphing.sources").findOne({ _id: memory })).toMatchObject({ withdrawn: true });
+  });
 });
 
-test("memory edit, reindex, delete and voice are owned and leave no resurrectable original", async () => {
-  const { browser, database } = await setup(undefined, undefined, { transcribe: async () => "Met Mira. Mira researches biology." });
-  const sam = browser(), leo = browser(); await sam.signIn(SAM); await leo.signIn(LEO);
-  expect(await sam.post("/capture/transcribe", { audio: "AQID", mediaType: "audio/webm" })).toMatchObject({ status: 200, body: { content: "Met Mira. Mira researches biology." } });
+
+test("HTTP removal erases MongoDB data durably across closing and reopening the connection", async () => {
+  const databaseName = `circle_delete_persistence_test_${crypto.randomUUID().replaceAll("-", "")}`;
+  const writer = new MongoClient(process.env.TEST_MONGODB_URL!, { serverSelectionTimeoutMS: 3_000 });
+  const reader = new MongoClient(process.env.TEST_MONGODB_URL!, { serverSelectionTimeoutMS: 3_000 });
+  let application: ReturnType<typeof assembleApplication> | undefined;
+  try {
+    await writer.connect();
+    const fixture = await setup(undefined, writer.db(databaseName));
+    application = fixture.application;
+    const sam = fixture.browser();
+    const owner = await sam.signIn(SAM);
+    const input = { content: NOTE, submission: crypto.randomUUID() };
+    const memory = (await sam.post("/memories/remember", input)).body.memory as string;
+    const keptContent = "Met Mira. We discussed ocean sensors.";
+    const kept = (await sam.post("/memories/remember", { content: keptContent })).body.memory as string;
+    expect((await sam.post("/needs/seek", { description: "systems engineering" })).body.results.suggestions).toHaveLength(1);
+    expect(await sam.post("/memories/forget", { memory })).toMatchObject({ status: 200 });
+    await application.beginDrain();
+    applications.splice(applications.indexOf(application), 1);
+    application = undefined;
+    await writer.close();
+
+    // A new network connection observes persisted data, not the original app's state.
+    await reader.connect();
+    const database = reader.db(databaseName);
+    expect(await database.collection<{ _id: string; owner: string; removed: true }>("remembering.memories").findOne({ _id: memory }))
+      .toEqual({ _id: memory, owner, removed: true });
+    expect(await database.collection<{ _id: string; owner: string; withdrawn: true }>("graphing.sources").findOne({ _id: memory }))
+      .toEqual({ _id: memory, owner, withdrawn: true });
+    expect(await database.collection("remembering.memories").countDocuments({ content: NOTE })).toBe(0);
+    expect(await database.collection<{ _id: string }>("graphing.sources").countDocuments({ _id: memory, card: { $exists: true } })).toBe(0);
+    const remembering = new RememberingConcept(database);
+    const graph = new GraphingConcept(database, new FixtureBrain());
+    expect(await remembering._get({ owner, memory })).toEqual([]);
+    expect(await remembering._list({ owner, after: "" })).toEqual([{ memory: kept, content: keptContent }]);
+    const { recall } = await graph.recall({ owner, description: "ocean sensors", ...(await remembering._corpus({ owner })) });
+    expect(await graph._matches({ owner, recall })).toMatchObject([{ label: "Mira", source: kept }]);
+    expect(await database.collection("graphing.recalls").countDocuments({ "selection.source": memory })).toBe(0);
+    await expect(remembering.remember({ owner, ...input, capturedAt: new Date() })).rejects.toThrow(SubmissionConflict);
+  } finally {
+    if (application) {
+      await application.beginDrain();
+      applications.splice(applications.indexOf(application), 1);
+    }
+    try {
+      await reader.connect();
+      await reader.db(databaseName).dropDatabase();
+    } finally {
+      await Promise.all([writer.close(), reader.close()]);
+    }
+  }
+}, 10_000);
+
+test("voice authenticates before transcription, returns editable text and never saves audio or a note", async () => {
+  const { browser, database } = await setup();
+  const sam = browser();
+  const recording = { audio: Buffer.from("synthetic audio").toString("base64"), mediaType: "audio/webm" };
+  expect(await sam.post("/memories/transcribe", recording)).toMatchObject({ status:401 });
+  await sam.signIn(SAM);
+  expect(await sam.post("/memories/transcribe", { ...recording, owner:"foreign" })).toMatchObject({status:400});
+  for (const invalid of [{...recording,audio:"bad!"},{...recording,mediaType:"text/plain"},{...recording,audio:""}]) expect(await sam.post("/memories/transcribe",invalid)).toMatchObject({status:400});
+  const transcript = await sam.post("/memories/transcribe",recording);
+  expect(transcript).toMatchObject({status:200,body:{content:"Met Mira. We discussed ocean sensors."}});
   expect(await database.collection("remembering.memories").countDocuments()).toBe(0);
-  const submission = crypto.randomUUID(); const content = "Met Mira. Mira researches robotics.";
-  const saved = await sam.post("/memories/remember", { content, submission }); const memory = saved.body.memory;
-  const missing = await leo.post("/memories/get", { memory });
-  expect(missing).toMatchObject({ status: 404 });
-  expect(await leo.post("/memories/get", { memory: "a".repeat(64) })).toMatchObject({ status: missing.status, body: missing.body });
-  expect(await leo.post("/memories/revise", { memory, content: "Forged" })).toMatchObject({ status: 404 });
-  expect(await sam.post("/memories/revise", { memory, content: "Met Mira. Mira researches biology." })).toMatchObject({ status: 200, body: { memory } });
-  expect(await sam.post("/memories/reindex", { memory })).toMatchObject({ status: 200, body: { memory } });
-  const found = await sam.post("/needs/seek", { description: "biology" }); const connection = found.body.results.suggestions[0].connection;
-  expect(await sam.post("/suggestions/exclude", { connection, explanation: "" })).toMatchObject({ status: 200, body: { suggestions: [] } });
-  expect(await sam.post("/memories/forget", { memory })).toMatchObject({ status: 200, body: { deleted: true } });
-  expect(await sam.post("/memories/forget", { memory })).toMatchObject({ status: 200 });
-  expect(await sam.post("/memories/reindex", { memory })).toMatchObject({ status: 404 });
-  expect(await sam.post("/memories/remember", { content, submission })).toMatchObject({ status: 409 });
-  expect(await sam.post("/suggestions/refresh")).toMatchObject({ status: 200, body: { suggestions: [] } });
+  expect(await database.collection("graphing.sources").countDocuments()).toBe(0);
+  const saved = await sam.post("/memories/remember",{content:transcript.body.content});
+  expect(saved.status).toBe(200);
+  expect((await sam.post("/memories/list",{after:""})).body.memories).toMatchObject([{memory:saved.body.memory,card:{name:"Mira"}}]);
+});
+
+test("an organization failure followed by repaired short-name evidence retries the same token without duplicating the original",async()=>{
+  const {browser,database}=await setup("ingest-once");
+  const sam=browser();const owner=await sam.signIn(SAM);
+  const content="I met David Hume who talks about philosophy.";
+  const input={content,submission:crypto.randomUUID()};
+  expect(await sam.post("/memories/remember",input)).toMatchObject({status:500});
+  const before=await sam.post("/memories/list",{after:""});
+  expect(before.body.memories).toHaveLength(1);
+  expect(await sam.post("/memories/remember",input)).toMatchObject({status:200,body:{memory:before.body.memories[0].memory}});
+  expect(await database.collection("remembering.memories").countDocuments({owner,content})).toBe(1);
 });

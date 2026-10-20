@@ -1,10 +1,28 @@
 import { readMemoryFields } from "../../src/memory-fields.ts";
-import { extractEncounter } from "../../src/concepts/Graphing/graphing-text.ts";
+import { extractEncounter } from "./encounter-text.ts";
+import type { ContactCard } from "../../src/concepts/brain-provider.ts";
 
 export interface MemoryDetail { label: string; value: string }
 
+/** A display name must be explicit in the original; this fallback only formats older unorganized notes. */
+export function memoryLabel(content: string): string {
+  const guided = readMemoryFields(content)?.person;
+  if (guided?.trim()) return guided.trim();
+  const extracted = extractEncounter(content).entities.find(entity => entity.kind === "PERSON")?.label;
+  if (extracted?.trim()) return extracted.trim();
+  // Older free-form notes may start with a lowercase name. Stop before context,
+  // punctuation or a role; do not use an arbitrary first line as a person's name.
+  const introduction = /(?:^|[.!?\n])\s*(?:I\s+)?(?:met|spoke with|talked to|chatted with)\s+([\p{L}][\p{L}'’\-]*(?:[ \t]+[\p{L}][\p{L}'’\-]*){0,2}?)(?=[ \t]*(?:[,;:—–-]|[.!?\n]|$)|[ \t]+(?:on|at|during|who|is|was|works?|from)\b)/iu.exec(content)?.[1];
+  if (introduction && !/^(?:a|an|the|someone|somebody|person|with)\b/iu.test(introduction)) return introduction;
+  return "Unnamed encounter";
+}
+
 /** Format supported facts from this original note; never infer a role from a discussion. */
-export function memorySummary(content: string, name: string): MemoryDetail[] {
+export function memorySummary(content: string, name: string, card?: ContactCard | null): MemoryDetail[] {
+  if (card) {
+    const labels = { context: "When", role: "Does", discussion: "Discussed", contact: "Contact", offer: "Offers", other: "Note" };
+    return card.facts.map(fact => ({ label: labels[fact.kind], value: fact.value }));
+  }
   const guided = readMemoryFields(content);
   if (guided && guided.person === name) {
     const rows = [
@@ -26,8 +44,7 @@ export function memorySummary(content: string, name: string): MemoryDetail[] {
       case "FOUNDED": return [`Founder, ${topic}`];
       case "MEMBER_OF": {
         const role = /\b(researcher|engineer|student|PhD)\s+at\b/iu.exec(claim.quote)?.[1];
-        return [role ? `${capitalized(role)}, ${topic}`
-          : /\bwork(?:s|ing)?\s+(?:at|for)\b/iu.test(claim.quote) ? `Works at ${topic}` : `Member of ${topic}`];
+        return [role ? `${capitalized(role)}, ${topic}` : `Works at ${topic}`];
       }
       case "WORKS_ON": return [`Works on ${topic}`];
       case "RESEARCHES": return [`Researches ${topic}`];

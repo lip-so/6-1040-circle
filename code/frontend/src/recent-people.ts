@@ -22,6 +22,12 @@ export function useRecentPeople(read: PageReader, unauthorized: () => void) {
     hasMore.value = false;
   }
 
+  function remove(memory: string) {
+    scope.invalidate();
+    loading.value = false;
+    memories.value = memories.value.filter(row => row.memory !== memory);
+  }
+
   async function page(after: string, append: boolean) {
     scope.invalidate();
     const current = scope.current();
@@ -45,5 +51,5 @@ export function useRecentPeople(read: PageReader, unauthorized: () => void) {
   const refresh = () => page("", false);
   const more = () => loading.value || !hasMore.value ? Promise.resolve()
     : page(memories.value.at(-1)?.memory ?? "", true);
-  return { memories, loading, loaded, error, hasMore, clear, refresh, more };
+  return { memories, loading, loaded, error, hasMore, clear, remove, refresh, more };
 }

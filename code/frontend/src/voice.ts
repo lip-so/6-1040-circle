@@ -47,6 +47,7 @@ export class VoiceCapture {
     if (revision !== this.revision) return null;
     const blob = new Blob(this.chunks, { type: recorder.mimeType });
     this.cancel();
+    const encodingRevision = this.revision;
     if (!blob.size || blob.size > 4 * 1024 * 1024) throw new Error("size");
     const data = await new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
@@ -54,6 +55,7 @@ export class VoiceCapture {
       reader.onerror = () => reject(new Error("recording"));
       reader.readAsDataURL(blob);
     });
+    if (encodingRevision !== this.revision) return null;
     return { audio: data, mediaType: recorder.mimeType.split(";")[0]! };
   }
 

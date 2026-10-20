@@ -1,0 +1,122 @@
+{
+  "state": "finalized",
+  "work": {
+    "slug": "p2-functionality-rollback",
+    "path": "/private/tmp/circle-p2-rollback/code/.sync-engine/work/p2-functionality-rollback"
+  },
+  "role": "critic",
+  "phase": "contracts",
+  "execution": "simulated",
+  "independent": false,
+  "harness": "coordinator",
+  "simulationReason": "Coordinator reviews the accepted baseline rollback; no independent delegation requested",
+  "timeoutSeconds": 1800,
+  "prompt": {
+    "path": "/private/tmp/circle-p2-rollback/code/.sync-engine/work/p2-functionality-rollback/2026-10-20T02-16-48Z-critic-contracts.prompt.md",
+    "sha256": "0907f558b090d1cd04fc73b84868dfb29b7fd28ddbe31ab161b078daef52b478"
+  },
+  "capabilities": {
+    "path": "/private/tmp/circle-p2-rollback/code/.sync-engine/work/p2-functionality-rollback/2026-10-20T02-16-48Z-critic-contracts.capabilities.json",
+    "sha256": "d7cf3660e4b9a27975c910d26dbf5ec2b6f9684d8995b1beff878b70c33e26ce"
+  },
+  "grant": {
+    "readableAreas": [
+      {
+        "area": "design",
+        "path": "compositions"
+      },
+      {
+        "area": "design",
+        "path": "concepts"
+      },
+      {
+        "area": "design",
+        "path": "types.md"
+      }
+    ],
+    "writableAreas": [],
+    "toolKinds": [
+      "repository-read"
+    ],
+    "projectShell": "none",
+    "network": false,
+    "generatedOutput": false,
+    "longRunningProcesses": false
+  },
+  "response": {
+    "path": "/private/tmp/circle-p2-rollback/code/.sync-engine/work/p2-functionality-rollback/2026-10-20T02-16-48Z-critic-contracts.response.md",
+    "sha256": "819f575294d20ee6698537f0f984fdf049462337c6082a9fe9e137bc9a0c17d3",
+    "bytes": 2590
+  },
+  "retainedSources": [
+    {
+      "inputId": "brief",
+      "displayName": ".sync-engine/work/p2-functionality-rollback/brief.md",
+      "sha256": "8156412ebbc71c957f6c5e50730faec349868ea63127e675cda52422a6ee2c05"
+    }
+  ],
+  "policy": {
+    "review": "required",
+    "execution": "simulated"
+  },
+  "workspace": {
+    "root": "/private/tmp/circle-p2-rollback/code",
+    "baseline": {
+      "path": "/private/tmp/circle-p2-rollback/code/.sync-engine/work/p2-functionality-rollback/2026-10-20T02-16-48Z-critic-contracts.baseline.json",
+      "sha256": "37dc1bd087017a1a04106488480dfcc531ce3edfde22b15e419488275750191c"
+    }
+  },
+  "design": {
+    "root": "/private/tmp/circle-p2-rollback/code/design",
+    "before": "07256ed30d2fe76d4338e0907f1910a54dc5b57d86ed4781b36d968478e6a84e",
+    "beforeFiles": [
+      {
+        "path": "compositions/Circle.md",
+        "sha256": "3af03ed22b14e918683949d0b8d03aebd019212beb171ced809b90289fedd5e1"
+      },
+      {
+        "path": "compositions/reusable/accounts.md",
+        "sha256": "b4c3fc51af033e41c525bdc848fcbe005365250e2f04eaf0bc1f9dec26af2cc2"
+      },
+      {
+        "path": "compositions/reusable/commons.md",
+        "sha256": "1231b51781afb5c08b02e790fce544b4db57be64dc13f86d36df5b59ac5b40f2"
+      },
+      {
+        "path": "concepts/Federating.md",
+        "sha256": "fdd29a2154b9d7c68938d278eaada07e80779250ec03c16f3b0f8e2768c3b699"
+      },
+      {
+        "path": "concepts/Graphing.md",
+        "sha256": "6d0852a5ac9b0d7d3008a4959cab429c634523099f2227185f088897c123c6d0"
+      },
+      {
+        "path": "concepts/Registering.md",
+        "sha256": "72e2f72dba60dc1c7def945510c7337ae1805d7d30fd757f6f5beac83d86e9cb"
+      },
+      {
+        "path": "concepts/Remembering.md",
+        "sha256": "45a2ff7ce1b63b3dd3b3c08910fb88726d20d698686b37d811f3b5f75d442471"
+      },
+      {
+        "path": "concepts/Seeking.md",
+        "sha256": "6e48265bde19914ef7642bf8a5616b13e2429edb4b18a05b3304c0682936032c"
+      },
+      {
+        "path": "concepts/Sessioning.md",
+        "sha256": "b47a9125cadab0e938b6298ac2cd782d7592eefdbd76caa879d4c8366e0ef9bc"
+      },
+      {
+        "path": "types.md",
+        "sha256": "d8079722d50f5149305dc0be2ff94dbf4a15777f8c6c54c7a15518a7eaf93261"
+      }
+    ]
+  },
+  "review": {
+    "subject": "design",
+    "digest": "07256ed30d2fe76d4338e0907f1910a54dc5b57d86ed4781b36d968478e6a84e"
+  },
+  "status": "completed",
+  "result": "approve",
+  "enforcement": "prompt-guided"
+}

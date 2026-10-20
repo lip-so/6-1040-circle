@@ -2,21 +2,19 @@
 
 ## Purpose
 
-Recover paths through supported relationships across accounts, with the exact evidence and uncertainty that make a person relevant, rather than storing outreach decisions or original encounter accounts.
+Organize encounter evidence into private structured contact memory and retrieve relevant saved sources from it.
 
 ## Principle
 
-One source says Sofia met Toni, who belongs to Improbable AI Lab. Another says that lab sometimes hosts undergraduate researchers. Tracing a robotics research need can recover Toni through the shared lab and show both supporting quotes without claiming that an opening currently exists.
+After a user records a note about Mira and ocean sensors, ingest preserves a structured JSON card whose facts quote that note. Recall can select Mira for a relevant need using only this user's contact memory. Repeating the same need against unchanged memory reuses the selected sources. Withdrawing a source erases its contact evidence and prevents old ingestion or cached selections from bringing it back.
 
 ## Types
 
 ```types
 external User
 external Source
-opaque Set
-  Finite unordered collection of values of its type argument; repeated elements have no meaning.
-EntityKind is SELF or PERSON or ORGANIZATION or TOPIC or OPPORTUNITY
-RelationKind is MET or KNOWS or MEMBER_OF or WORKS_ON or RESEARCHES or INTERNED_AT or OFFERS or SOMETIMES_HOSTS or BASED_IN or DISCUSSED or FOUNDED or DESCRIBED_AS
+opaque ContactCard
+opaque Selection
 ```
 
 ## State
@@ -24,131 +22,91 @@ RelationKind is MET or KNOWS or MEMBER_OF or WORKS_ON or RESEARCHES or INTERNED_
 ```state
 a set of Sources with
   an owner User
-  an optional contentDigest String
-  an optional sourceRevision Number
-  an optional observedAt DateTime
-  an optional retracted Flag
+  an optional digest String
+  an optional providerVersion String
+  an optional card ContactCard
 
-a set of Entities with
+a set of Withdrawn Sources
+
+a set of Recalls with
   an owner User
-  a kind EntityKind
-  a label String
-  an optional origin Source
-  an optional identityHint String
+  a corpusDigest String
+  a selection Selection
 
-a set of Claims with
-  an owner User
-  a from Entity
-  a relation RelationKind
-  a to Entity
-  a source Source
-  a quote String
-  an optional usable Flag
-  an optional observedAt DateTime
-
-Rule: Sources retain owner and retraction metadata even after their claims are removed; a retracted source cannot be ingested again. ingest and retract enforce this atomically so an in-flight extraction cannot resurrect a forgotten source.
-Rule: every claim and both endpoints have the same owner as its source. Every new quote is complete positive evidence from the exact indexed content, excluding guided Contact text.
-Rule: every successful ingest records the SHA-256 digest of the exact supplied content before Contact exclusion. Legacy sources lacking that digest are not usable as current evidence until explicitly reindexed.
-Rule: sourceRevision is monotone; an omitted revision is interpreted as zero for legacy direct calls and cannot replace a higher committed revision. An older in-flight ingest cannot replace a newer committed revision. observedAt is an engine-supplied processing instant, never an inferred encounter date; absent legacy instants remain unknown.
-Rule: people remain local to their source, including equal names in different encounters. Only unambiguous exact normalized organization or topic identities may be shared across an owner's sources. Similar names or conflicting identity hints never cause a merge.
-Rule: missing legacy usable means true; explicit false claims remain stored but are excluded from every trace and evidence query. Replacement removes old claims and resets extracted claims to usable, rather than transferring rejection to potentially different claims.
+Rule: source owner is immutable, including while extraction is pending or failed. Sources never share a contact identity merely by matching names.
+Rule: ContactCard is validated JSON containing one primary name and nameQuote (both nullable), and at most 32 facts with kind, value and quote. Kinds are context, role, discussion, contact, offer and other. Names/values are literal source text; quotes are complete supporting source sentences or guided lines. Unsupported, negated and ambiguous claims are omitted, never invented. Null name is valid. A literal partial nameQuote may be deterministically expanded to its complete enclosing original sentence or line before validation/storage; no model words are added. Fact quotes still must be complete. Explicit habitual activity uses role/Does with literal wording; a conversation with the user uses discussion/Discussed. Vague activity never implies a more specific occupation or expertise. Encounter date is optional and never invented.
+Rule: digest identifies the exact original content. Provider version identifies the extraction/search schema, prompt and configured model. Source-local JSON is the durable memory; there is no shared external conversation, remote thread or provider-held per-user memory.
+Rule: selection stores only source identities, their exact record digests and fact indexes, never original text or generated card content. Recall identity derives from owner, normalized query, complete ordered corpus and provider version. Concurrent equivalent recalls use the first validated stored selection.
+Rule: Withdrawn sources retain only owner and identity/classification. They have no card, digest, facts, quotes or labels. Withdrawal also erases the owner's cached recalls. Reads always include owner in their database query.
 ```
 
 ## Actions
 
 ```actions
-ingest(owner: User, source: Source, content: String, observedAt?: DateTime, sourceRevision?: Number) : returns ()
+ingest(owner: User, source: Source, content: String) : returns ()
   where content is blank
   then
     refuses EMPTY_SOURCE_CONTENT "Source content must not be blank."
-  where content is not blank and source is in Sources and source.owner is not owner
+  where source is present and its owner differs from owner
   then
     refuses SOURCE_NOT_OWNED "The source belongs to another user."
-  where content is not blank and source is in Sources and source.owner is owner and source.retracted is true
+  where source is in Withdrawn and source.owner is owner
   then
-    refuses SOURCE_RETRACTED "This source has been withdrawn."
-  where content is not blank and source is in Sources and source.owner is owner and source.retracted is not true and supplied sourceRevision is older than its committed sourceRevision
+    refuses SOURCE_WITHDRAWN "The source was withdrawn."
+  where source is absent or belongs to owner outside Withdrawn, and content is not blank
   then
-    refuses STALE_SOURCE_REVISION "A newer source revision has already been indexed."
-  where content is not blank and (source is not in Sources or (source.owner is owner and source.retracted is not true)) and supplied sourceRevision is not older than its committed sourceRevision
-  then
-    extract through the configured injectable provider or explicitly selected local parser, without changing stored state first
-    for both the local parser and any model provider, validate the full proposal: allowed kinds and relation endpoints, unique keys, resolvable references, source-literal labels, and complete supporting quotes
-    enforce that each full supporting quote is literal eligible source text and neither negated nor cropped to hide a conflict; reject malformed, unsupported, negated, or misleadingly cropped evidence; leave unsupported statements unindexed
-    permit several explicitly named people in a source while keeping each path tied to its own supported claims
-    recognize old guided Person, When, Does, Discussed, and optional Contact accounts; retain When literally, exclude Contact from extraction and evidence, and never infer expertise or employment from a discussion
-    atomically recheck source ownership, retraction, and sourceRevision before replacing claims, including after awaiting provider output
-    create or reuse owner-scoped entities under the identity rules, replace this source's claims, and store its exact-content digest, supplied revision, and supplied observedAt
-    leave every stored source and claim unchanged on provider failure or invalid output; never silently fall back or retry
-    treat a repeated current revision as replacement for the same source without duplicate claims
+    reserve source ownership without changing existing evidence
+    if content digest and provider version are already current, return without another model call
+    otherwise request strict structured extraction for this original only, treating note text as untrusted data
+    validate names, exact values, full quotes, kinds, limits and schema before atomically replacing this source's JSON
+    commit only if source remains owned and not withdrawn; concurrent equivalent extraction reuses the first committed record
+    leave the original outside this concept unchanged; provider faults keep any previous valid evidence and the ownership reservation, return an error and never silently retry or use a local fallback
     returns
 
-reject(owner: User, claim: Claim) : returns ()
-  where claim is not in Claims or claim.owner is not owner
+recall(owner: User, description: String, notes: String) : returns (recall: Recall)
+  where description is blank
   then
-    refuses CLAIM_REJECTION_UNAVAILABLE "This claim is not available."
-  where claim is in Claims and claim.owner is owner
+    refuses EMPTY_QUERY "Describe the search first."
+  where notes exceeds the complete-memory bounds or is not a valid original-note corpus
   then
-    atomically set usable false, leaving an already rejected claim unchanged
-    returns
+    refuses MEMORY_LIMIT "Contact memory exceeds the supported search limit."
+  where description is not blank and notes is a valid bounded corpus
+  then
+    parse the supplied JSON list of source identities and exact originals, supplied by the application for this owner
+    enforce at most 256 originals and 256 KiB of original corpus, refusing before provider calls or state changes rather than silently truncating
+    ingest missing or outdated owned records using the same validation and source guards; this makes older owned originals available without a global migration
+    build a canonical complete JSON memory for only these source identities, excluding withdrawn or digest-mismatched records
+    if structured memory exceeds 256 KiB after organization, raise an ordinary processing error before selection; retain completed organization and permit manual retry, never emit the no-effect MEMORY_LIMIT refusal at this late stage
+    reuse an existing equivalent owned recall without a model call
+    otherwise ask the model for at most five source identities and supporting fact indexes; no account identity, credentials, other-user notes or external conversation state is sent
+    validate every chosen identity and index against the supplied memory, reject duplicates or invented choices, and verify source versions again before storing only the selection
+    require explicit offer evidence for hiring; discussion never proves employment or expertise; name-only matches require literal name support
+    order validated matches by relevance selection order then stable source identity, and preserve stored order on repeats
+    produce an empty selection for an empty corpus without a model call
+    provider faults preserve saved originals, successfully organized records and the saved need; return an error with manual retry, never fallback or fabricated cards
+    returns recall
 
-restore(owner: User, claim: Claim) : returns ()
-  where claim is not in Claims or claim.owner is not owner
+withdraw(owner: User, source: Source) : returns ()
+  where source is present and its owner differs from owner
   then
-    refuses CLAIM_RESTORE_UNAVAILABLE "This claim is not available."
-  where claim is in Claims and claim.owner is owner
+    refuses SOURCE_NOT_OWNED "The source belongs to another user."
+  where source is absent or belongs to owner
   then
-    atomically set usable true, leaving an already usable claim unchanged
-    returns
-
-remove(owner: User, claim: Claim) : returns ()
-  where true
-  then
-    atomically remove the claim only when it belongs to owner
-    leave an absent or other-owner claim unchanged with the same successful result
-    repetition succeeds unchanged and may trigger only this owner's downstream refresh
-    returns
-
-retract(owner: User, source: Source) : returns ()
-  where source is in Sources and source.owner is not owner
-  then
-    refuses RETRACT_NOT_OWNED "The source belongs to another user."
-  where source is not in Sources or source.owner is owner
-  then
-    atomically register the source with owner if absent, set retracted true, and remove all its claims
-    retain only source ownership and invalidation metadata; repeating retraction is unchanged
+    retain only source identity and owner and classify it as Withdrawn
+    erase all of its contact JSON and evidence, and erase the owner's cached recalls
+    keep withdrawal durable so delayed ingestion cannot recreate evidence
+    repeated withdrawal succeeds; a downstream failure may be manually retried with the same source
     returns
 ```
 
 ## Queries
 
 ```queries
-_trace(owner: User, description: String) : many (target: Entity, label: String, source: Source, evidence: Set<Claim>, reason: String, gaps: Set<String>)
-  Answer at most five relevant people using only owner's usable claims and nonretracted digested sources, beginning with a supported MET or KNOWS acquaintance path and combining safely shared organizations or topics across sources.
-  Identify source as the evidence source for the target person's final MET or KNOWS acquaintance step, choosing claim identity ascending if equivalent proofs tie; include that claim in evidence.
-  Match supported meaning through conservative aliases and directed relationship paths; shared topics never transfer one person's expertise to another, and multiple source-local people connect only through explicitly supported KNOWS paths or shared organizations; include all path claims as evidence, explain the help actually supported, distinguish discussion from expertise and possible hosting from a current opening, and list missing opportunity or identity information as gaps; exclude known conflicts and unsupported negative requirements.
-  Answer no rows for blank descriptions, no supported path, or a requirement contradicted by its evidence.
-  Order by fewer gaps, fewer acquaintance hops, more recent known supporting observedAt with unknown instants last, then target label and target identity ascending.
+_card(owner: User, source: Source, content: String) : one (card: ContactCard)
+  Return the validated contact JSON only if the source belongs to owner, is not withdrawn and matches the exact content digest. Otherwise return card as null. No model call or state change.
 
-_claims(owner: User, source: Source) : many (claim: Claim, fromLabel: String, relation: RelationKind, toLabel: String, quote: String, usable: Flag)
-  Answer this owner's source claims including rejected claims, labels, relation, quote, and explicit usable status; require a nonretracted source with a content digest.
-  Answer no rows for an unknown or other-owner source or a source without current evidence metadata.
-  Order by claim identity ascending.
-
-_members(owner: User, evidence: Set<Claim>) : many (claim: Claim)
-  Answer every distinct claim identity supplied in evidence, including absent and other-owner references, without reading stored graph facts or revealing any fact beyond the supplied identities.
-  Answer no rows when evidence is empty; owner conveys the application query scope but does not filter, authenticate, or validate these supplied identities.
-  Order by claim identity ascending.
-
-_evidence(owner: User, claim: Claim) : optional (source: Source, quote: String, contentDigest: String)
-  Answer source, quote, and exact indexed-content digest only for owner's usable claim on a nonretracted digested source, with both endpoints owned by the same owner.
-  Answer no row for missing, rejected, withdrawn, undigested, or other-owner evidence.
-
-_entity(owner: User, entity: Entity) : optional (label: String, kind: EntityKind)
-  Answer the label and kind only for owner's entity.
-  Answer no row for missing or other-owner entities.
-
-_source(owner: User, source: Source) : optional (contentDigest: String)
-  Answer the exact indexed-content digest for owner's nonretracted source.
-  Answer no row for unknown, withdrawn, undigested, or other-owner source.
+_matches(owner: User, recall: Recall) : many (target: Source, label: String, source: Source, reason: String, card: ContactCard)
+  Read only the owned recall and owned current sources referenced by it. Omit withdrawn, missing or version/digest-mismatched sources.
+  Return the real source identity as target/source, stored name or Unnamed encounter as label, its validated card and a deterministic reason assembled from the selected literal facts/quotes. Never return a model-authored card.
+  Preserve the stored selection order. Unknown/foreign recalls, erased recalls and empty selections return no rows. No external calls or state changes.
 ```

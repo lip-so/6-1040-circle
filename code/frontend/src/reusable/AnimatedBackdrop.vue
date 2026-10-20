@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import ActionIcon from './ActionIcon.vue';
-const props = defineProps<{ gesture?: number }>();
 const root = ref<HTMLElement>();
-const paused = ref(false);
+const hovered = ref(false);
 const visible = ref(true);
 const hidden = ref(document.hidden);
 const reduced = ref(false);
-const suspended = computed(() => paused.value || !visible.value || hidden.value || reduced.value);
+const suspended = computed(() => !hovered.value || !visible.value || hidden.value || reduced.value);
 let observer: IntersectionObserver | undefined;
 let preference: MediaQueryList | undefined;
 let frame = 0;
@@ -60,7 +58,7 @@ function syncAnimation() {
   if (!suspended.value) frame = requestAnimationFrame(tick);
 }
 watch(suspended, syncAnimation);
-watch(() => props.gesture, () => { if (!suspended.value) waveStart = elapsed.value; });
+watch(hovered, active => { if (active && !reduced.value) waveStart = elapsed.value; });
 onMounted(() => {
   preference = window.matchMedia('(prefers-reduced-motion: reduce)');
   motionPreference(); preference.addEventListener('change', motionPreference);
@@ -76,7 +74,7 @@ onBeforeUnmount(() => {
 });
 </script>
 <template>
-  <div ref="root" class="animated-backdrop">
+  <div ref="root" class="animated-backdrop" @pointerenter="hovered = $event.pointerType === 'mouse'" @pointerleave="hovered = false" @pointercancel="hovered = false">
     <svg class="articulated-scene" viewBox="0 0 1000 650" fill="none" aria-hidden="true" focusable="false">
       <g class="scene-connections" stroke-width=".85">
         <path d="M30 360C180 30 410 90 540 220S870 420 990 100M90 590C270 540 350 340 620 390S890 600 960 430" stroke="#2455a4" />
@@ -93,6 +91,5 @@ onBeforeUnmount(() => {
         </g>
       </g>
     </svg>
-    <button v-if="!reduced" class="icon-button motion-toggle" type="button" :aria-label="paused ? 'Play artwork animation' : 'Pause artwork animation'" :title="paused ? 'Play artwork animation' : 'Pause artwork animation'" :aria-pressed="paused" @click="paused = !paused"><ActionIcon :name="paused ? 'play' : 'pause'" /></button>
   </div>
 </template>
