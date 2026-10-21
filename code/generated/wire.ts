@@ -16,7 +16,7 @@ export type AppWideError = never;
 export type CircleWire = {
   "/auth/commons/choose": {
     input: {
-      "attempt": Jsonify<OneOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["CommonsFederating"]["_linkable"]>[0], ["attempt"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["CommonsFederating"]["link"]>[0], ["attempt"]>]>>;
+      "attempt": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["CommonsFederating"]["requireLinkable"]>[0], ["attempt"]>>;
       "username": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Registering"]["register"]>[0], ["username"]>>;
     };
     output: {
@@ -64,9 +64,9 @@ export type CircleWire = {
       "session": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["use"]>[0], ["session"]>>;
     };
     output: {
-      "username": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Registering"]["_username"]>>>, ["username"]>>;
+      "username": Jsonify<AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Registering"]["identify"]>>, ["username"]>>;
     };
-    error: { error: AppWideError | "INVALID_INPUT" | "NOT_SIGNED_IN" };
+    error: { error: AppWideError | "INVALID_INPUT" | "NOT_SIGNED_IN" | "USER_NOT_FOUND" };
   };
   "/memories/edit": {
     input: {
@@ -109,16 +109,16 @@ export type CircleWire = {
   };
   "/memories/prepare-edit": {
     input: {
-      "memory": Jsonify<OneOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["inspect"]>[0], ["memory"]>, AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["ingest"]>[0], ["source"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_card"]>[0], ["source"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_record"]>[0], ["memory"]>]>]>>;
+      "memory": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["inspect"]>[0], ["memory"]>>;
       "session": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["use"]>[0], ["session"]>>;
     };
     output: {
       "card": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_card"]>>>, ["card"]>>;
-      "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_card"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_record"]>>>, ["content"]>]>>;
-      "memory": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["ingest"]>[0], ["source"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_card"]>[0], ["source"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_record"]>[0], ["memory"]>]>>;
-      "original": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_record"]>>>, ["original"]>>;
-      "referenceDate": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_card"]>[0], ["referenceDate"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_record"]>>>, ["referenceDate"]>]>>;
-      "revision": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_card"]>[0], ["revision"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_record"]>>>, ["revision"]>]>>;
+      "content": Jsonify<AllOf<[AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["inspect"]>>, ["content"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_card"]>[0], ["content"]>]>>;
+      "memory": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["inspect"]>[0], ["memory"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_card"]>[0], ["source"]>]>>;
+      "original": Jsonify<AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["inspect"]>>, ["original"]>>;
+      "referenceDate": Jsonify<AllOf<[AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["inspect"]>>, ["referenceDate"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_card"]>[0], ["referenceDate"]>]>>;
+      "revision": Jsonify<AllOf<[AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["inspect"]>>, ["revision"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_card"]>[0], ["revision"]>]>>;
     };
     error: { error: AppWideError | "EMPTY_SOURCE_CONTENT" | "INVALID_INPUT" | "MEMORY_NOT_FOUND" | "NOT_SIGNED_IN" | "SOURCE_NOT_OWNED" | "SOURCE_WITHDRAWN" };
   };
@@ -132,7 +132,7 @@ export type CircleWire = {
     output: {
       "memory": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["ingest"]>[0], ["source"]>>;
     };
-    error: { error: AppWideError | "EMPTY_CONTENT" | "EMPTY_SOURCE_CONTENT" | "INVALID_INPUT" | "NOT_SIGNED_IN" | "SOURCE_NOT_OWNED" | "SOURCE_WITHDRAWN" | "SUBMISSION_CONFLICT" };
+    error: { error: AppWideError | "EMPTY_CONTENT" | "EMPTY_SOURCE_CONTENT" | "INVALID_INPUT" | "MEMORY_NOT_FOUND" | "NOT_SIGNED_IN" | "SOURCE_NOT_OWNED" | "SOURCE_WITHDRAWN" | "SUBMISSION_CONFLICT" };
   };
   "/memories/transcribe": {
     input: {
@@ -210,7 +210,7 @@ export type CircleWireHttp = {
   "/auth/me": {
     input: Record<string, never>;
     output: {
-      "username": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Registering"]["_username"]>>>, ["username"]>>;
+      "username": Jsonify<AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Registering"]["identify"]>>, ["username"]>>;
     };
     error: { error: HttpAppWideError | "INVALID_REQUEST" | "UNAUTHORIZED" };
   };
@@ -252,15 +252,15 @@ export type CircleWireHttp = {
   };
   "/memories/prepare-edit": {
     input: {
-      "memory": Jsonify<OneOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["inspect"]>[0], ["memory"]>, AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["ingest"]>[0], ["source"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_card"]>[0], ["source"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_record"]>[0], ["memory"]>]>]>>;
+      "memory": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["inspect"]>[0], ["memory"]>>;
     };
     output: {
       "card": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Graphing"]["_card"]>>>, ["card"]>>;
-      "content": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_card"]>[0], ["content"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_record"]>>>, ["content"]>]>>;
-      "memory": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["ingest"]>[0], ["source"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_card"]>[0], ["source"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["_record"]>[0], ["memory"]>]>>;
-      "original": Jsonify<AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_record"]>>>, ["original"]>>;
-      "referenceDate": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_card"]>[0], ["referenceDate"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_record"]>>>, ["referenceDate"]>]>>;
-      "revision": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_card"]>[0], ["revision"]>, AtPath<QueryRow<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["_record"]>>>, ["revision"]>]>>;
+      "content": Jsonify<AllOf<[AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["inspect"]>>, ["content"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_card"]>[0], ["content"]>]>>;
+      "memory": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["inspect"]>[0], ["memory"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_card"]>[0], ["source"]>]>>;
+      "original": Jsonify<AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["inspect"]>>, ["original"]>>;
+      "referenceDate": Jsonify<AllOf<[AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["inspect"]>>, ["referenceDate"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_card"]>[0], ["referenceDate"]>]>>;
+      "revision": Jsonify<AllOf<[AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Remembering"]["inspect"]>>, ["revision"]>, AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["_card"]>[0], ["revision"]>]>>;
     };
     error: { error: HttpAppWideError | "CONFLICT" | "FORBIDDEN" | "INVALID_REQUEST" | "NOT_FOUND" | "UNAUTHORIZED" };
   };
@@ -273,7 +273,7 @@ export type CircleWireHttp = {
     output: {
       "memory": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Graphing"]["ingest"]>[0], ["source"]>>;
     };
-    error: { error: HttpAppWideError | "CONFLICT" | "FORBIDDEN" | "INVALID_REQUEST" | "UNAUTHORIZED" };
+    error: { error: HttpAppWideError | "CONFLICT" | "FORBIDDEN" | "INVALID_REQUEST" | "NOT_FOUND" | "UNAUTHORIZED" };
   };
   "/memories/transcribe": {
     input: {

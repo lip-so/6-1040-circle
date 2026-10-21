@@ -1,0 +1,4 @@
+Local Markdown file-target audit: 2026-10-21T02:43:33.075504+00:00
+24 Markdown files; 218 local file/directory targets checked.
+Remote URLs and heading anchors were not checked.
+PASS: no missing local file/directory targets.

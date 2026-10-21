@@ -168,3 +168,19 @@ describe("Federating", () => {
     expect(await federating._linkable({ attempt: "unknown" as Attempt })).toEqual({ linkable: false });
   });
 });
+
+
+test("routing actions return one snapshot or a typed expiry without new links",async()=>{
+  const {federating,approved,advance}=await setup();
+  const input=await approved();
+  await expect(federating.resolve({attempt:input.attempt})).rejects.toThrow(SignInExpired);
+  await federating.finish(input);
+  expect(await federating.resolve({attempt:input.attempt})).toEqual({user:null,linked:false});
+  expect(await federating.requireLinkable({attempt:input.attempt})).toEqual({});
+  await federating.link({attempt:input.attempt,user:"stable-user"});
+  expect(await federating.resolve({attempt:input.attempt})).toEqual({user:"stable-user",linked:true});
+  await expect(federating.requireLinkable({attempt:input.attempt})).rejects.toThrow(SignInExpired);
+  advance(11*MINUTE);
+  await expect(federating.resolve({attempt:input.attempt})).rejects.toThrow(SignInExpired);
+  expect(await federating._user({attempt:input.attempt})).toEqual([{user:"stable-user"}]);
+});

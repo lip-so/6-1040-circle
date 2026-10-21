@@ -104,7 +104,7 @@ transcribe(audio: String, mediaType: String) : returns (content: String)
   where audio and mediaType are supported
   then
     send only the recording to the configured transcription provider
-    require nonblank text of at most 20,000 characters and return it without saving a memory or retaining the recording; the two-minute recording limit is enforced by frontend capture, not by inspecting duration here
+    require a string containing nonblank text of at most 20,000 characters (invalid provider values are ordinary processing errors) and return it without saving a memory or retaining the recording; the two-minute recording limit is enforced by frontend capture, not by inspecting duration here
     provider failure is an error with no automatic retry or fabricated transcript
     returns content
 ```

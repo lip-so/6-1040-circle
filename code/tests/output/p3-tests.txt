@@ -1,173 +1,221 @@
-P3 automated test execution
-UTC: 2026-10-20T18:03:09.786265+00:00
-Command (repository root): bun run test
-Database: TEST_MONGODB_URL; uniquely named disposable databases
-Providers: injected test doubles; no live OpenAI calls
+Command: bun run test
+Working directory: /Users/sofia/6-1040-circle
+Started (UTC): 2026-10-21T02:41:39.324112+00:00
 
-$ bun run --cwd code test
+$ bun run --cwd code test && bun run --cwd code/frontend test:browser
 $ bun test
 bun test v1.4.2 (744846f84)
 
 tests/ui/recent-people.test.ts:
-(pass) recent people distinguish a failed initial load from a genuinely empty account and can retry [0.45ms]
-(pass) Load more uses the last displayed identity and keeps different encounters with the same name [0.36ms]
-(pass) a failed refresh retains visible notes and offers retry rather than showing an empty account [0.07ms]
-(pass) sign-out or an account change ignores a pending list response [0.07ms]
-(pass) an older refresh cannot replace a newer response [0.06ms]
-(pass) expired sessions clear previous results and request sign-in [0.05ms]
+(pass) recent people distinguish a failed initial load from a genuinely empty account and can retry [0.47ms]
+(pass) Load more uses the last displayed identity and keeps different encounters with the same name [0.41ms]
+(pass) a failed refresh retains visible notes and offers retry rather than showing an empty account [0.08ms]
+(pass) sign-out or an account change ignores a pending list response [0.09ms]
+(pass) an older refresh cannot replace a newer response [0.07ms]
+(pass) expired sessions clear previous results and request sign-in [0.06ms]
 (pass) the shared request guard invalidates pending save/search replies and network errors settle [0.04ms]
-(pass) removing a row invalidates a pending page so it cannot restore the deleted encounter [0.14ms]
+(pass) removing a row invalidates a pending page so it cannot restore the deleted encounter [0.15ms]
 
 tests/ui/memory-fields.test.ts:
-(pass) guided memories > the fields display exactly what was entered, without requiring natural-language trigger phrases [0.22ms]
-(pass) guided memories > multiline entries cannot overwrite the person or another field [0.03ms]
-(pass) guided memories > only a person's name is needed, and older free-text notes are still recognized separately [0.02ms]
+(pass) guided memories > the fields display exactly what was entered, without requiring natural-language trigger phrases [0.24ms]
+(pass) guided memories > multiline entries cannot overwrite the person or another field [0.04ms]
+(pass) guided memories > only a person's name is needed, and older free-text notes are still recognized separately [0.04ms]
 (pass) optional contact information > preserves and displays a phone number [0.03ms]
 (pass) optional contact information > preserves and displays a LinkedIn URL [0.02ms]
-(pass) optional contact information > reads the original four-field format and keeps contact optional [0.04ms]
+(pass) optional contact information > reads the original four-field format and keeps contact optional [0.05ms]
 (pass) optional contact information > contact text cannot overwrite the person or other fields [0.02ms]
 (pass) form notes stay separate from headers and optional contact can be absent [0.02ms]
 
 tests/ui/memory-summary.test.ts:
-(pass) short encounter details > the demo note gives a role and discussion without inventing an encounter date [0.69ms]
-(pass) short encounter details > a meeting date is kept as written; a company founding date is not used as the meeting date [0.08ms]
-(pass) short encounter details > discussing a topic does not become employment or expertise [0.01ms]
-(pass) short encounter details > another person's role and negated work are not attributed to the person [0.01ms]
-(pass) explicit lowercase encounter names remain visible without guessing unnamed notes [0.34ms]
+(pass) short encounter details > the demo note gives a role and discussion without inventing an encounter date [0.79ms]
+(pass) short encounter details > a meeting date is kept as written; a company founding date is not used as the meeting date [0.09ms]
+(pass) short encounter details > discussing a topic does not become employment or expertise [0.02ms]
+(pass) short encounter details > another person's role and negated work are not attributed to the person [0.02ms]
+(pass) explicit lowercase encounter names remain visible without guessing unnamed notes [0.41ms]
 (pass) literal activities display under Does without requiring or inventing a date or profession [0.03ms]
-(pass) lowercase direct names/activities work while unknown placeholders stay absent [0.04ms]
+(pass) lowercase direct names/activities work while unknown placeholders stay absent [0.10ms]
 
 tests/ui/voice.test.ts:
-(pass) cancelling while microphone permission is pending stops the late stream and never starts capture [0.23ms]
-(pass) finishing produces bounded recording data and stops microphone tracks; cancellation discards a later recording [0.28ms]
+(pass) cancelling while microphone permission is pending stops the late stream and never starts capture [0.27ms]
+(pass) finishing produces bounded recording data and stops microphone tracks; cancellation discards a later recording [0.31ms]
 
 tests/ui/removal-confirmation.test.ts:
-(pass) the basket requests confirmation; cancel does nothing and confirm removes exactly the selected encounter once [0.09ms]
+(pass) the basket requests confirmation; cancel does nothing and confirm removes exactly the selected encounter once [0.10ms]
 
 tests/compositions/Circle.test.ts:
-(pass) Circle result composition > joins an owned need, graph match, and exact original note [84.93ms]
-(pass) Circle result composition > returns an empty list when an owned need has no matching encounters [14.71ms]
-(pass) Circle result composition > does not form results for another owner's need [11.81ms]
-(pass) Circle result composition > does not read another owner's graph [26.06ms]
+(pass) Circle result composition > joins an owned need, graph match, and exact original note [70.15ms]
+(pass) Circle result composition > returns an empty list when an owned need has no matching encounters [14.31ms]
+(pass) Circle result composition > does not form results for another owner's need [10.06ms]
+(pass) Circle result composition > does not read another owner's graph [26.84ms]
 (pass) results hide stale organization while an edited current original awaits reprocessing [42.27ms]
+(pass) saved former preserves timestamp/identity paging order and drops disappeared rows [17.84ms]
+(pass) results former retains provider relevance order through joins [41.15ms]
+(pass) list formation omits a record removed after enumeration without dropping the whole answer [9.10ms]
 
 tests/compositions/authenticated-flows.test.ts:
-(pass) Circle authenticated flows > Commons sign-in, save, index, search, original note, and sign-out work from an empty database [91.88ms]
-(pass) Circle authenticated flows > a guided memo keeps its entered fields through save, indexing, and an owned search [72.59ms]
-(pass) Circle authenticated flows > two signed-in users get only their own notes and graph, including the same person's name [73.81ms]
-(pass) Circle authenticated flows > a body cannot pick the owner or source, supply a session without its cookie, or invoke indexing [32.70ms]
-(pass) Circle authenticated flows > unauthenticated and expired sessions save nothing; blank notes and needs use their declared refusals [34.75ms]
-{"action":"ingest","actionId":"d4d9dec1-0561-47d0-bb01-e10b84aea12b","error":{"name":"Error"},"level":"error","message":"Consequence action faulted","timestamp":"2026-10-20T18:03:10.435Z"}
-(pass) Circle authenticated flows > indexing failure keeps the original note and returns an error [35.74ms]
-{"action":"recall","actionId":"6b8e00d7-bd76-426c-99f3-30ac4b4a55d2","error":{"name":"Error"},"level":"error","message":"Consequence action faulted","timestamp":"2026-10-20T18:03:10.471Z"}
-(pass) Circle authenticated flows > search failure keeps the saved need and returns an error [36.23ms]
-(pass) Circle authenticated flows > a missing original source is omitted from otherwise owned search results [56.02ms]
-(pass) Circle authenticated flows > Commons' stable subject returns to the same Circle owner after its username changes [61.91ms]
-(pass) Circle authenticated flows > sign-in is bound to its browser and PKCE verifier; HTTP hides credentials and refuses other origins [35.78ms]
-(pass) Circle authenticated flows > a duplicate Commons username uses the blueprint's choose flow without linking the wrong user [38.24ms]
-(pass) Saved people HTTP edge cases > listing authenticates first, rejects owner/timestamp input, and never returns another user's notes [53.76ms]
-{"action":"ingest","actionId":"4c400212-961c-49a7-8b87-e8f8636611f1","error":{"name":"Error"},"level":"error","message":"Consequence action faulted","timestamp":"2026-10-20T18:03:10.751Z"}
-(pass) Saved people HTTP edge cases > a note remains visible after indexing failure and a manual retry does not duplicate it [45.45ms]
-(pass) Connection removal > the authenticated basket route removes one encounter and its evidence, never another owner's or same-name encounter [72.58ms]
-{"action":"withdraw","actionId":"b24a7062-63bd-4439-af0b-30945f87339d","error":{"name":"Error"},"level":"error","message":"Consequence action faulted","timestamp":"2026-10-20T18:03:10.876Z"}
-(pass) Connection removal > failed withdrawal hides the removed original and same-memory retry finishes cleanup [55.94ms]
-(pass) HTTP removal erases MongoDB data durably across closing and reopening the connection [81.65ms]
-(pass) voice authenticates before transcription, returns editable text and never saves audio or a note [49.57ms]
-{"action":"ingest","actionId":"2b059507-1d1e-4b3f-b569-7adc01811ee7","error":{"name":"Error"},"level":"error","message":"Consequence action faulted","timestamp":"2026-10-20T18:03:11.063Z"}
-(pass) an organization failure followed by repaired short-name evidence retries the same token without duplicating the original [50.85ms]
-(pass) form edit is owner-scoped, prefills JSON, preserves original, rejects stale revisions and invalidates search [84.81ms]
-(pass) invalid timezone/revision inputs fail before effects [37.73ms]
-{"action":"ingest","actionId":"ff61e48e-40ea-4559-b2d9-33ef1bfe672a","error":{"name":"Error"},"level":"error","message":"Consequence action faulted","timestamp":"2026-10-20T18:03:11.236Z"}
-(pass) processing failure after an edit preserves current form and original, same edit retry never increments twice [48.30ms]
+(pass) Circle authenticated flows > Commons sign-in, save, index, search, original note, and sign-out work from an empty database [88.47ms]
+(pass) Circle authenticated flows > a guided memo keeps its entered fields through save, indexing, and an owned search [60.08ms]
+(pass) Circle authenticated flows > two signed-in users get only their own notes and graph, including the same person's name [77.50ms]
+(pass) Circle authenticated flows > a body cannot pick the owner or source, supply a session without its cookie, or invoke indexing [33.68ms]
+(pass) Circle authenticated flows > unauthenticated and expired sessions save nothing; blank notes and needs use their declared refusals [34.51ms]
+{"action":"ingest","actionId":"9065a52e-2f84-411d-8b0a-e6aa9bd4a717","error":{"name":"Error"},"level":"error","message":"Consequence action faulted","timestamp":"2026-10-21T02:41:40.014Z"}
+(pass) Circle authenticated flows > indexing failure keeps the original note and returns an error [38.39ms]
+{"action":"recall","actionId":"bfbc8444-fdf4-4b9a-a8f4-2f02e2d42e8e","error":{"name":"Error"},"level":"error","message":"Consequence action faulted","timestamp":"2026-10-21T02:41:40.050Z"}
+(pass) Circle authenticated flows > search failure keeps the saved need and returns an error [35.85ms]
+(pass) Circle authenticated flows > a missing original source is omitted from otherwise owned search results [54.29ms]
+(pass) Circle authenticated flows > Commons' stable subject returns to the same Circle owner after its username changes [56.26ms]
+(pass) Circle authenticated flows > sign-in is bound to its browser and PKCE verifier; HTTP hides credentials and refuses other origins [31.72ms]
+(pass) Circle authenticated flows > a duplicate Commons username uses the blueprint's choose flow without linking the wrong user [40.84ms]
+(pass) Saved people HTTP edge cases > listing authenticates first, rejects owner/timestamp input, and never returns another user's notes [54.21ms]
+{"action":"ingest","actionId":"bc1abaa3-e70e-45ab-ade8-28123d33f6ff","error":{"name":"Error"},"level":"error","message":"Consequence action faulted","timestamp":"2026-10-21T02:41:40.324Z"}
+(pass) Saved people HTTP edge cases > a note remains visible after indexing failure and a manual retry does not duplicate it [52.21ms]
+(pass) Connection removal > the authenticated basket route removes one encounter and its evidence, never another owner's or same-name encounter [76.24ms]
+{"action":"withdraw","actionId":"7ba66720-1d53-44e8-a2df-3eb48a946f53","error":{"name":"Error"},"level":"error","message":"Consequence action faulted","timestamp":"2026-10-21T02:41:40.458Z"}
+(pass) Connection removal > failed withdrawal hides the removed original and same-memory retry finishes cleanup [58.47ms]
+(pass) HTTP removal erases MongoDB data durably across closing and reopening the connection [79.84ms]
+(pass) voice authenticates before transcription, returns editable text and never saves audio or a note [46.49ms]
+{"action":"ingest","actionId":"8364fd6d-93a7-41ad-b053-13997707d7d3","error":{"name":"Error"},"level":"error","message":"Consequence action faulted","timestamp":"2026-10-21T02:41:40.636Z"}
+(pass) an organization failure followed by repaired short-name evidence retries the same token without duplicating the original [44.54ms]
+(pass) form edit is owner-scoped, prefills JSON, preserves original, rejects stale revisions and invalidates search [90.82ms]
+(pass) invalid timezone/revision inputs fail before effects [42.92ms]
+{"action":"ingest","actionId":"8aacce71-5f28-42d7-8b97-31c0f722b20e","error":{"name":"Error"},"level":"error","message":"Consequence action faulted","timestamp":"2026-10-21T02:41:40.827Z"}
+(pass) processing failure after an edit preserves current form and original, same edit retry never increments twice [56.33ms]
+(pass) disappear-save returns a response within two seconds rather than the 120-second deadline [35.10ms]
+(pass) disappear-edit returns a response within two seconds rather than the 120-second deadline [44.43ms]
+(pass) disappear-prepare returns a response within two seconds rather than the 120-second deadline [49.04ms]
+(pass) disappear-results returns a response within two seconds rather than the 120-second deadline [59.06ms]
+{"action":"respond","actionId":"5e81734f-2cdb-4ce6-94fc-58e29cbb6f2d","error":{"name":"FormerFault"},"level":"error","message":"Reaction \"Circle.Seek#4\": consequence input former failed","timestamp":"2026-10-21T02:41:41.080Z"}
+(pass) disappear-need returns a response within two seconds rather than the 120-second deadline [56.49ms]
+(pass) account disappearance after sign-in returns UNAUTHORIZED without waiting [30.79ms]
 
 tests/providers/BrainProvider.test.ts:
-(pass) OpenAI requests strict stateless source-linked JSON without account credentials in model input [0.56ms]
-(pass) provider rejects malformed, incomplete and refusal responses without retry or local fallback [0.47ms]
-(pass) transcription uploads only ephemeral audio and returns bounded editable text [0.18ms]
+(pass) OpenAI requests strict stateless source-linked JSON without account credentials in model input [0.59ms]
+(pass) provider rejects malformed, incomplete and refusal responses without retry or local fallback [0.36ms]
+(pass) transcription uploads only ephemeral audio and returns bounded editable text [0.14ms]
+
+tests/providers/SyntheticEvaluation.test.ts:
+(pass) deterministic synthetic transport/validation: ambiguous-name [0.21ms]
+(pass) deterministic synthetic transport/validation: negation [0.14ms]
+(pass) deterministic synthetic transport/validation: relative-date [0.19ms]
+(pass) deterministic synthetic transport/validation: discussion-not-expertise [0.03ms]
 
 tests/concepts/Seeking.test.ts:
-(pass) Seeking > saves and retrieves the owner's exact need description [5.65ms]
-(pass) Seeking > refuses empty descriptions without saving [0.94ms]
-(pass) Seeking > refuses whitespace-only descriptions without saving [0.79ms]
-(pass) Seeking > does not return another owner's need [0.94ms]
-(pass) Seeking > returns no row for an unknown need [0.60ms]
-(pass) Seeking > saves separate needs without overwriting earlier ones [1.44ms]
-(pass) Seeking > reads a saved need after closing its writing connection [7.33ms]
+(pass) Seeking > saves and retrieves the owner's exact need description [5.88ms]
+(pass) Seeking > refuses empty descriptions without saving [0.97ms]
+(pass) Seeking > refuses whitespace-only descriptions without saving [0.71ms]
+(pass) Seeking > does not return another owner's need [1.00ms]
+(pass) Seeking > returns no row for an unknown need [0.80ms]
+(pass) Seeking > saves separate needs without overwriting earlier ones [1.68ms]
+(pass) Seeking > reads a saved need after closing its writing connection [8.56ms]
+(pass) identical repeated needs have separate identities and preserve both exact descriptions [3.17ms]
 
 tests/concepts/Sessioning.test.ts:
-(pass) Sessioning > its principle: Maya stays signed in until she signs out, leaves a session unused for a week, or reaches 90 days [45.22ms]
-(pass) Sessioning > a session's identity is 32 random bytes in base64url [6.26ms]
-(pass) Sessioning > every use sets lastUsed to now, so the week of idleness counts from the latest use [7.91ms]
-(pass) Sessioning > a refused use or end changes no session [8.16ms]
-(pass) Sessioning > Sessioning refuses to use or end an unknown or ended session [8.39ms]
-(pass) Sessioning > of two ends of one session at once, Sessioning accepts one and refuses the other with NOT_SIGNED_IN [8.33ms]
+(pass) Sessioning > its principle: Maya stays signed in until she signs out, leaves a session unused for a week, or reaches 90 days [46.61ms]
+(pass) Sessioning > a session's identity is 32 random bytes in base64url [7.41ms]
+(pass) Sessioning > every use sets lastUsed to now, so the week of idleness counts from the latest use [7.87ms]
+(pass) Sessioning > a refused use or end changes no session [9.69ms]
+(pass) Sessioning > Sessioning refuses to use or end an unknown or ended session [9.44ms]
+(pass) Sessioning > of two ends of one session at once, Sessioning accepts one and refuses the other with NOT_SIGNED_IN [9.48ms]
 
 tests/concepts/Federating.test.ts:
-(pass) Federating > its principle: Sam comes back to the same user after his Commons username changes, and neither Leo's link nor Sam's code read by Leo finishes a sign-in [22.76ms]
-(pass) Federating > start returns an address carrying a fresh nonce and challenge in the forms Commons accepts, and an attempt that expires in 10 minutes [10.54ms]
-(pass) Federating > finish refuses an unknown, expired, or confirmed attempt, or another nonce, with SIGN_IN_EXPIRED before contacting the other site [12.76ms]
-(pass) Federating > finish refuses a code the other site doesn't confirm with SIGN_IN_REFUSED, and the attempt stays unconfirmed [10.70ms]
-(pass) Federating > of two finishes of one attempt at once, one confirms it and the other is refused [11.63ms]
-(pass) Federating > link refuses an unconfirmed attempt with NOT_CONFIRMED and a subject already linked with ALREADY_LINKED [16.09ms]
-(pass) Federating > _linkable is true only for a confirmed, unexpired attempt whose subject is unlinked, and link still links after expiry [15.80ms]
+(pass) Federating > its principle: Sam comes back to the same user after his Commons username changes, and neither Leo's link nor Sam's code read by Leo finishes a sign-in [25.85ms]
+(pass) Federating > start returns an address carrying a fresh nonce and challenge in the forms Commons accepts, and an attempt that expires in 10 minutes [10.42ms]
+(pass) Federating > finish refuses an unknown, expired, or confirmed attempt, or another nonce, with SIGN_IN_EXPIRED before contacting the other site [15.74ms]
+(pass) Federating > finish refuses a code the other site doesn't confirm with SIGN_IN_REFUSED, and the attempt stays unconfirmed [11.86ms]
+(pass) Federating > of two finishes of one attempt at once, one confirms it and the other is refused [12.46ms]
+(pass) Federating > link refuses an unconfirmed attempt with NOT_CONFIRMED and a subject already linked with ALREADY_LINKED [17.14ms]
+(pass) Federating > _linkable is true only for a confirmed, unexpired attempt whose subject is unlinked, and link still links after expiry [16.64ms]
+(pass) routing actions return one snapshot or a typed expiry without new links [17.11ms]
 
 tests/concepts/Registering.test.ts:
-(pass) Registering > its principle: Sam finds Maya by her username, and Ben registers another when hers is taken [11.77ms]
-(pass) Registering > a username must have 3 to 32 ASCII letters, digits, underscores, or hyphens [7.36ms]
-(pass) Registering > usernames are case-sensitive, so `Maya` is a different username from `maya` [6.08ms]
-(pass) Registering > of two registrations of one username at once, one succeeds and the other is refused with USERNAME_TAKEN [9.73ms]
-(pass) Registering > _username and _byUsername return no row for an unknown user or username [1.54ms]
+(pass) Registering > its principle: Sam finds Maya by her username, and Ben registers another when hers is taken [12.62ms]
+(pass) Registering > a username must have 3 to 32 ASCII letters, digits, underscores, or hyphens [6.37ms]
+(pass) Registering > usernames are case-sensitive, so `Maya` is a different username from `maya` [6.13ms]
+(pass) Registering > of two registrations of one username at once, one succeeds and the other is refused with USERNAME_TAKEN [8.50ms]
+(pass) Registering > _username and _byUsername return no row for an unknown user or username [0.90ms]
 
 tests/concepts/calendar.test.ts:
-(pass) calendar anchoring respects local midnight, DST, month/year and leap boundaries [0.48ms]
-(pass) relative date canonicalization uses the original reference day and omits unanchored dates [0.10ms]
-(pass) summaries and marked conclusions retain their exact source evidence [0.03ms]
+(pass) calendar anchoring respects local midnight, DST, month/year and leap boundaries [0.19ms]
+(pass) relative date canonicalization uses the original reference day and omits unanchored dates [0.09ms]
+(pass) summaries and marked conclusions retain their exact source evidence [0.07ms]
 
 tests/concepts/CommonsProvider.test.ts:
-(pass) CommonsProvider > the sign-in address names the app by its origin, carries the nonce as state, and the verifier's S256 challenge [1.86ms]
-(pass) CommonsProvider > redeeming posts exactly the code, the app, and the verifier, and returns Commons' user as the subject [0.80ms]
-Commons at http://localhost:60242 didn't redeem a sign-in code: Error: status 503
-Commons at http://localhost:60242 didn't redeem a sign-in code: Error: no user in the answer
-(pass) CommonsProvider > a refused code, an error, or an answer without a user returns undefined, and nothing is retried [0.56ms]
-Commons at http://localhost:60242 didn't redeem a sign-in code: TimeoutError: The operation timed out.
-(pass) CommonsProvider > Commons not answering within the timeout returns undefined [50.90ms]
+(pass) CommonsProvider > the sign-in address names the app by its origin, carries the nonce as state, and the verifier's S256 challenge [1.80ms]
+(pass) CommonsProvider > redeeming posts exactly the code, the app, and the verifier, and returns Commons' user as the subject [1.02ms]
+Commons at http://localhost:64306 didn't redeem a sign-in code: Error: status 503
+Commons at http://localhost:64306 didn't redeem a sign-in code: Error: no user in the answer
+(pass) CommonsProvider > a refused code, an error, or an answer without a user returns undefined, and nothing is retried [0.65ms]
+Commons at http://localhost:64306 didn't redeem a sign-in code: TimeoutError: The operation timed out.
+(pass) CommonsProvider > Commons not answering within the timeout returns undefined [51.39ms]
 Commons at http://127.0.0.1:9 didn't redeem a sign-in code: TypeError: Unable to connect. Is the computer able to access the url?
-(pass) CommonsProvider > a Commons that can't be reached returns undefined [0.65ms]
+(pass) CommonsProvider > a Commons that can't be reached returns undefined [0.66ms]
 
 tests/concepts/Remembering.test.ts:
-(pass) Remembering > retrieves an encounter exactly as its owner wrote it [6.91ms]
-(pass) Remembering > refuses empty content without saving anything [1.25ms]
-(pass) Remembering > refuses whitespace-only content without saving anything [0.89ms]
-(pass) Remembering > does not return another owner's memory [1.77ms]
-(pass) Remembering > returns no row for an unknown memory [1.16ms]
-(pass) Remembering > creates separate memories for separate saves [4.24ms]
-(pass) Remembering > keeps the note after closing the writing connection and opening a new one [10.07ms]
-(pass) Remembering saved-list edge cases > concurrent retries make one note and keep the original timestamp [11.35ms]
-(pass) Remembering saved-list edge cases > the same token from different owners cannot collide or reveal another user's note [3.26ms]
-(pass) Remembering saved-list edge cases > same-name encounters remain separate; legacy notes and exact text stay available without graph extraction [2.73ms]
-(pass) Remembering saved-list edge cases > every older note remains reachable when a new save arrives between pages [12.45ms]
-(pass) forget erases an owned original, keeps other same-name encounters and rejects stale retries [6.84ms]
-(pass) edits preserve original text/identity/time, use revisions and permit an unchanged same-token retry [5.79ms]
-(pass) concurrent edits accept one revision, retries retain the first saved local day [4.32ms]
+(pass) Remembering > retrieves an encounter exactly as its owner wrote it [6.37ms]
+(pass) Remembering > refuses empty content without saving anything [1.07ms]
+(pass) Remembering > refuses whitespace-only content without saving anything [0.87ms]
+(pass) Remembering > does not return another owner's memory [1.42ms]
+(pass) Remembering > returns no row for an unknown memory [0.78ms]
+(pass) Remembering > creates separate memories for separate saves [2.10ms]
+(pass) Remembering > keeps the note after closing the writing connection and opening a new one [8.59ms]
+(pass) Remembering saved-list edge cases > concurrent retries make one note and keep the original timestamp [9.91ms]
+(pass) Remembering saved-list edge cases > the same token from different owners cannot collide or reveal another user's note [2.66ms]
+(pass) Remembering saved-list edge cases > same-name encounters remain separate; legacy notes and exact text stay available without graph extraction [2.68ms]
+(pass) Remembering saved-list edge cases > every older note remains reachable when a new save arrives between pages [11.34ms]
+(pass) forget erases an owned original, keeps other same-name encounters and rejects stale retries [6.79ms]
+(pass) edits preserve original text/identity/time, use revisions and permit an unchanged same-token retry [6.60ms]
+(pass) concurrent edits accept one revision, retries retain the first saved local day [4.92ms]
+(pass) blank edits refuse EmptyContent without changing original, timestamp or revision [2.91ms]
+(pass) canonical audio byte boundaries and transcript boundaries never persist notes [148.32ms]
 
 tests/concepts/Graphing.test.ts:
-(pass) stores validated JSON once, reuses equivalent searches and persists IDs/evidence [17.48ms]
-(pass) new contacts change the corpus, repeated names remain separate, foreign memory never reaches provider [17.12ms]
+(pass) stores validated JSON once, reuses equivalent searches and persists IDs/evidence [21.56ms]
+(pass) new contacts change the corpus, repeated names remain separate, foreign memory never reaches provider [16.98ms]
 (pass) malformed or oversized original corpus refuses before state changes or provider calls [0.84ms]
-(pass) bad evidence and provider failure keep old valid record and reserve ownership [8.66ms]
-(pass) literal validation rejects fabricated/partial quotes, schemas and invented selection IDs or indexes [0.25ms]
-(pass) concurrent equivalent extraction/search reuses the first validated stored selection [18.91ms]
-(pass) withdrawal erases JSON/caches and wins over delayed extraction [14.83ms]
-(pass) withdrawal during selection cannot resurrect a result or save source text in cache [8.00ms]
-(pass) structured overflow keeps organized records but never sends a partial selection corpus [17.73ms]
-(pass) short-name evidence from both reported notes expands to the exact complete original without a date [12.43ms]
-(pass) expanding name evidence never accepts a fabricated name, fabricated quote or partial fact evidence [0.18ms]
-(pass) a cached newer revision returning to A blocks delayed older extraction for B [10.20ms]
-(pass) previous JSON cards remain readable only for matching unedited originals, never after a revision changes [6.01ms]
+(pass) bad evidence and provider failure keep old valid record and reserve ownership [9.02ms]
+(pass) literal validation rejects fabricated/partial quotes, schemas and invented selection IDs or indexes [0.21ms]
+(pass) concurrent equivalent extraction/search reuses the first validated stored selection [21.98ms]
+(pass) withdrawal erases JSON/caches and wins over delayed extraction [15.45ms]
+(pass) withdrawal during selection cannot resurrect a result or save source text in cache [8.52ms]
+(pass) structured overflow keeps organized records but never sends a partial selection corpus [17.17ms]
+(pass) short-name evidence from both reported notes expands to the exact complete original without a date [11.95ms]
+(pass) expanding name evidence never accepts a fabricated name, fabricated quote or partial fact evidence [0.10ms]
+(pass) a cached newer revision returning to A blocks delayed older extraction for B [7.95ms]
+(pass) previous JSON cards remain readable only for matching unedited originals, never after a revision changes [4.92ms]
+(pass) blank queries refuse before extraction, selection or any graph mutation [0.91ms]
+(pass) provider-version changes invalidate extraction and selection caches while same-version repeats are read-only [20.96ms]
 
- 115 pass
+ 134 pass
  0 fail
- 633 expect() calls
-Ran 115 tests across 16 files. [2.01s]
+ 748 expect() calls
+Ran 134 tests across 17 files. [2.55s]
+$ playwright test
+[WebServer] $ vite --host "127.0.0.1" --port "4173"
+[WebServer] (node:58901) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
 
+Running 16 tests using 1 worker
+
+(node:58902) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/browser/interactions.pw.mjs:39:1 › Text, Voice, Form preserve independent drafts and are named, pressed and keyboard reachable (479ms)
+  ✓   2 tests/browser/interactions.pw.mjs:58:1 › search announces pending, success, empty and failure distinctly (456ms)
+  ✓   3 tests/browser/interactions.pw.mjs:76:1 › edit prefills, cancels without writes, recovers a conflict and saves the fresh revision (663ms)
+  ✓   4 tests/browser/interactions.pw.mjs:98:1 › removal names contact, Cancel and Escape restore focus, duplicate clicks make one request (312ms)
+  ✓   5 tests/browser/interactions.pw.mjs:112:66 › account switch discards pending save and clears drafts (336ms)
+  ✓   6 tests/browser/interactions.pw.mjs:112:66 › account switch discards pending edit and clears drafts (437ms)
+  ✓   7 tests/browser/interactions.pw.mjs:112:66 › account switch discards pending search and clears drafts (351ms)
+  ✓   8 tests/browser/interactions.pw.mjs:112:66 › account switch discards pending transcription and clears drafts (483ms)
+  ✓   9 tests/browser/interactions.pw.mjs:139:40 › responsive layout 320px: long content, dialog scroll and focus remain usable (384ms)
+  ✓  10 tests/browser/interactions.pw.mjs:139:40 › responsive layout 390px: long content, dialog scroll and focus remain usable (398ms)
+  ✓  11 tests/browser/interactions.pw.mjs:139:40 › responsive layout 640px: long content, dialog scroll and focus remain usable (410ms)
+  ✓  12 tests/browser/interactions.pw.mjs:139:40 › responsive layout 1280px: long content, dialog scroll and focus remain usable (470ms)
+  ✓  13 tests/browser/interactions.pw.mjs:159:1 › switching away from pending Voice preserves typed draft and ignores the late transcript (497ms)
+  ✓  14 tests/browser/interactions.pw.mjs:170:26 › enlarged 200% CSS zoom keeps forms and dialogs operable (371ms)
+  ✓  15 tests/browser/interactions.pw.mjs:170:26 › enlarged 400% CSS zoom keeps forms and dialogs operable (379ms)
+  ✓  16 tests/browser/interactions.pw.mjs:183:1 › long removal confirmation scrolls in a short viewport and traps keyboard focus (270ms)
+
+  16 passed (7.8s)
+
+Finished (UTC): 2026-10-21T02:41:49.933367+00:00
 Exit status: 0

@@ -228,8 +228,10 @@ async function finishVoice() {
   } catch { if (current()) saveError.value = "Couldn't use this recording. Try again or type your note."; }
   finally { if (current()) { capture.cancel(); transcribing.value = false; } }
 }
+let editOpener: HTMLElement | null = null;
 async function openEdit(memory: string) {
   if (busy.value) return;
+  editOpener = document.activeElement as HTMLElement;
   cancelVoice(); preparingEdit.value = true; editError.value = ""; saveError.value = "";
   const current = sessionScope.current();
   const answer = await attempt(() => api.memories["prepare-edit"]({ memory }));
@@ -242,7 +244,16 @@ async function openEdit(memory: string) {
   pendingEdit = null;
   editing.value = { memory, revision: answer.revision, fields: fieldsFromCard(answer.card, answer.content) };
 }
-function closeEdit() { if (!editingBusy.value) { editing.value = null; pendingEdit = null; editError.value = ""; } }
+function closeEdit() {
+  if (editingBusy.value) return;
+  editing.value = null;
+  pendingEdit = null;
+  editError.value = "";
+  void nextTick(() => {
+    if (editOpener?.isConnected && !editOpener.matches(":disabled")) editOpener.focus();
+    else document.getElementById("recent-heading")?.focus();
+  });
+}
 async function saveEdit() {
   if (!editing.value || editingBusy.value) return;
   const { memory, revision, fields } = editing.value;
@@ -332,9 +343,9 @@ async function removeConnection(memory: string, label: string) {
 
       <form v-if="mode === 'remember'" class="memory-form" aria-label="Remember someone" :aria-busy="saving || transcribing" @submit.prevent="remember">
         <div class="input-choice" role="group" aria-label="Note input">
-          <button type="button" aria-label="Text input" title="Text input" :aria-pressed="inputMode === 'text'" :disabled="saving || searching || removing || preparingEdit || editingBusy || signingOut" @click="chooseInput('text')"><ActionIcon name="text" /></button>
-          <button type="button" aria-label="Voice input" title="Voice input" :aria-pressed="inputMode === 'voice'" :disabled="saving || searching || removing || preparingEdit || editingBusy || signingOut" @click="chooseInput('voice')"><ActionIcon name="mic" /></button>
-          <button type="button" aria-label="Form input" title="Form input" :aria-pressed="inputMode === 'form'" :disabled="busy && !recording && !transcribing && !openingMic" @click="chooseInput('form')"><ActionIcon name="form" /></button>
+          <button type="button" aria-label="Text input" title="Text input" :aria-pressed="inputMode === 'text'" :disabled="saving || searching || removing || preparingEdit || editingBusy || signingOut" @click="chooseInput('text')"><ActionIcon name="text" /><span>Text</span></button>
+          <button type="button" aria-label="Voice input" title="Voice input" :aria-pressed="inputMode === 'voice'" :disabled="saving || searching || removing || preparingEdit || editingBusy || signingOut" @click="chooseInput('voice')"><ActionIcon name="mic" /><span>Voice</span></button>
+          <button type="button" aria-label="Form input" title="Form input" :aria-pressed="inputMode === 'form'" :disabled="busy && !recording && !transcribing && !openingMic" @click="chooseInput('form')"><ActionIcon name="form" /><span>Form</span></button>
         </div>
         <div v-if="inputMode === 'text'" class="note-composer">
           <label for="note" class="sr-only">Encounter note</label>
@@ -354,21 +365,22 @@ async function removeConnection(memory: string, label: string) {
         </div>
       </form>
 
-      <form v-else class="search-form" role="search" :aria-busy="searching" @submit.prevent="seek">
+      <form v-else class="search-form" role="search" @submit.prevent="seek">
         <label for="need" class="sr-only">Who could help?</label>
-        <div class="search-composer">
+        <div class="search-composer" :aria-busy="searching">
           <ActionIcon name="search" />
           <input id="need" ref="needField" v-model="description" type="search" maxlength="2000" :disabled="busy" required placeholder="What do you need help with?" />
           <button class="icon-button composer-action save-action" type="submit" :disabled="busy" :aria-label="searching ? 'Finding connections' : 'Find connections'" :title="searching ? 'Finding…' : 'Find'"><ActionIcon name="arrow" /></button>
         </div>
+        <p v-if="searching" class="status search-status" role="status" aria-live="polite">Finding connections…</p>
         <p v-if="searchError" class="refusal" role="alert">{{ searchError }}</p>
       </form>
 
       <AnimatedBackdrop />
       </div>
 
-      <section v-if="mode === 'find' && results" class="results" aria-label="Suggestions" aria-live="polite">
-        <p v-if="results.suggestions.length === 0" class="status">No saved encounters matched this need.</p>
+      <section v-if="mode === 'find' && results" class="results" aria-label="Suggestions">
+        <p class="status" role="status">{{ results.suggestions.length ? `Found ${results.suggestions.length} connection${results.suggestions.length === 1 ? "" : "s"}.` : "No saved encounters matched this need." }}</p>
         <ContactRow v-for="suggestion in suggestions" :key="`${suggestion.target}:${suggestion.source}`" :label="suggestion.label" :content="suggestion.content" :original="suggestion.original" :details="suggestion.details" :reason="suggestion.reason" :busy="busy" heading="h2" @edit="openEdit(suggestion.source)" @remove="requestRemoval(suggestion.source, suggestion.label)" />
       </section>
 

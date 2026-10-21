@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { trapDialogFocus } from "./dialog-focus.ts";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 defineProps<{ label: string }>();
 defineEmits<{ confirm: []; cancel: [] }>();
@@ -8,7 +9,7 @@ onBeforeUnmount(() => dialog.value?.close());
 </script>
 
 <template>
-  <dialog ref="dialog" class="removal-dialog" aria-labelledby="removal-title" aria-describedby="removal-description" @cancel.prevent="$emit('cancel')">
+  <dialog ref="dialog" @keydown="trapDialogFocus" class="removal-dialog" aria-labelledby="removal-title" aria-describedby="removal-description" @cancel.prevent="$emit('cancel')">
     <h2 id="removal-title">Remove {{ label }}?</h2>
     <p id="removal-description">This deletes this saved encounter and its search evidence. It cannot be undone.</p>
     <div class="dialog-actions">

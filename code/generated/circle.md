@@ -14,6 +14,10 @@ Defined in [Federating](../design/concepts/Federating.md), line 1.
 
 #### Actions
 
+- `resolve(attempt: Attempt) : returns (user: User | null, linked: Flag)`
+  - Refuses `SIGN_IN_EXPIRED`: This sign-in has expired. Start again.
+- `requireLinkable(attempt: Attempt) : returns ()`
+  - Refuses `SIGN_IN_EXPIRED`: This sign-in has expired. Start again.
 - `start() : returns (attempt: Attempt, expiresAt: DateTime, address: String)`
 - `finish(attempt: Attempt, nonce: String, code: String) : returns (username: String)`
   - Refuses `SIGN_IN_EXPIRED`: This sign-in has expired. Start again.
@@ -65,6 +69,8 @@ Defined in [Registering](../design/concepts/Registering.md), line 1.
 
 #### Actions
 
+- `identify(user: User) : returns (username: String)`
+  - Refuses `USER_NOT_FOUND`: Account not found.
 - `register(username: String) : returns (user: User)`
   - Refuses `INVALID_USERNAME`: A username must have 3 to 32 letters, digits, underscores, or hyphens.
   - Refuses `USERNAME_TAKEN`: That username is taken.
@@ -248,10 +254,8 @@ Authored path: `Circle.Edit`.
 
 ```reaction
 when Remembering.edit (capturedAt, content, memory, owner, revision, submission, timeZone), asked by Circle.Edit#2
-where
-  view "the memory (memory) owned by (owner)" with (memory, owner) has (content: savedContent, referenceDate, revision: savedRevision)
 then
-  Graphing.ingest (content: savedContent, owner, referenceDate, revision: savedRevision, source: memory)
+  Remembering.inspect (memory, owner)
 ```
 
 ### Circle.Edit#4
@@ -261,7 +265,19 @@ Authored path: `Circle.Edit`.
 - Covered by [Circle](../design/compositions/Circle.md), line 31.
 
 ```reaction
-when Graphing.ingest (content: savedContent, owner, referenceDate, revision: savedRevision, source: memory), asked by Circle.Edit#3
+when Remembering.inspect (memory, owner, content: savedContent, referenceDate, revision: savedRevision), asked by Circle.Edit#3
+then
+  Graphing.ingest (content: savedContent, owner, referenceDate, revision: savedRevision, source: memory)
+```
+
+### Circle.Edit#5
+
+Authored path: `Circle.Edit`.
+- Covered by [Circle](../design/compositions/Circle.md), line 13.
+- Covered by [Circle](../design/compositions/Circle.md), line 31.
+
+```reaction
+when Graphing.ingest (content: savedContent, owner, referenceDate, revision: savedRevision, source: memory), asked by Circle.Edit#4
 where
   earlier, RequestBoundary.request (content, memory, path: "/memories/edit", requestId, revision, session, submission, timeZone)
 then
@@ -392,12 +408,23 @@ Authored path: `Circle.PrepareEdit`.
 
 ```reaction
 when Graphing.ingest (content, owner, referenceDate, revision, source: memory), asked by Circle.PrepareEdit#3
+then
+  Remembering.inspect (memory, owner)
+```
+
+### Circle.PrepareEdit#5
+
+Authored path: `Circle.PrepareEdit`.
+- Covered by [Circle](../design/compositions/Circle.md), line 13.
+- Covered by [Circle](../design/compositions/Circle.md), line 30.
+
+```reaction
+when Remembering.inspect (memory, owner, content: currentContent, original: currentOriginal, referenceDate: currentDate, revision: currentRevision), asked by Circle.PrepareEdit#4
 where
-  view "the memory (memory) owned by (owner)" with (memory, owner) has (content, original, referenceDate, revision)
-  Graphing._card (content, owner, referenceDate, revision, source: memory) has (card)
+  Graphing._card (content: currentContent, owner, referenceDate: currentDate, revision: currentRevision, source: memory) has (card)
   earlier, RequestBoundary.request (memory, path: "/memories/prepare-edit", requestId, session)
 then
-  RequestBoundary.respond (card, content, memory, original, referenceDate, requestId, revision)
+  RequestBoundary.respond (card, content: currentContent, memory, original: currentOriginal, referenceDate: currentDate, requestId, revision: currentRevision)
 ```
 
 ### Circle.Remember
@@ -437,10 +464,8 @@ Authored path: `Circle.Remember`.
 
 ```reaction
 when Remembering.remember (capturedAt, content, owner, submission, timeZone, memory), asked by Circle.Remember#2
-where
-  view "the memory (memory) owned by (owner)" with (memory, owner) has (content: savedContent, referenceDate, revision)
 then
-  Graphing.ingest (content: savedContent, owner, referenceDate, revision, source: memory)
+  Remembering.inspect (memory, owner)
 ```
 
 ### Circle.Remember#4
@@ -450,7 +475,19 @@ Authored path: `Circle.Remember`.
 - Covered by [Circle](../design/compositions/Circle.md), line 26.
 
 ```reaction
-when Graphing.ingest (content: savedContent, owner, referenceDate, revision, source: memory), asked by Circle.Remember#3
+when Remembering.inspect (memory, owner, content: savedContent, referenceDate, revision), asked by Circle.Remember#3
+then
+  Graphing.ingest (content: savedContent, owner, referenceDate, revision, source: memory)
+```
+
+### Circle.Remember#5
+
+Authored path: `Circle.Remember`.
+- Covered by [Circle](../design/compositions/Circle.md), line 9.
+- Covered by [Circle](../design/compositions/Circle.md), line 26.
+
+```reaction
+when Graphing.ingest (content: savedContent, owner, referenceDate, revision, source: memory), asked by Circle.Remember#4
 where
   earlier, RequestBoundary.request (content, path: "/memories/remember", requestId, session, submission, timeZone)
 then
@@ -592,8 +629,19 @@ Authored path: `reusable.accounts.identifying.Me`.
 
 ```reaction
 when Sessioning.use (session, subject: user), asked by reusable.accounts.identifying.Me
+then
+  Registering.identify (user)
+```
+
+### reusable.accounts.identifying.Me#3
+
+Authored path: `reusable.accounts.identifying.Me`.
+- Covered by [Accounts](../design/compositions/reusable/accounts.md), line 5.
+- Covered by [Accounts](../design/compositions/reusable/accounts.md), line 8.
+
+```reaction
+when Registering.identify (user, username), asked by reusable.accounts.identifying.Me#2
 where
-  Registering._username (user) has (username)
   earlier, RequestBoundary.request (path: "/auth/me", requestId, session)
 then
   RequestBoundary.respond (requestId, username)
@@ -625,7 +673,7 @@ then
   RequestBoundary.respond (requestId)
 ```
 
-### reusable.commons.finishing.ChooseUsername:expired
+### reusable.commons.finishing.ChooseUsername
 
 Authored path: `reusable.commons.finishing.ChooseUsername`.
 - Covered by [Signing in with Commons](../design/compositions/reusable/commons.md), line 22.
@@ -633,60 +681,58 @@ Authored path: `reusable.commons.finishing.ChooseUsername`.
 
 ```reaction
 when RequestBoundary.request (attempt, path: "/auth/commons/choose", requestId, username)
-where
-  CommonsFederating._linkable (attempt) has (linkable: false)
 then
-  RequestBoundary.respond (error: "SIGN_IN_EXPIRED", requestId)
+  CommonsFederating.requireLinkable (attempt)
 ```
 
-### reusable.commons.finishing.ChooseUsername:linkable
+### reusable.commons.finishing.ChooseUsername#2
 
 Authored path: `reusable.commons.finishing.ChooseUsername`.
 - Covered by [Signing in with Commons](../design/compositions/reusable/commons.md), line 22.
 - Covered by [Signing in with Commons](../design/compositions/reusable/commons.md), line 26.
 
 ```reaction
-when RequestBoundary.request (attempt, path: "/auth/commons/choose", requestId, username)
+when CommonsFederating.requireLinkable (attempt), asked by reusable.commons.finishing.ChooseUsername
 where
-  CommonsFederating._linkable (attempt) has (linkable: true)
+  earlier, RequestBoundary.request (attempt, path: "/auth/commons/choose", requestId, username)
 then
   Registering.register (username)
 ```
 
-### reusable.commons.finishing.ChooseUsername:linkable#2
+### reusable.commons.finishing.ChooseUsername#3
 
 Authored path: `reusable.commons.finishing.ChooseUsername`.
 - Covered by [Signing in with Commons](../design/compositions/reusable/commons.md), line 22.
 - Covered by [Signing in with Commons](../design/compositions/reusable/commons.md), line 26.
 
 ```reaction
-when Registering.register (username, user), asked by reusable.commons.finishing.ChooseUsername:linkable
+when Registering.register (username, user), asked by reusable.commons.finishing.ChooseUsername#2
 where
-  earlier, RequestBoundary.request (attempt, path: "/auth/commons/choose", requestId, username)
+  earlier, CommonsFederating.requireLinkable (attempt), asked by reusable.commons.finishing.ChooseUsername
 then
   CommonsFederating.link (attempt, user)
 ```
 
-### reusable.commons.finishing.ChooseUsername:linkable#3
+### reusable.commons.finishing.ChooseUsername#4
 
 Authored path: `reusable.commons.finishing.ChooseUsername`.
 - Covered by [Signing in with Commons](../design/compositions/reusable/commons.md), line 22.
 - Covered by [Signing in with Commons](../design/compositions/reusable/commons.md), line 26.
 
 ```reaction
-when CommonsFederating.link (attempt, user), asked by reusable.commons.finishing.ChooseUsername:linkable#2
+when CommonsFederating.link (attempt, user), asked by reusable.commons.finishing.ChooseUsername#3
 then
   Sessioning.start (subject: user)
 ```
 
-### reusable.commons.finishing.ChooseUsername:linkable#4
+### reusable.commons.finishing.ChooseUsername#5
 
 Authored path: `reusable.commons.finishing.ChooseUsername`.
 - Covered by [Signing in with Commons](../design/compositions/reusable/commons.md), line 22.
 - Covered by [Signing in with Commons](../design/compositions/reusable/commons.md), line 26.
 
 ```reaction
-when Sessioning.start (subject: user, expiresAt, session), asked by reusable.commons.finishing.ChooseUsername:linkable#3
+when Sessioning.start (subject: user, expiresAt, session), asked by reusable.commons.finishing.ChooseUsername#4
 where
   earlier, RequestBoundary.request (attempt, path: "/auth/commons/choose", requestId, username)
 then
@@ -705,7 +751,7 @@ then
   CommonsFederating.finish (attempt, code, nonce: state)
 ```
 
-### reusable.commons.finishing.FinishCommons:new#2
+### reusable.commons.finishing.FinishCommons#2
 
 Authored path: `reusable.commons.finishing.FinishCommons`.
 - Covered by [Signing in with Commons](../design/compositions/reusable/commons.md), line 15.
@@ -713,10 +759,8 @@ Authored path: `reusable.commons.finishing.FinishCommons`.
 
 ```reaction
 when CommonsFederating.finish (attempt, code, nonce: state, username), asked by reusable.commons.finishing.FinishCommons
-where
-  no CommonsFederating._user (attempt)
 then
-  Registering.register (username)
+  CommonsFederating.resolve (attempt)
 ```
 
 ### reusable.commons.finishing.FinishCommons:new#3
@@ -726,11 +770,12 @@ Authored path: `reusable.commons.finishing.FinishCommons`.
 - Covered by [Signing in with Commons](../design/compositions/reusable/commons.md), line 25.
 
 ```reaction
-when Registering.register (username, user), asked by reusable.commons.finishing.FinishCommons:new#2
+when CommonsFederating.resolve (attempt, linked, user), asked by reusable.commons.finishing.FinishCommons#2
 where
+  linked is among [false]
   earlier, CommonsFederating.finish (attempt, code, nonce: state, username), asked by reusable.commons.finishing.FinishCommons
 then
-  CommonsFederating.link (attempt, user)
+  Registering.register (username)
 ```
 
 ### reusable.commons.finishing.FinishCommons:new#4
@@ -740,9 +785,11 @@ Authored path: `reusable.commons.finishing.FinishCommons`.
 - Covered by [Signing in with Commons](../design/compositions/reusable/commons.md), line 25.
 
 ```reaction
-when CommonsFederating.link (attempt, user), asked by reusable.commons.finishing.FinishCommons:new#3
+when Registering.register (username, user: newUser), asked by reusable.commons.finishing.FinishCommons:new#3
+where
+  earlier, CommonsFederating.finish (attempt, code, nonce: state, username), asked by reusable.commons.finishing.FinishCommons
 then
-  Sessioning.start (subject: user)
+  CommonsFederating.link (attempt, user: newUser)
 ```
 
 ### reusable.commons.finishing.FinishCommons:new#5
@@ -752,25 +799,23 @@ Authored path: `reusable.commons.finishing.FinishCommons`.
 - Covered by [Signing in with Commons](../design/compositions/reusable/commons.md), line 25.
 
 ```reaction
-when Sessioning.start (subject: user, expiresAt, session), asked by reusable.commons.finishing.FinishCommons:new#4
-where
-  earlier, RequestBoundary.request (attempt, code, path: "/auth/commons/finish", requestId, state)
+when CommonsFederating.link (attempt, user: newUser), asked by reusable.commons.finishing.FinishCommons:new#4
 then
-  RequestBoundary.respond (expiresAt, requestId, session, user)
+  Sessioning.start (subject: newUser)
 ```
 
-### reusable.commons.finishing.FinishCommons:returning#2
+### reusable.commons.finishing.FinishCommons:new#6
 
 Authored path: `reusable.commons.finishing.FinishCommons`.
 - Covered by [Signing in with Commons](../design/compositions/reusable/commons.md), line 15.
 - Covered by [Signing in with Commons](../design/compositions/reusable/commons.md), line 25.
 
 ```reaction
-when CommonsFederating.finish (attempt, code, nonce: state, username), asked by reusable.commons.finishing.FinishCommons
+when Sessioning.start (subject: newUser, expiresAt, session), asked by reusable.commons.finishing.FinishCommons:new#5
 where
-  CommonsFederating._user (attempt) has (user)
+  earlier, RequestBoundary.request (attempt, code, path: "/auth/commons/finish", requestId, state)
 then
-  Sessioning.start (subject: user)
+  RequestBoundary.respond (expiresAt, requestId, session, user: newUser)
 ```
 
 ### reusable.commons.finishing.FinishCommons:returning#3
@@ -780,7 +825,21 @@ Authored path: `reusable.commons.finishing.FinishCommons`.
 - Covered by [Signing in with Commons](../design/compositions/reusable/commons.md), line 25.
 
 ```reaction
-when Sessioning.start (subject: user, expiresAt, session), asked by reusable.commons.finishing.FinishCommons:returning#2
+when CommonsFederating.resolve (attempt, linked, user), asked by reusable.commons.finishing.FinishCommons#2
+where
+  linked is among [true]
+then
+  Sessioning.start (subject: user)
+```
+
+### reusable.commons.finishing.FinishCommons:returning#4
+
+Authored path: `reusable.commons.finishing.FinishCommons`.
+- Covered by [Signing in with Commons](../design/compositions/reusable/commons.md), line 15.
+- Covered by [Signing in with Commons](../design/compositions/reusable/commons.md), line 25.
+
+```reaction
+when Sessioning.start (subject: user, expiresAt, session), asked by reusable.commons.finishing.FinishCommons:returning#3
 where
   earlier, RequestBoundary.request (attempt, code, path: "/auth/commons/finish", requestId, state)
 then

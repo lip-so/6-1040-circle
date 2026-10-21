@@ -78,3 +78,13 @@ describe("Seeking", () => {
     }
   });
 });
+
+
+test("identical repeated needs have separate identities and preserve both exact descriptions",async()=>{
+  const description="  Who develops sensors?  ";
+  const a=await seeking.seek({owner:"ralph",description}),b=await seeking.seek({owner:"ralph",description});
+  expect(a.need).not.toBe(b.need);
+  expect(await seeking._get({owner:"ralph",...a})).toEqual([{description}]);
+  expect(await seeking._get({owner:"ralph",...b})).toEqual([{description}]);
+  expect(await db.collection("seeking.needs").countDocuments()).toBe(2);
+});

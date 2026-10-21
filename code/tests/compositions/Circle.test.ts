@@ -1,7 +1,8 @@
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "bun:test";
 import { MongoClient, type Db } from "mongodb";
+import type { CircleWireHttp } from "../../generated/wire.ts";
 import { assembleApplication } from "../../src/assembly.ts";
-import { NeedResults } from "../../src/compositions/Circle.ts";
+import { NeedResults, SavedMemories } from "../../src/compositions/Circle.ts";
 import { RememberingConcept } from "../../src/concepts/Remembering.ts";
 import { SeekingConcept } from "../../src/concepts/Seeking.ts";
 import { GraphingConcept } from "../../src/concepts/Graphing.ts";
@@ -78,4 +79,36 @@ test("results hide stale organization while an edited current original awaits re
   expect(await application().form(NeedResults({owner,need,recall}))).toMatchObject({suggestions:[{source:memory}]});
   await memories.edit({owner,memory,content:"Person: Faustin\nWhen:\nDoes: Marine biologist\nDiscussed:",revision:0,submission:crypto.randomUUID(),capturedAt:new Date()});
   expect(await application().form(NeedResults({owner,need,recall}))).toMatchObject({suggestions:[]});
+});
+
+
+test("saved former preserves timestamp/identity paging order and drops disappeared rows",async()=>{
+  const memories=new RememberingConcept(db),owner="ordering";
+  for(const [memory,capturedAt] of [["z",new Date("2026-10-20")],["b",new Date("2026-10-19")],["a",new Date("2026-10-19")]] as const) await db.collection<{_id:string;owner:string;content:string;capturedAt:Date}>("remembering.memories").insertOne({_id:memory,owner,content:"Met Mira.",capturedAt});
+  const app=application();
+  const result=await app.form(SavedMemories({owner,after:""})) as CircleWireHttp["/memories/list"]["output"]["memories"];
+  expect(result.map(row=>row.memory)).toEqual(["z","a","b"]);
+  await memories.forget({owner,memory:"a"});
+  expect((await app.form(SavedMemories({owner,after:""})) as CircleWireHttp["/memories/list"]["output"]["memories"]).map(row=>row.memory)).toEqual(["z","b"]);
+});
+
+test("results former retains provider relevance order through joins",async()=>{
+  const owner="ordering",memories=new RememberingConcept(db),brain=new FixtureBrain(),graph=new GraphingConcept(db,brain);
+  const notes=[];
+  for(const name of ["Mira","Nia","Leo"]) {const content=`Met ${name}. We discussed sensors.`;const {memory}=await memories.remember({owner,content,submission:crypto.randomUUID(),capturedAt:new Date()});notes.push(memory);}
+  brain.select=async(_description,rows)=>({matches:[...rows].reverse().map(row=>({source:row.source,facts:[1]}))});
+  const {need}=await new SeekingConcept(db).seek({owner,description:"sensors"});
+  const {recall}=await graph.recall({owner,description:"sensors",...(await memories._corpus({owner}))});
+  const result=await application().form(NeedResults({owner,need,recall})) as CircleWireHttp["/needs/seek"]["output"]["results"];
+  expect(result.suggestions.map(row=>row.source)).toEqual(notes.sort().reverse());
+});
+
+
+test("list formation omits a record removed after enumeration without dropping the whole answer",async()=>{
+  const owner="ordering",memories=new RememberingConcept(db);
+  await memories.remember({owner,content:"Met Mira.",submission:crypto.randomUUID(),capturedAt:new Date()});
+  const originalList=memories._list.bind(memories);
+  memories._list=async function _list(input){const rows=await originalList(input);if(rows[0]) await memories.forget({owner,memory:rows[0].memory});return rows;};
+  const app=assembleApplication(db,{instances:{Remembering:memories}});applications.push(app);
+  expect(await app.form(SavedMemories({owner,after:""}))).toEqual([]);
 });

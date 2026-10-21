@@ -21,7 +21,7 @@ const NOTE = "Met Faustin, founder of an AI-chip startup. We talked about system
 const applications: ReturnType<typeof assembleApplication>[] = [];
 afterEach(async () => { for (const app of applications.splice(0)) await app.beginDrain(); });
 
-async function setup(failure?: "ingest" | "trace" | "ingest-once" | "withdraw-once" | "edit-ingest-once", databaseOverride?: Db) {
+async function setup(failure?: "ingest" | "trace" | "ingest-once" | "withdraw-once" | "edit-ingest-once" | "disappear-save" | "disappear-edit" | "disappear-prepare" | "disappear-results" | "disappear-need", databaseOverride?: Db) {
   const database = databaseOverride ?? await testDatabase();
   const commons = new MemoryProvider();
   const graph = new GraphingConcept(database, new FixtureBrain());
@@ -47,7 +47,24 @@ async function setup(failure?: "ingest" | "trace" | "ingest-once" | "withdraw-on
       return original(input);
     };
   }
-  const application = assembleApplication(database, { commons, transcriber: { async transcribe() { return "Met Mira. We discussed ocean sensors."; } }, instances: { Graphing: graph } });
+  const remembering = new RememberingConcept(database);
+  if(failure === "disappear-save") {
+    const save=remembering.remember.bind(remembering);
+    remembering.remember=async function remember(input){const result=await save(input);await remembering.forget({...input,...result});return result;};
+  }
+  if(failure === "disappear-edit") {
+    const save=remembering.edit.bind(remembering);
+    remembering.edit=async function edit(input){const result=await save(input);await remembering.forget(input);return result;};
+  }
+  if(failure === "disappear-prepare") {
+    const originalIngest=graph.ingest.bind(graph); let calls=0;
+    graph.ingest=async function ingest(input): Promise<Record<string, never>> {const result=await originalIngest(input);if(++calls > 1) await remembering.forget({owner:input.owner,memory:input.source});return result;};
+  }
+  if(failure === "disappear-results" || failure === "disappear-need") {
+    const originalRecall=graph.recall.bind(graph);
+    graph.recall=async function recall(input): Promise<{ recall: string }> {const result=await originalRecall(input);if(failure === "disappear-results") for(const row of JSON.parse(input.notes)) await remembering.forget({owner:input.owner,memory:row.source});else await database.collection("seeking.needs").deleteMany({owner:input.owner});return result;};
+  }
+  const application = assembleApplication(database, { commons, transcriber: { async transcribe() { return "Met Mira. We discussed ocean sensors."; } }, instances: { Graphing: graph, Remembering: failure?.startsWith("disappear") ? remembering : new RememberingConcept(database, {async transcribe(){return "Met Mira. We discussed ocean sensors.";}}) } });
   applications.push(application);
   const handle = createHttpHandler({ application, gateway: createGateway({ application }), policy: circleHttpPolicy(ORIGIN) });
 
@@ -429,3 +446,28 @@ test("processing failure after an edit preserves current form and original, same
   expect((await sam.post("/memories/list",{after:""})).body.memories).toMatchObject([{memory,content,original:NOTE,revision:1,card:{name:"Faustin"}}]);
   expect(await database.collection("remembering.memories").countDocuments({owner})).toBe(1);
 });
+
+
+for(const stage of ["disappear-save","disappear-edit","disappear-prepare","disappear-results","disappear-need"] as const) {
+  test(`${stage} returns a response within two seconds rather than the 120-second deadline`,async()=>{
+    const {browser,database}=await setup(stage),sam=browser();const owner=await sam.signIn(SAM);
+    const saved=stage === "disappear-save" ? null : await sam.post("/memories/remember",{content:NOTE});
+    const memory=saved?.body.memory;
+    const endpoint=stage === "disappear-save" ? "/memories/remember" : stage === "disappear-edit" ? "/memories/edit" : stage === "disappear-prepare" ? "/memories/prepare-edit" : "/needs/seek";
+    const body=stage === "disappear-save" ? {content:NOTE} : stage === "disappear-edit" ? {memory,content:"Met Mira.",revision:0,submission:crypto.randomUUID()} : stage === "disappear-prepare" ? {memory} : {description:"systems engineering"};
+    const response=await sam.post(endpoint,body);
+    if(stage === "disappear-results") expect(response).toMatchObject({status:200,body:{results:{suggestions:[]}}});
+    else if(stage === "disappear-need") expect(response).toMatchObject({status:500,body:{error:"INTERNAL_ERROR"}});
+    else expect(response).toMatchObject({status:404,body:{error:"NOT_FOUND"}});
+    expect(response.body.error).not.toBe("TIMEOUT");
+    if(stage !== "disappear-need") expect(await database.collection("remembering.memories").countDocuments({owner,removed:{$ne:true}})).toBe(0);
+  },2_000);
+}
+
+
+
+test("account disappearance after sign-in returns UNAUTHORIZED without waiting",async()=>{
+  const {browser,database}=await setup(),sam=browser();const owner=await sam.signIn(SAM);
+  await database.collection("registering.users").deleteOne({_id:owner} as any);
+  expect(await sam.post("/auth/me")).toMatchObject({status:401,body:{error:"UNAUTHORIZED"}});
+},2_000);

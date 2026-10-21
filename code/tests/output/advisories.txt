@@ -1,0 +1,22 @@
+Command: bun x --no-install sync-engine check --show-advisories
+Working directory: /Users/sofia/6-1040-circle/code
+Started (UTC): 2026-10-21T02:41:38.737477+00:00
+
+Concept action/query source check passed for 6 concepts.
+warning MISSING_ENDPOINT_FALLBACK: Endpoint "Circle.Edit" at "/memories/edit" has no recognized total answer path; an admitted request can time out when every answer guard drops.
+warning MISSING_ENDPOINT_FALLBACK: Endpoint "Circle.Forget" at "/memories/forget" has no recognized total answer path; an admitted request can time out when every answer guard drops.
+warning MISSING_ENDPOINT_FALLBACK: Endpoint "Circle.ListMemories" at "/memories/list" has no recognized total answer path; an admitted request can time out when every answer guard drops.
+warning MISSING_ENDPOINT_FALLBACK: Endpoint "Circle.PrepareEdit" at "/memories/prepare-edit" has no recognized total answer path; an admitted request can time out when every answer guard drops.
+warning MISSING_ENDPOINT_FALLBACK: Endpoint "Circle.Remember" at "/memories/remember" has no recognized total answer path; an admitted request can time out when every answer guard drops.
+warning MISSING_ENDPOINT_FALLBACK: Endpoint "Circle.Seek" at "/needs/seek" has no recognized total answer path; an admitted request can time out when every answer guard drops.
+warning MISSING_ENDPOINT_FALLBACK: Endpoint "Circle.Transcribe" at "/memories/transcribe" has no recognized total answer path; an admitted request can time out when every answer guard drops.
+warning MISSING_ENDPOINT_FALLBACK: Endpoint "reusable.accounts.identifying.Me" at "/auth/me" has no recognized total answer path; an admitted request can time out when every answer guard drops.
+warning MISSING_ENDPOINT_FALLBACK: Endpoint "reusable.commons.finishing.ChooseUsername" at "/auth/commons/choose" has no recognized total answer path; an admitted request can time out when every answer guard drops.
+warning MISSING_ENDPOINT_FALLBACK: Endpoint "reusable.commons.finishing.FinishCommons" at "/auth/commons/finish" has no recognized total answer path; an admitted request can time out when every answer guard drops.
+warning MISSING_ENDPOINT_FALLBACK: Endpoint "reusable.commons.starting.StartCommons" at "/auth/commons/start" has no recognized total answer path; an admitted request can time out when every answer guard drops.
+info ORDER_SENSITIVE_FORMER: Former "results for (owner)'s need (need) from (recall)" contains a source-order-sensitive selection.
+info ORDER_SENSITIVE_FORMER: Former "saved memories of (owner) after (after)" contains a source-order-sensitive selection.
+Application diagnostic check passed with 13 advisories.
+
+Finished (UTC): 2026-10-21T02:41:39.323881+00:00
+Exit status: 0

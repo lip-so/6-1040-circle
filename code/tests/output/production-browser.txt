@@ -1,0 +1,33 @@
+Command: env CIRCLE_BROWSER_PREVIEW=1 bun run --cwd code/frontend test:browser
+Working directory: /Users/sofia/6-1040-circle
+Started (UTC): 2026-10-21T02:41:50.222919+00:00
+
+$ playwright test
+[WebServer] (node:59073) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 16 tests using 1 worker
+
+(node:59085) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/browser/interactions.pw.mjs:39:1 › Text, Voice, Form preserve independent drafts and are named, pressed and keyboard reachable (408ms)
+  ✓   2 tests/browser/interactions.pw.mjs:58:1 › search announces pending, success, empty and failure distinctly (346ms)
+  ✓   3 tests/browser/interactions.pw.mjs:76:1 › edit prefills, cancels without writes, recovers a conflict and saves the fresh revision (646ms)
+  ✓   4 tests/browser/interactions.pw.mjs:98:1 › removal names contact, Cancel and Escape restore focus, duplicate clicks make one request (315ms)
+  ✓   5 tests/browser/interactions.pw.mjs:112:66 › account switch discards pending save and clears drafts (311ms)
+  ✓   6 tests/browser/interactions.pw.mjs:112:66 › account switch discards pending edit and clears drafts (388ms)
+  ✓   7 tests/browser/interactions.pw.mjs:112:66 › account switch discards pending search and clears drafts (280ms)
+  ✓   8 tests/browser/interactions.pw.mjs:112:66 › account switch discards pending transcription and clears drafts (479ms)
+  ✓   9 tests/browser/interactions.pw.mjs:139:40 › responsive layout 320px: long content, dialog scroll and focus remain usable (356ms)
+  ✓  10 tests/browser/interactions.pw.mjs:139:40 › responsive layout 390px: long content, dialog scroll and focus remain usable (351ms)
+  ✓  11 tests/browser/interactions.pw.mjs:139:40 › responsive layout 640px: long content, dialog scroll and focus remain usable (356ms)
+  ✓  12 tests/browser/interactions.pw.mjs:139:40 › responsive layout 1280px: long content, dialog scroll and focus remain usable (443ms)
+  ✓  13 tests/browser/interactions.pw.mjs:159:1 › switching away from pending Voice preserves typed draft and ignores the late transcript (485ms)
+  ✓  14 tests/browser/interactions.pw.mjs:170:26 › enlarged 200% CSS zoom keeps forms and dialogs operable (321ms)
+  ✓  15 tests/browser/interactions.pw.mjs:170:26 › enlarged 400% CSS zoom keeps forms and dialogs operable (333ms)
+  ✓  16 tests/browser/interactions.pw.mjs:183:1 › long removal confirmation scrolls in a short viewport and traps keyboard focus (223ms)
+
+  16 passed (7.0s)
+
+Finished (UTC): 2026-10-21T02:41:57.512406+00:00
+Exit status: 0

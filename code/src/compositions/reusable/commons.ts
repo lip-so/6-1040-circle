@@ -1,7 +1,7 @@
 // Reused from mit-sdg/conceptbox (MIT); see third-party/Conceptbox-LICENSE.
 import type { HttpCookieBinding } from "@mit-sdg/sync-engine-http/policy";
 import { endpoint, receive, respond } from "@mit-sdg/sync-engine/boundary";
-import { no, where } from "@mit-sdg/sync-engine/language";
+import { is, where } from "@mit-sdg/sync-engine/language";
 import { concepts } from "../../concepts.ts";
 import { textInput } from "./inputs.ts";
 
@@ -18,19 +18,20 @@ const StartCommons = endpoint(
 
 const FinishCommons = endpoint(
   "/auth/commons/finish",
-  ({ attempt, state, code, username, user, session, expiresAt }) =>
+  ({ attempt, state, code, username, user, newUser, linked, session, expiresAt }) =>
     receive({ attempt, state, code })
       .then(CommonsFederating.finish({ attempt, nonce: state, code }).responds({ username }))
+      .then(CommonsFederating.resolve({ attempt }).responds({ user, linked }))
       .then(
-        where(CommonsFederating._user({ attempt }).is({ user }))
+        where(is.among(linked, [true]))
           .then(Sessioning.start({ subject: user }).responds({ session, expiresAt }))
           .then(respond({ user, session, expiresAt }))
           .named("returning"),
-        where(no(CommonsFederating._user({ attempt })))
-          .then(Registering.register({ username }).responds({ user }))
-          .then(CommonsFederating.link({ attempt, user }).responds({}))
-          .then(Sessioning.start({ subject: user }).responds({ session, expiresAt }))
-          .then(respond({ user, session, expiresAt }))
+        where(is.among(linked, [false]))
+          .then(Registering.register({ username }).responds({ user: newUser }))
+          .then(CommonsFederating.link({ attempt, user: newUser }).responds({}))
+          .then(Sessioning.start({ subject: newUser }).responds({ session, expiresAt }))
+          .then(respond({ user: newUser, session, expiresAt }))
           .named("new"),
       ),
   { validators: { input: textInput } },
@@ -39,17 +40,12 @@ const FinishCommons = endpoint(
 const ChooseUsername = endpoint(
   "/auth/commons/choose",
   ({ attempt, username, user, session, expiresAt }) =>
-    receive({ attempt, username }).then(
-      where(CommonsFederating._linkable({ attempt }).is({ linkable: true }))
-        .then(Registering.register({ username }).responds({ user }))
-        .then(CommonsFederating.link({ attempt, user }).responds({}))
-        .then(Sessioning.start({ subject: user }).responds({ session, expiresAt }))
-        .then(respond({ user, session, expiresAt }))
-        .named("linkable"),
-      where(CommonsFederating._linkable({ attempt }).is({ linkable: false }))
-        .then(respond({ error: "SIGN_IN_EXPIRED" }))
-        .named("expired"),
-    ),
+    receive({ attempt, username })
+      .then(CommonsFederating.requireLinkable({ attempt }).responds({}))
+      .then(Registering.register({ username }).responds({ user }))
+      .then(CommonsFederating.link({ attempt, user }).responds({}))
+      .then(Sessioning.start({ subject: user }).responds({ session, expiresAt }))
+      .then(respond({ user, session, expiresAt })),
   { validators: { input: textInput } },
 );
 

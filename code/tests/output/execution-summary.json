@@ -1,0 +1,32 @@
+{
+  "results": [
+    {
+      "output": "generation.txt",
+      "exit": 0
+    },
+    {
+      "output": "checks.txt",
+      "exit": 0
+    },
+    {
+      "output": "advisories.txt",
+      "exit": 0
+    },
+    {
+      "output": "p3-tests.txt",
+      "exit": 0
+    },
+    {
+      "output": "build.txt",
+      "exit": 0
+    },
+    {
+      "output": "production-browser.txt",
+      "exit": 0
+    },
+    {
+      "output": "contrast.txt",
+      "exit": 0
+    }
+  ]
+}

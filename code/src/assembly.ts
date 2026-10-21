@@ -41,7 +41,7 @@ export function assembleApplication(database: Db, options: {
       Graphing: new GraphingConcept(database, options.brain),
       ...options.instances,
     },
-    redaction: { fields: ["attempt", "nonce", "state", "code", "session", "content", "original", "fields", "editSubmission", "savedContent", "description", "notes", "audio", "card", "reason", "label", "facts", "selection", "memories", "results"] },
+    redaction: { fields: ["attempt", "nonce", "state", "code", "session", "content", "original", "fields", "editSubmission", "savedContent", "currentContent", "currentOriginal", "description", "notes", "audio", "card", "reason", "label", "facts", "selection", "memories", "results"] },
     composition: { reusable: { accounts, commons }, Circle: composition },
   });
 }

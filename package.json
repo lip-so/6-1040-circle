@@ -7,6 +7,6 @@
     "dev": "bun code/scripts/dev.ts",
     "build": "bun run --cwd code/frontend build",
     "check": "bun run --cwd code check && bun run --cwd code/frontend typecheck",
-    "test": "bun run --cwd code test"
+    "test": "bun run --cwd code test && bun run --cwd code/frontend test:browser"
   }
 }

@@ -27,6 +27,15 @@ Rule: usernames are exact and case-sensitive; Maya and maya are different. Regis
 ## Actions
 
 ```actions
+identify(user: User) : returns (username: String)
+  where user does not exist
+  then
+    refuses USER_NOT_FOUND "Account not found."
+  where user exists
+  then
+    read the user's exact username without changing state
+    returns username
+
 register(username: String) : returns (user: User)
   where username is not 3 to 32 ASCII letters, digits, underscores, or hyphens
   then

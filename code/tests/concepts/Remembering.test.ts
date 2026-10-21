@@ -1,6 +1,6 @@
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "bun:test";
 import { MongoClient, type Db } from "mongodb";
-import { EmptyContent, MemoryNotFound, SubmissionConflict, RememberingConcept } from "../../src/concepts/Remembering.ts";
+import { InvalidAudio, EditConflict, EmptyContent, MemoryNotFound, SubmissionConflict, RememberingConcept } from "../../src/concepts/Remembering.ts";
 
 const testUrl = process.env.TEST_MONGODB_URL;
 if (!testUrl) {
@@ -170,8 +170,10 @@ test("edits preserve original text/identity/time, use revisions and permit an un
   const record=await remembering.inspect({owner,memory});
   expect(record).toMatchObject({content:edit.content,original:content,revision:1,referenceDate:"2026-10-22"});
   expect(await db.collection<{_id:string;capturedAt:Date}>("remembering.memories").findOne({_id:memory})).toMatchObject({capturedAt});
-  await expect(remembering.edit({...edit,submission:crypto.randomUUID(),content:"changed"})).rejects.toThrow("changed");
-  await expect(remembering.edit({...edit,content:"reused token changed"})).rejects.toThrow("changed");
+  await expect(remembering.edit({...edit,submission:crypto.randomUUID(),content:"changed"})).rejects.toThrow(EditConflict);
+  await expect(remembering.edit({...edit,content:"reused token changed"})).rejects.toThrow(EditConflict);
+  expect(await remembering.inspect({owner,memory})).toEqual(record);
+  expect(await db.collection("remembering.memories").findOne({_id:memory} as any)).toMatchObject({capturedAt,content:edit.content,original:content,revision:1});
   await expect(remembering.edit({...edit,owner:"foreign"})).rejects.toThrow(MemoryNotFound);
   await remembering.forget({owner,memory});
   await expect(remembering.edit(edit)).rejects.toThrow(MemoryNotFound);
@@ -187,5 +189,37 @@ test("concurrent edits accept one revision, retries retain the first saved local
   expect((await remembering.inspect({owner,memory})).referenceDate).toBe("2025-12-31");
   const results=await Promise.allSettled(["one","two"].map(content=>remembering.edit({owner,memory,content,revision:0,submission:crypto.randomUUID(),capturedAt:new Date()})));
   expect(results.filter(r=>r.status==="fulfilled")).toHaveLength(1);
-  expect((await remembering.inspect({owner,memory})).revision).toBe(1);
+  const winner = results.findIndex(r => r.status === "fulfilled");
+  const loser = results.find(r => r.status === "rejected") as PromiseRejectedResult;
+  expect(loser.reason).toBeInstanceOf(EditConflict);
+  expect(await remembering.inspect({owner,memory})).toMatchObject({content:["one","two"][winner],original:input.content,revision:1});
+  expect(await db.collection("remembering.memories").findOne({_id:memory} as any)).toMatchObject({capturedAt:input.capturedAt});
+});
+
+
+test("blank edits refuse EmptyContent without changing original, timestamp or revision", async () => {
+  const input={owner:"sam",content:"Met Mira.",submission:crypto.randomUUID(),capturedAt:new Date("2026-10-20T12:00:00Z")};
+  const {memory}=await remembering.remember(input);
+  const before=await db.collection("remembering.memories").findOne({_id:memory} as any);
+  for(const content of ["", " \t\n "]) await expect(remembering.edit({...input,memory,content,revision:0,submission:crypto.randomUUID()})).rejects.toThrow(EmptyContent);
+  expect(await db.collection("remembering.memories").findOne({_id:memory} as any)).toEqual(before);
+});
+
+test("canonical audio byte boundaries and transcript boundaries never persist notes", async () => {
+  let calls=0; let transcript:unknown="x".repeat(20_000);
+  const transcriber={async transcribe(bytes:Uint8Array){calls++;expect(bytes.length).toBeLessThanOrEqual(4*1024*1024);return transcript as string;}};
+  const voice=new RememberingConcept(db,transcriber);
+  for(const size of [1,4*1024*1024-1,4*1024*1024]) expect((await voice.transcribe({audio:Buffer.alloc(size,1).toString("base64"),mediaType:"audio/webm"})).content.length).toBe(20_000);
+  const before=calls;
+  for(const audio of ["", "A", "AB==", "@@==",Buffer.alloc(4*1024*1024+1).toString("base64")]) await expect(voice.transcribe({audio,mediaType:"audio/webm"})).rejects.toThrow(InvalidAudio);
+  await expect(voice.transcribe({audio:"AQ==",mediaType:"text/plain"})).rejects.toThrow(InvalidAudio);
+  expect(calls).toBe(before);
+  for(const value of ["", " \n ","x".repeat(20_001),null,42,{}]) {
+    transcript=value;
+    await expect(voice.transcribe({audio:"AQ==",mediaType:"audio/webm"})).rejects.toThrow("Invalid transcription.");
+  }
+  const fault=new Error("injected transcription failure");
+  const failed=new RememberingConcept(db,{async transcribe(){throw fault;}});
+  await expect(failed.transcribe({audio:"AQ==",mediaType:"audio/webm"})).rejects.toBe(fault);
+  expect(await db.collection("remembering.memories").countDocuments()).toBe(0);
 });

@@ -1,7 +1,6 @@
 // Reused from mit-sdg/conceptbox (MIT); see third-party/Conceptbox-LICENSE.
 import type { HttpCookieBinding } from "@mit-sdg/sync-engine-http/policy";
 import { endpoint, receive, respond } from "@mit-sdg/sync-engine/boundary";
-import { where } from "@mit-sdg/sync-engine/language";
 import { concepts } from "../../concepts.ts";
 import { textInput } from "./inputs.ts";
 
@@ -12,9 +11,8 @@ const Me = endpoint(
   ({ session, user, username }) =>
     receive({ session })
       .then(Sessioning.use({ session }).responds({ subject: user }))
-      .then(
-        where(Registering._username({ user }).is({ username })).then(respond({ username })),
-      ),
+      .then(Registering.identify({ user }).responds({ username }))
+      .then(respond({ username })),
   { validators: { input: textInput } },
 );
 
@@ -32,7 +30,7 @@ const SignOut = endpoint(
  * the session cookie, which each endpoint in `startingSessions` sets and sign-out clears.
  */
 export const accountsHttp = {
-  publicErrors: { NOT_SIGNED_IN: "UNAUTHORIZED", INVALID_USERNAME: "INVALID_REQUEST", USERNAME_TAKEN: "CONFLICT" },
+  publicErrors: { USER_NOT_FOUND: "UNAUTHORIZED", NOT_SIGNED_IN: "UNAUTHORIZED", INVALID_USERNAME: "INVALID_REQUEST", USERNAME_TAKEN: "CONFLICT" },
   sessionCookie: (name: string, startingSessions: readonly string[]): HttpCookieBinding => ({
     name,
     input: "session",

@@ -1,0 +1,17 @@
+Command: bun code/scripts/check-contrast.ts
+Working directory: /Users/sofia/6-1040-circle
+Started (UTC): 2026-10-21T02:41:57.512538+00:00
+
+Body on cream: #252525 / #f6f2e9 = 13.72:1
+Card text on white: #20231f / #ffffff = 15.89:1
+Muted on cream: #62615d / #f6f2e9 = 5.55:1
+Blue status/focus on cream: #2455a4 / #f6f2e9 = 6.46:1
+White on primary action: #ffffff / #b83225 = 5.96:1
+White on action hover: #ffffff / #97271d = 8.00:1
+Selected toggle: #fffefa / #2455a4 = 7.15:1
+Placeholder on warm input: #73716a / #fffdf8 = 4.81:1
+Decorative vermilion on cream: #e74735 / #f6f2e9 = 3.51:1
+Quiet border on white: #d9d6ce / #ffffff = 1.45:1
+
+Finished (UTC): 2026-10-21T02:41:57.521365+00:00
+Exit status: 0

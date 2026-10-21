@@ -49,11 +49,9 @@ const Remember = endpoint(
     receive({ session, content, submission, timeZone }).where(now(capturedAt))
       .then(Sessioning.use({ session }).responds({ subject: owner }))
       .then(Remembering.remember({ owner, content, submission, capturedAt, timeZone }).responds({ memory }))
-      .then(
-        where(OwnedMemory({ owner, memory }).is({ content: savedContent, referenceDate, revision }))
-          .then(Graphing.ingest({ owner, source: memory, content: savedContent, referenceDate, revision }).responds({}))
-          .then(respond({ memory })),
-      ),
+      .then(Remembering.inspect({ owner, memory }).responds({ content: savedContent, referenceDate, revision }))
+      .then(Graphing.ingest({ owner, source: memory, content: savedContent, referenceDate, revision }).responds({}))
+      .then(respond({ memory })),
   { input: { required: ["session", "content", "submission"], defaults: { timeZone: "America/New_York" } }, validators: { input: rememberInput } },
 );
 
@@ -90,13 +88,13 @@ const Transcribe = endpoint(
 
 const PrepareEdit = endpoint(
   "/memories/prepare-edit",
-  ({ session, owner, memory, content, original, revision, referenceDate, card }) => receive({ session, memory })
+  ({ session, owner, memory, content, original, revision, referenceDate, currentContent, currentOriginal, currentRevision, currentDate, card }) => receive({ session, memory })
     .then(Sessioning.use({ session }).responds({ subject: owner }))
     .then(Remembering.inspect({ owner, memory }).responds({ content, original, revision, referenceDate }))
     .then(Graphing.ingest({ owner, source: memory, content, referenceDate, revision }).responds({}))
-    .then(where(OwnedMemory({ owner, memory }).is({ content, original, revision, referenceDate }),
-        Graphing._card({ owner, source: memory, content, referenceDate, revision }).is({ card }))
-      .then(respond({ memory, content, original, revision, referenceDate, card }))),
+    .then(Remembering.inspect({ owner, memory }).responds({ content: currentContent, original: currentOriginal, revision: currentRevision, referenceDate: currentDate }))
+    .then(where(Graphing._card({ owner, source: memory, content: currentContent, referenceDate: currentDate, revision: currentRevision }).is({ card }))
+      .then(respond({ memory, content: currentContent, original: currentOriginal, revision: currentRevision, referenceDate: currentDate, card }))),
   { input: { required: ["session", "memory"] }, validators: { input: memoryIdentityInput } },
 );
 const Edit = endpoint(
@@ -104,9 +102,9 @@ const Edit = endpoint(
   ({ session, owner, memory, content, submission, revision, timeZone, capturedAt, savedContent, savedRevision, referenceDate }) => receive({ session, memory, content, submission, revision, timeZone }).where(now(capturedAt))
     .then(Sessioning.use({ session }).responds({ subject: owner }))
     .then(Remembering.edit({ owner, memory, content, submission, revision, capturedAt, timeZone }).responds({}))
-    .then(where(OwnedMemory({ owner, memory }).is({ content: savedContent, revision: savedRevision, referenceDate }))
-      .then(Graphing.ingest({ owner, source: memory, content: savedContent, revision: savedRevision, referenceDate }).responds({}))
-      .then(respond({ memory }))),
+    .then(Remembering.inspect({ owner, memory }).responds({ content: savedContent, revision: savedRevision, referenceDate }))
+    .then(Graphing.ingest({ owner, source: memory, content: savedContent, revision: savedRevision, referenceDate }).responds({}))
+    .then(respond({ memory })),
   { input: { required: ["session", "memory", "content", "submission", "revision"], defaults: { timeZone: "America/New_York" } }, validators: { input: editInput } },
 );
 

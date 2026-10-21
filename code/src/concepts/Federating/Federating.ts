@@ -99,6 +99,19 @@ export class FederatingConcept<User extends string> {
     return { user };
   }
 
+  /** One snapshot for endpoint routing; never race independent positive/negative reads. */
+  async resolve({ attempt }: { attempt: Attempt }): Promise<{ user: User | null; linked: boolean }> {
+    const confirmed = await this.#confirmed(attempt);
+    if (!confirmed || confirmed.expiresAt <= this.clock()) throw new SignInExpired("This sign-in has expired. Start again.");
+    const link = await this.links.findOne({ subject: confirmed.subject });
+    return { user: link?.user ?? null, linked: link !== null };
+  }
+
+  async requireLinkable({ attempt }: { attempt: Attempt }): Promise<Record<string, never>> {
+    if (!(await this._linkable({ attempt })).linkable) throw new SignInExpired("This sign-in has expired. Start again.");
+    return {};
+  }
+
   async _user({ attempt }: { attempt: Attempt }) {
     const confirmed = await this.#confirmed(attempt);
     if (confirmed === null) return [];

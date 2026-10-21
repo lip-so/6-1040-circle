@@ -42,6 +42,23 @@ Rule: confirmed-attempt reads and link do not recheck expiry while the record re
 ## Actions
 
 ```actions
+resolve(attempt: Attempt) : returns (user: User | null, linked: Flag)
+  where attempt is unknown, unconfirmed or expired
+  then
+    refuses SIGN_IN_EXPIRED "This sign-in has expired. Start again."
+  where attempt is confirmed and unexpired
+  then
+    read the linked user once; return null and false when unlinked, otherwise the linked user and true
+    returns user, linked
+
+requireLinkable(attempt: Attempt) : returns ()
+  where attempt is unknown, unconfirmed, expired or its subject already linked
+  then
+    refuses SIGN_IN_EXPIRED "This sign-in has expired. Start again."
+  where attempt is confirmed, unexpired and its subject unlinked
+  then
+    returns
+
 start() : returns (attempt: Attempt, expiresAt: DateTime, address: String)
   where true
   then

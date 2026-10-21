@@ -19,7 +19,7 @@ export class RememberingConcept {
     const bytes = Buffer.from(audio, "base64");
     if (!bytes.length || bytes.length > 4 * 1024 * 1024 || bytes.toString("base64") !== audio) throw new InvalidAudio("Unsupported or invalid recording.");
     const content = await this.transcription.transcribe(bytes, mediaType);
-    if (!content.trim() || content.length > 20_000) throw new Error("Invalid transcription.");
+    if (typeof content !== "string" || !content.trim() || content.length > 20_000) throw new Error("Invalid transcription.");
     return { content };
   }
   async remember({ owner, content, submission, capturedAt, timeZone = defaultTimeZone }: {

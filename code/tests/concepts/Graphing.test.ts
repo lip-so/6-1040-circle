@@ -1,5 +1,5 @@
 import { afterAll, expect, test } from "bun:test";
-import { GraphingConcept, SourceNotOwned, SourceWithdrawn, MemoryLimit, MemoryChanged, EmptySourceContent } from "../../src/concepts/Graphing.ts";
+import { EmptyQuery, GraphingConcept, SourceNotOwned, SourceWithdrawn, MemoryLimit, MemoryChanged, EmptySourceContent } from "../../src/concepts/Graphing.ts";
 import { InvalidModelOutput, BrainUnavailable, validateCard, validateSelection, type BrainProvider, type ContactCard } from "../../src/providers/brain-provider.ts";
 import { FixtureBrain } from "../support/brain.ts";
 import { cleanupDatabases, testDatabase } from "../support/reusable/mongo.ts";
@@ -169,4 +169,32 @@ test("previous JSON cards remain readable only for matching unedited originals, 
   expect(await graph._card({owner,source:"old",content,referenceDate:"2026-10-20",revision:0})).toEqual({card});
   expect(await graph._card({owner,source:"old",content,referenceDate:"2026-10-20",revision:1})).toEqual({card:null});
   expect(await graph._card({owner:"foreign",source:"old",content})).toEqual({card:null});
+});
+
+
+test("blank queries refuse before extraction, selection or any graph mutation",async()=>{
+  const brain=new FixtureBrain(),{graph,db}=await fixture(brain);
+  for(const description of ["", " \t\n "]) await expect(graph.recall({owner,notes,description})).rejects.toThrow(EmptyQuery);
+  expect(brain.extracts).toEqual([]);expect(brain.selections).toEqual([]);
+  expect(await db.collection("graphing.sources").countDocuments()).toBe(0);
+  expect(await db.collection("graphing.recalls").countDocuments()).toBe(0);
+});
+
+test("provider-version changes invalidate extraction and selection caches while same-version repeats are read-only",async()=>{
+  const brain=new FixtureBrain(),{graph,db}=await fixture(brain);
+  const input={owner,notes,description:"ocean"};
+  const first=await graph.recall(input);
+  const stored=await db.collection("graphing.sources").findOne({owner});
+  expect(await graph.recall(input)).toEqual(first);
+  expect(await db.collection("graphing.sources").findOne({owner})).toEqual(stored);
+  expect(brain.extracts).toHaveLength(1);expect(brain.selections).toHaveLength(1);
+  brain.version="test-fixture-v2";
+  const second=await graph.recall(input);
+  expect(second.recall).not.toBe(first.recall);
+  expect(brain.extracts).toHaveLength(2);expect(brain.selections).toHaveLength(2);
+  expect(await graph._matches({owner,...first})).toEqual([]);
+  expect(await graph._matches({owner,...second})).toHaveLength(1);
+  expect(await db.collection("graphing.sources").findOne({owner})).toMatchObject({providerVersion:brain.version,sourceRevision:0});
+  expect(await graph.recall(input)).toEqual(second);
+  expect(brain.selections).toHaveLength(2);
 });

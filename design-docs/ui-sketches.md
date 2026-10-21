@@ -1,6 +1,8 @@
 # UI sketches
 
-Original scans: [UI.pdf](UI/UI.pdf).
+Historical P1 sketches; [current P3 journey](p3-user-journey.md) and [current contract](../code/design/compositions/Circle.md) define implemented behavior. Active-need reminders, Keep looking, dismissal/useful history and automatic rediscovery remain deferred. Editing and confirmed removal are implemented.
+
+Original scans: [UI.pdf](UI-assets/UI.pdf).
 
 ## 1. Home
 

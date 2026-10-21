@@ -1,4 +1,4 @@
-> Historical P2 journey. The current version adds explicitly requested editable text/voice input and private LLM contact recall; see README and `code/design/compositions/Circle.md` for current behavior.
+> Historical P2 journey. The current version adds explicitly requested editable text/voice input and private LLM contact recall; see the [P3 journey](p3-user-journey.md) and [current composition](../code/design/compositions/Circle.md) for current behavior.
 
 # P2: User Journey
 

@@ -10,7 +10,7 @@ import federatingSpec from "@design/concepts/Federating.md" with { type: "text" 
 import registeringSpec from "@design/concepts/Registering.md" with { type: "text" };
 import sessioningSpec from "@design/concepts/Sessioning.md" with { type: "text" };
 import { AlreadyLinked, FederatingConcept, NotConfirmed, SignInExpired, SignInRefused } from "./concepts/Federating/Federating.ts";
-import { InvalidUsername, RegisteringConcept, UsernameTaken } from "./concepts/Registering/Registering.ts";
+import { UserNotFound, InvalidUsername, RegisteringConcept, UsernameTaken } from "./concepts/Registering/Registering.ts";
 import { NotSignedIn, SessioningConcept } from "./concepts/Sessioning/Sessioning.ts";
 
 export class CommonsFederating extends FederatingConcept<string> {}
@@ -19,7 +19,7 @@ export class Sessioning extends SessioningConcept<string> {}
 const registering = registerConcept({
   class: RegisteringConcept,
   spec: registeringSpec,
-  refusals: { INVALID_USERNAME: InvalidUsername, USERNAME_TAKEN: UsernameTaken },
+  refusals: { USER_NOT_FOUND: UserNotFound, INVALID_USERNAME: InvalidUsername, USERNAME_TAKEN: UsernameTaken },
 });
 const commonsFederating = registerConcept({
   class: CommonsFederating,

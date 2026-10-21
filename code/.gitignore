@@ -5,3 +5,8 @@ node_modules/
 .env.*
 .DS_Store
 !.env.example
+
+# Playwright transient traces; saved verification logs/screenshots remain reviewable.
+tests/output/browser-artifacts/*/
+tests/output/browser-artifacts/.last-run.json
+frontend/dist/

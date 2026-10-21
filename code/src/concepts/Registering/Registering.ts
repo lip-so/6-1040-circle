@@ -1,6 +1,7 @@
 // Reused from mit-sdg/conceptbox (MIT); see third-party/Conceptbox-LICENSE.
 import { type Collection, type Db, MongoServerError } from "mongodb";
 
+export class UserNotFound extends Error {}
 export class InvalidUsername extends Error {}
 export class UsernameTaken extends Error {}
 
@@ -46,6 +47,12 @@ export class RegisteringConcept {
       throw error;
     }
     return { user };
+  }
+
+  async identify({ user }: { user: User }): Promise<{ username: string }> {
+    const found = await this.users.findOne({ _id: user });
+    if (!found) throw new UserNotFound("Account not found.");
+    return { username: found.username };
   }
 
   async _byUsername({ username }: { username: string }) {
