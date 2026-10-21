@@ -3,6 +3,10 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import type { CircleWireHttp } from "../../generated/wire.ts";
 import { api } from "./api/client.ts";
 import { memoryLabel, memorySummary } from "./memory-summary.ts";
+import { writeMemoryFields } from "../../src/memory-fields.ts";
+import { emptyFields, fieldsFromCard } from "./encounter-form.ts";
+import EncounterFields from "./reusable/EncounterFields.vue";
+import EditEncounter from "./reusable/EditEncounter.vue";
 import { VoiceCapture } from "./voice.ts";
 import { useRemovalConfirmation } from "./removal-confirmation.ts";
 import { useRecentPeople } from "./recent-people.ts";
@@ -19,7 +23,14 @@ const { me, checked, signingOut, error: accountError, load, signOut, sessionEnde
 const callback = ref(window.location.pathname === "/auth/commons/callback");
 const mode = ref<"remember" | "find">("find");
 const draft = ref("");
-const inputMode = ref<"text" | "voice">("text");
+const inputMode = ref<"text" | "voice" | "form">("text");
+const formDraft = ref(emptyFields());
+const editing = ref<{ memory: string; revision: number; fields: ReturnType<typeof emptyFields> } | null>(null);
+const preparingEdit = ref(false);
+const editingBusy = ref(false);
+const editError = ref("");
+let pendingEdit: { memory: string; revision: number; content: string; submission: string } | null = null;
+const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/New_York";
 const recording = ref(false);
 const openingMic = ref(false);
 const transcribing = ref(false);
@@ -35,7 +46,7 @@ const removal = ref<{ memory: string; label: string } | null>(null);
 const removalError = ref("");
 const confirmation = useRemovalConfirmation(removeConnection);
 const { target: removalTarget } = confirmation;
-const busy = computed(() => saving.value || searching.value || removing.value || signingOut.value || recording.value || openingMic.value || transcribing.value);
+const busy = computed(() => saving.value || searching.value || removing.value || preparingEdit.value || editingBusy.value || signingOut.value || recording.value || openingMic.value || transcribing.value);
 const notice = ref("");
 const noteField = ref<HTMLTextAreaElement>();
 const needField = ref<HTMLInputElement>();
@@ -44,7 +55,7 @@ let pendingSave: { submission: string; content: string } | null = null;
 const recent = useRecentPeople(input => api.memories.list(input), sessionEnded);
 const { memories, loading: loadingPeople, loaded: loadedPeople, error: peopleError, hasMore } = recent;
 const people = computed(() => memories.value.map(memory => {
-  const label = memory.card ? memory.card.name ?? "Unnamed encounter" : memoryLabel(memory.content);
+  const label = memory.card?.name || memoryLabel(memory.content);
   return { ...memory, label, details: memorySummary(memory.content, label, memory.card) };
 }));
 type Results = CircleWireHttp["/needs/seek"]["output"]["results"];
@@ -75,6 +86,7 @@ watch([me, signingOut], () => {
   removal.value = null;
   confirmation.cancel();
   removalError.value = "";
+  editing.value = null; preparingEdit.value = false; editingBusy.value = false; pendingEdit = null; editError.value = "";
   clearDraft();
   description.value = "";
   results.value = null;
@@ -101,9 +113,11 @@ function clearDraft() {
   pendingSave = null;
   draft.value = "";
   inputMode.value = "text";
+  formDraft.value = emptyFields();
 }
 
 async function switchMode(next: "remember" | "find") {
+  if (saving.value || searching.value || removing.value || preparingEdit.value || editingBusy.value || signingOut.value) return;
   cancelVoice();
   mode.value = next;
   notice.value = "";
@@ -116,12 +130,13 @@ async function remember() {
   if (busy.value) return;
   saveError.value = "";
   notice.value = "";
-  if (!draft.value.trim()) { saveError.value = "Add a note first."; return; }
+  const content = inputMode.value === "form" ? writeMemoryFields(formDraft.value) : draft.value;
+  if (!(inputMode.value === "form" ? formDraft.value.person.trim() : content.trim())) { saveError.value = "Add a note or person first."; return; }
+  if (content.length > 20_000) { saveError.value = "Please shorten this note before saving."; return; }
   saving.value = true;
   const current = sessionScope.current();
-  const content = draft.value;
   if (!pendingSave || pendingSave.content !== content) pendingSave = { submission: crypto.randomUUID(), content };
-  const answer = await attempt(() => api.memories.remember(pendingSave!));
+  const answer = await attempt(() => api.memories.remember({ ...pendingSave!, timeZone }));
   if (!current()) return;
   saving.value = false;
   if ("error" in answer) {
@@ -161,8 +176,8 @@ async function seek() {
   }
   results.value = answer.results;
 }
-async function chooseInput(next: "text" | "voice") {
-  if (saving.value || searching.value || removing.value || signingOut.value) return;
+async function chooseInput(next: "text" | "voice" | "form") {
+  if (saving.value || searching.value || removing.value || preparingEdit.value || editingBusy.value || signingOut.value) return;
   if (next !== inputMode.value) cancelVoice();
   inputMode.value = next;
   await nextTick();
@@ -213,6 +228,40 @@ async function finishVoice() {
   } catch { if (current()) saveError.value = "Couldn't use this recording. Try again or type your note."; }
   finally { if (current()) { capture.cancel(); transcribing.value = false; } }
 }
+async function openEdit(memory: string) {
+  if (busy.value) return;
+  cancelVoice(); preparingEdit.value = true; editError.value = ""; saveError.value = "";
+  const current = sessionScope.current();
+  const answer = await attempt(() => api.memories["prepare-edit"]({ memory }));
+  if (!current()) return;
+  preparingEdit.value = false;
+  if ("error" in answer || !answer.card) {
+    if ("error" in answer && answer.error === "UNAUTHORIZED") return sessionEnded();
+    editError.value = "Couldn't prepare this encounter for editing. Please try again."; return;
+  }
+  pendingEdit = null;
+  editing.value = { memory, revision: answer.revision, fields: fieldsFromCard(answer.card, answer.content) };
+}
+function closeEdit() { if (!editingBusy.value) { editing.value = null; pendingEdit = null; editError.value = ""; } }
+async function saveEdit() {
+  if (!editing.value || editingBusy.value) return;
+  const { memory, revision, fields } = editing.value;
+  const content = writeMemoryFields(fields);
+  if (!fields.person.trim() || content.length > 20_000) { editError.value = "Add a name and keep the note under 20,000 characters."; return; }
+  if (!pendingEdit || pendingEdit.memory !== memory || pendingEdit.content !== content) pendingEdit = { memory, revision, content, submission: crypto.randomUUID() };
+  editingBusy.value = true; editError.value = "";
+  const current = sessionScope.current();
+  const answer = await attempt(() => api.memories.edit({ ...pendingEdit!, timeZone }));
+  if (!current()) return;
+  editingBusy.value = false;
+  results.value = null; recent.remove(memory); void recent.refresh();
+  if ("error" in answer) {
+    if (answer.error === "UNAUTHORIZED") return sessionEnded();
+    editError.value = answer.error === "CONFLICT" ? "This encounter changed elsewhere. Close and reopen it before editing." : answer.error === "NOT_FOUND" ? "This encounter was removed. Close this form." : "Your changes may be saved, but processing didn't finish. Retry the same form to finish.";
+    return;
+  }
+  closeEdit(); notice.value = "Encounter updated.";
+}
 function requestRemoval(memory: string, label: string) {
   if (!busy.value) confirmation.request(memory, label);
 }
@@ -244,6 +293,7 @@ async function removeConnection(memory: string, label: string) {
 </script>
 
 <template>
+  <EditEncounter v-if="editing" v-model="editing.fields" :busy="editingBusy" :error="editError" @save="saveEdit" @cancel="closeEdit" />
   <RemovalConfirmation v-if="removalTarget" :label="removalTarget.label" @confirm="confirmation.confirm" @cancel="confirmation.cancel" />
   <a class="skip" href="#main">Skip to content</a>
   <header class="topbar">
@@ -270,23 +320,27 @@ async function removeConnection(memory: string, label: string) {
     <template v-else>
       <p v-if="accountError" class="refusal" role="alert">{{ accountError }}</p>
       <p v-if="notice" class="status" role="status">{{ notice }}</p>
+      <p v-if="preparingEdit" class="status" role="status">Preparing encounter…</p>
+      <p v-if="editError && !editing" class="refusal" role="alert">{{ editError }}</p>
       <p v-if="removalError && removal" class="refusal" role="alert">{{ removalError }} <button class="text-button" :disabled="busy" @click="removeConnection(removal.memory, removal.label)">Retry removal</button></p>
 
       <div class="workspace-composition">
       <div class="mode-toggle" role="group" aria-label="Circle mode">
-        <button type="button" :aria-pressed="mode === 'remember'" :disabled="saving || searching || removing || signingOut" @click="switchMode('remember')">Remember</button>
-        <button type="button" :aria-pressed="mode === 'find'" :disabled="saving || searching || removing || signingOut" @click="switchMode('find')">Find</button>
+        <button type="button" :aria-pressed="mode === 'remember'" :disabled="saving || searching || removing || preparingEdit || editingBusy || signingOut" @click="switchMode('remember')">Remember</button>
+        <button type="button" :aria-pressed="mode === 'find'" :disabled="saving || searching || removing || preparingEdit || editingBusy || signingOut" @click="switchMode('find')">Find</button>
       </div>
 
       <form v-if="mode === 'remember'" class="memory-form" aria-label="Remember someone" :aria-busy="saving || transcribing" @submit.prevent="remember">
         <div class="input-choice" role="group" aria-label="Note input">
-          <button type="button" :aria-pressed="inputMode === 'text'" :disabled="saving || searching || removing || signingOut" @click="chooseInput('text')"><ActionIcon name="text" /><span>Text</span></button>
-          <button type="button" :aria-pressed="inputMode === 'voice'" :disabled="saving || searching || removing || signingOut" @click="chooseInput('voice')"><ActionIcon name="mic" /><span>Voice</span></button>
+          <button type="button" aria-label="Text input" title="Text input" :aria-pressed="inputMode === 'text'" :disabled="saving || searching || removing || preparingEdit || editingBusy || signingOut" @click="chooseInput('text')"><ActionIcon name="text" /></button>
+          <button type="button" aria-label="Voice input" title="Voice input" :aria-pressed="inputMode === 'voice'" :disabled="saving || searching || removing || preparingEdit || editingBusy || signingOut" @click="chooseInput('voice')"><ActionIcon name="mic" /></button>
+          <button type="button" aria-label="Form input" title="Form input" :aria-pressed="inputMode === 'form'" :disabled="busy && !recording && !transcribing && !openingMic" @click="chooseInput('form')"><ActionIcon name="form" /></button>
         </div>
         <div v-if="inputMode === 'text'" class="note-composer">
           <label for="note" class="sr-only">Encounter note</label>
           <textarea id="note" ref="noteField" v-model="draft" :disabled="busy" maxlength="20000" rows="4" required placeholder="Who did you meet? What would you like to remember?" />
         </div>
+        <EncounterFields v-else-if="inputMode === 'form'" v-model="formDraft" prefix="remember" :disabled="busy" />
         <div v-else class="voice-composer" :aria-busy="openingMic || transcribing">
           <p class="hint" role="status">{{ openingMic ? "Opening microphone…" : recording ? "Recording…" : transcribing ? "Transcribing…" : "Tell us who you met and what they do." }}</p>
           <button v-if="recording" class="button voice-record" type="button" @click="finishVoice"><ActionIcon name="stop" />Stop and transcribe</button>
@@ -296,7 +350,7 @@ async function removeConnection(memory: string, label: string) {
         </div>
         <p v-if="saveError" class="refusal" role="alert">{{ saveError }}</p>
         <div class="form-actions">
-          <button class="button primary" type="submit" :disabled="busy || !draft.trim()">{{ saving ? "Organizing…" : "Save" }}</button>
+          <button class="button primary" type="submit" :disabled="busy || !(inputMode === 'form' ? formDraft.person.trim() : draft.trim())">{{ saving ? "Organizing…" : "Save" }}</button>
         </div>
       </form>
 
@@ -304,7 +358,7 @@ async function removeConnection(memory: string, label: string) {
         <label for="need" class="sr-only">Who could help?</label>
         <div class="search-composer">
           <ActionIcon name="search" />
-          <input id="need" ref="needField" v-model="description" type="search" :disabled="busy" required placeholder="What do you need help with?" />
+          <input id="need" ref="needField" v-model="description" type="search" maxlength="2000" :disabled="busy" required placeholder="What do you need help with?" />
           <button class="icon-button composer-action save-action" type="submit" :disabled="busy" :aria-label="searching ? 'Finding connections' : 'Find connections'" :title="searching ? 'Finding…' : 'Find'"><ActionIcon name="arrow" /></button>
         </div>
         <p v-if="searchError" class="refusal" role="alert">{{ searchError }}</p>
@@ -315,7 +369,7 @@ async function removeConnection(memory: string, label: string) {
 
       <section v-if="mode === 'find' && results" class="results" aria-label="Suggestions" aria-live="polite">
         <p v-if="results.suggestions.length === 0" class="status">No saved encounters matched this need.</p>
-        <ContactRow v-for="suggestion in suggestions" :key="`${suggestion.target}:${suggestion.source}`" :label="suggestion.label" :content="suggestion.content" :details="suggestion.details" :reason="suggestion.reason" :busy="busy" heading="h2" @remove="requestRemoval(suggestion.source, suggestion.label)" />
+        <ContactRow v-for="suggestion in suggestions" :key="`${suggestion.target}:${suggestion.source}`" :label="suggestion.label" :content="suggestion.content" :original="suggestion.original" :details="suggestion.details" :reason="suggestion.reason" :busy="busy" heading="h2" @edit="openEdit(suggestion.source)" @remove="requestRemoval(suggestion.source, suggestion.label)" />
       </section>
 
       <section class="recent-people" aria-labelledby="recent-heading" :aria-busy="loadingPeople">
@@ -324,7 +378,7 @@ async function removeConnection(memory: string, label: string) {
         <p v-if="peopleError" class="refusal" role="alert">{{ peopleError }} <button class="text-button" type="button" :disabled="loadingPeople" @click="recent.refresh">Retry</button></p>
         <p v-else-if="loadedPeople && !people.length && !loadingPeople" class="status">No saved people yet.</p>
         <div v-if="people.length" class="contact-list">
-          <ContactRow v-for="person in people" :key="person.memory" :label="person.label" :content="person.content" :details="person.details" :busy="busy" @remove="requestRemoval(person.memory, person.label)" />
+          <ContactRow v-for="person in people" :key="person.memory" :label="person.label" :content="person.content" :original="person.original" :details="person.details" :busy="busy" @edit="openEdit(person.memory)" @remove="requestRemoval(person.memory, person.label)" />
         </div>
         <div v-if="hasMore" class="recent-actions"><button class="text-button" type="button" :disabled="loadingPeople" @click="recent.more">{{ loadingPeople ? "Loading…" : "Load more" }}</button></div>
       </section>

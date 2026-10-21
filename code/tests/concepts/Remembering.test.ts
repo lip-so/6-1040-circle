@@ -161,3 +161,31 @@ test("forget erases an owned original, keeps other same-name encounters and reje
   await expect(fresh.remember(input)).rejects.toThrow(SubmissionConflict);
   await expect(fresh.remember({ ...input, content: "Changed original" })).rejects.toThrow(SubmissionConflict);
 });
+
+test("edits preserve original text/identity/time, use revisions and permit an unchanged same-token retry",async()=>{
+  const owner="sam",content="Met Mira yesterday.",capturedAt=new Date("2026-10-20T02:00:00Z");
+  const {memory}=await remembering.remember({owner,content,capturedAt,submission:crypto.randomUUID(),timeZone:"America/New_York"});
+  const edit={owner,memory,revision:0,content:"Person: Mira\nWhen: 2026-10-18\nDoes: Builds sensors\nDiscussed:",submission:crypto.randomUUID(),capturedAt:new Date("2026-10-22T12:00:00Z"),timeZone:"America/New_York"};
+  await remembering.edit(edit);await remembering.edit({...edit,capturedAt:new Date("2030-01-01")});
+  const record=await remembering.inspect({owner,memory});
+  expect(record).toMatchObject({content:edit.content,original:content,revision:1,referenceDate:"2026-10-22"});
+  expect(await db.collection<{_id:string;capturedAt:Date}>("remembering.memories").findOne({_id:memory})).toMatchObject({capturedAt});
+  await expect(remembering.edit({...edit,submission:crypto.randomUUID(),content:"changed"})).rejects.toThrow("changed");
+  await expect(remembering.edit({...edit,content:"reused token changed"})).rejects.toThrow("changed");
+  await expect(remembering.edit({...edit,owner:"foreign"})).rejects.toThrow(MemoryNotFound);
+  await remembering.forget({owner,memory});
+  await expect(remembering.edit(edit)).rejects.toThrow(MemoryNotFound);
+  expect(await remembering._record({owner,memory})).toEqual([]);
+  expect(await db.collection<{_id:string;owner:string;removed:true}>("remembering.memories").findOne({_id:memory})).toEqual({_id:memory,owner,removed:true});
+});
+
+test("concurrent edits accept one revision, retries retain the first saved local day",async()=>{
+  const owner="sam",submission=crypto.randomUUID();
+  const input={owner,submission,content:"Met Mira today.",capturedAt:new Date("2026-01-01T02:00:00Z"),timeZone:"America/New_York"};
+  const {memory}=await remembering.remember(input);
+  await remembering.remember({...input,capturedAt:new Date("2027-01-01")});
+  expect((await remembering.inspect({owner,memory})).referenceDate).toBe("2025-12-31");
+  const results=await Promise.allSettled(["one","two"].map(content=>remembering.edit({owner,memory,content,revision:0,submission:crypto.randomUUID(),capturedAt:new Date()})));
+  expect(results.filter(r=>r.status==="fulfilled")).toHaveLength(1);
+  expect((await remembering.inspect({owner,memory})).revision).toBe(1);
+});

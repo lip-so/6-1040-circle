@@ -2,9 +2,9 @@
 
 ## Purpose
 
-Let people stay signed in across requests without sending their password each time.
+Let people stay signed in across requests by presenting an opaque session identity. Circle supplies the local user as Subject after Commons sign-in; this concept does not check passwords or contact Commons.
 
-*Prevents:* someone keeps using a session after signing out; someone who finds a session left open on a shared computer, or copies one, keeps using it indefinitely; someone who comes back after a few days has to sign in again.
+*Prevents:* continued use after sign-out, seven days of inactivity, or the session’s absolute 90-day lifetime.
 
 ## Principle
 
@@ -25,8 +25,9 @@ a set of Sessions with
   a lastUsed DateTime
   an expiresAt DateTime
 
-Rule: a session's identity is unguessable, and it is all a person sends to use the session.
-Rule: Sessioning may delete a session at any time once it can no longer be used.
+Rule: a session identity is 32 random bytes encoded as base64url. Circle carries it in a host-managed cookie. Sessioning itself accepts the opaque identity, not a username or password.
+Rule: use and end require lastUsed strictly later than now minus 7 times 24 hours and expiresAt strictly later than now. Equality at either cutoff is expired. Successful use changes only lastUsed; it never extends the original 90 times 24 hour absolute lifetime. Refused use/end leaves state unchanged.
+Rule: a database TTL index eventually removes sessions after expiresAt; it does not provide immediate cleanup or enforce the idle cutoff. Each use/end checks both cutoffs directly.
 ```
 
 ## Actions

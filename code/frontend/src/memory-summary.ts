@@ -1,6 +1,6 @@
 import { readMemoryFields } from "../../src/memory-fields.ts";
 import { extractEncounter } from "./encounter-text.ts";
-import type { ContactCard } from "../../src/concepts/brain-provider.ts";
+import type { ContactCard } from "../../src/providers/brain-provider.ts";
 
 export interface MemoryDetail { label: string; value: string }
 
@@ -14,24 +14,26 @@ export function memoryLabel(content: string): string {
   // punctuation or a role; do not use an arbitrary first line as a person's name.
   const introduction = /(?:^|[.!?\n])\s*(?:I\s+)?(?:met|spoke with|talked to|chatted with)\s+([\p{L}][\p{L}'’\-]*(?:[ \t]+[\p{L}][\p{L}'’\-]*){0,2}?)(?=[ \t]*(?:[,;:—–-]|[.!?\n]|$)|[ \t]+(?:on|at|during|who|is|was|works?|from)\b)/iu.exec(content)?.[1];
   if (introduction && !/^(?:a|an|the|someone|somebody|person|with)\b/iu.test(introduction)) return introduction;
-  return "Unnamed encounter";
+  const direct = /^\s*([\p{L}][\p{L}’'\-]*(?:[ \t]+[\p{L}][\p{L}’'\-]*){0,2}?)\s+(?:who\s+)?(?:does|works?\s+(?:on|at)|talks?\s+about|researches)\b/iu.exec(content)?.[1];
+  return direct && !/^(?:someone|somebody|a|an|the|he|she|they|we|i)$/iu.test(direct) ? direct : "Unnamed encounter";
 }
 
 /** Format supported facts from this original note; never infer a role from a discussion. */
 export function memorySummary(content: string, name: string, card?: ContactCard | null): MemoryDetail[] {
   if (card) {
-    const labels = { context: "When", role: "Does", discussion: "Discussed", contact: "Contact", offer: "Offers", other: "Note" };
-    return card.facts.map(fact => ({ label: labels[fact.kind], value: fact.value }));
+    const labels = { date: "When", context: "Context", role: "Does", discussion: "Discussed", contact: "Contact", offer: "Offers", other: "Note" };
+    return card.facts.map(fact => ({ label: labels[fact.kind], value: fact.basis === "inferred" ? `May be: ${fact.value}` : fact.value }));
   }
   const guided = readMemoryFields(content);
   if (guided && guided.person === name) {
     const rows = [
-      { label: "When", value: guided.when || "Not recorded" },
-      { label: "Does", value: guided.does || "Not recorded" },
+      { label: "When", value: guided.when },
+      { label: "Does", value: guided.does },
     ];
     if (guided.discussed) rows.push({ label: "Discussed", value: guided.discussed });
     if (guided.contact) rows.push({ label: "Contact", value: guided.contact });
-    return rows;
+    if (guided.notes) rows.push({ label: "Note", value: guided.notes });
+    return rows.filter(row => row.value.trim());
   }
   const { entities, claims } = extractEncounter(content);
   const person = entities.find(entity => entity.kind === "PERSON" && entity.label === name);
@@ -55,14 +57,14 @@ export function memorySummary(content: string, name: string, card?: ContactCard 
     .map(claim => labels.get(claim.to)).filter((label): label is string => Boolean(label));
   const rows = [
     { label: "When", value: encounterWhen(content, name, claims.find(claim => claim.relation === "MET")?.quote ?? "") },
-    { label: "Does", value: unique(roles).join("; ") || "Not recorded" },
+    { label: "Does", value: unique(roles).join("; ") },
   ];
   if (discussed.length) rows.push({ label: "Discussed", value: capitalized(unique(discussed).join(", ")) });
   const organizations = new Set(personal.filter(claim => claim.relation === "MEMBER_OF" || claim.relation === "FOUNDED").map(claim => claim.to));
   const offers = person ? claims.filter(claim => claim.relation === "OFFERS" && (claim.from === person.key || organizations.has(claim.from)))
     .map(claim => labels.get(claim.to)).filter((label): label is string => Boolean(label)) : [];
   if (offers.length) rows.push({ label: "Offers", value: capitalized(unique(offers).join(", ")) });
-  return rows;
+  return rows.filter(row => row.value.trim());
 }
 
 function unique(values: string[]): string[] { return [...new Set(values)]; }
@@ -79,5 +81,5 @@ function encounterWhen(content: string, name: string, meeting: string): string {
   // A company founding date or future job start is not the encounter date.
   const afterName = meeting.slice(meeting.indexOf(name) + name.length);
   const recorded = new RegExp(`^\\s+(?:on\\s+)?(${date})(?=[,.;!?\\s]|$)`, "iu").exec(afterName)?.[1];
-  return recorded ? capitalized(recorded) : "Not recorded";
+  return recorded ? capitalized(recorded) : "";
 }

@@ -76,11 +76,6 @@ onBeforeUnmount(() => {
 <template>
   <div ref="root" class="animated-backdrop" @pointerenter="hovered = $event.pointerType === 'mouse'" @pointerleave="hovered = false" @pointercancel="hovered = false">
     <svg class="articulated-scene" viewBox="0 0 1000 650" fill="none" aria-hidden="true" focusable="false">
-      <g class="scene-connections" stroke-width=".85">
-        <path d="M30 360C180 30 410 90 540 220S870 420 990 100M90 590C270 540 350 340 620 390S890 600 960 430" stroke="#2455a4" />
-        <path d="M120 100C350 140 370 600 690 565S810 200 930 145" stroke="#e74735" />
-        <circle cx="500" cy="330" r="240" stroke="#2455a4" opacity=".3" />
-      </g>
       <g class="scene-circles"><circle cx="105" cy="185" r="27" fill="#f6bda9" /><circle cx="845" cy="130" r="37" fill="#e74735" /><circle cx="875" cy="470" r="23" fill="#2455a4" /><circle cx="167" cy="530" r="13" fill="#e74735" /><circle cx="646" cy="72" r="9" fill="#2455a4" /><circle cx="934" cy="335" r="8" fill="#e74735" /><circle cx="365" cy="560" r="19" fill="#f6bda9" /></g>
       <g v-for="(dancer, index) in dancers" :key="index" :transform="index === 0 ? 'translate(230 210) rotate(19) scale(1.05)' : 'translate(780 222) rotate(-24) scale(1.02)'" :data-dancer="index">
         <g :transform="dancer.torso" fill="#2455a4">

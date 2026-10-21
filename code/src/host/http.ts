@@ -11,6 +11,7 @@ export function circleHttpPolicy(publicOrigin: string) {
     publicErrors: {
       ...accountsHttp.publicErrors,
       ...commonsHttp.publicErrors,
+      EDIT_CONFLICT: "CONFLICT",
       EMPTY_CONTENT: "INVALID_REQUEST",
       INVALID_AUDIO: "INVALID_REQUEST",
       EMPTY_QUERY: "INVALID_REQUEST",

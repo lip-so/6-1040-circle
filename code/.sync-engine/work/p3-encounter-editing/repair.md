@@ -1,0 +1,1 @@
+P3-01: declared sourceRevision state and made successful equivalent cached ingestion atomically advance revision under owner/active/digest/version guards, rechecking races. Lower revision extraction cannot overwrite A after revision 2 reuses A.

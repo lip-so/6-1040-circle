@@ -1,6 +1,6 @@
 import { afterAll, expect, test } from "bun:test";
 import { GraphingConcept, SourceNotOwned, SourceWithdrawn, MemoryLimit, MemoryChanged, EmptySourceContent } from "../../src/concepts/Graphing.ts";
-import { InvalidModelOutput, BrainUnavailable, validateCard, validateSelection, type BrainProvider, type ContactCard } from "../../src/concepts/brain-provider.ts";
+import { InvalidModelOutput, BrainUnavailable, validateCard, validateSelection, type BrainProvider, type ContactCard } from "../../src/providers/brain-provider.ts";
 import { FixtureBrain } from "../support/brain.ts";
 import { cleanupDatabases, testDatabase } from "../support/reusable/mongo.ts";
 afterAll(cleanupDatabases);
@@ -67,7 +67,7 @@ test("bad evidence and provider failure keep old valid record and reserve owners
 test("literal validation rejects fabricated/partial quotes, schemas and invented selection IDs or indexes", () => {
   const valid: ContactCard = { name: "Mira", nameQuote: "Met Mira.", facts: [{ kind: "discussion", value: "ocean sensors", quote: "We discussed ocean sensors." }] };
   expect(validateCard(valid, content)).toEqual(valid);
-  for (const bad of [{ ...valid, name: "Lena" }, { ...valid, extra: true }, { ...valid, facts: [{ kind: "expert", value: "ocean sensors", quote: "We discussed ocean sensors." }] }, { ...valid, facts: [{ kind: "role", value: "research robotics", quote: "research robotics." }] }]) {
+  for (const bad of [{ ...valid, name: "Lena" }, { ...valid, extra: true }, { ...valid, facts: [{ kind: "expert", value: "ocean sensors", quote: "We discussed ocean sensors." }] }]) {
     expect(() => validateCard(bad, content + " They do not research robotics.")).toThrow(InvalidModelOutput);
   }
   const memory = [{ source: "one", card: valid as any }];
@@ -142,5 +142,31 @@ test("expanding name evidence never accepts a fabricated name, fabricated quote 
   const original="I met David Hume who does not write papers.";
   const base={name:"David Hume",nameQuote:"David Hume",facts:[]};
   expect(validateCard(base,original).nameQuote).toBe(original);
-  for(const bad of [{...base,name:"Someone Else"},{...base,nameQuote:"Met David Hume."},{...base,facts:[{kind:"role",value:"write papers",quote:"write papers."}]}]) expect(()=>validateCard(bad,original)).toThrow(InvalidModelOutput);
+  expect(validateCard({...base,facts:[{kind:"role",value:"write papers",quote:"write papers."}]},original).facts).toEqual([]);
+  for(const bad of [{...base,name:"Someone Else"},{...base,nameQuote:"Met David Hume."}]) expect(()=>validateCard(bad,original)).toThrow(InvalidModelOutput);
+});
+
+test("a cached newer revision returning to A blocks delayed older extraction for B",async()=>{
+  const brain=new FixtureBrain(),{graph,db}=await fixture(brain);
+  await graph.ingest({owner,...note,revision:0});
+  const entered=gate<void>(),pending=gate<unknown>();
+  const originalExtract=brain.extract.bind(brain);
+  brain.extract=async text=>{entered.resolve();return pending.promise as any;};
+  const older=graph.ingest({owner,source:note.source,content:"Met Mira. We discussed robotics.",revision:1});
+  await entered.promise;
+  await graph.ingest({owner,...note,revision:2});
+  pending.resolve(await originalExtract("Met Mira. We discussed robotics."));
+  await expect(older).rejects.toThrow(MemoryChanged);
+  expect((await graph._card({owner,...note,revision:2})).card?.facts.some(f=>f.value.includes("ocean"))).toBe(true);
+  expect(await db.collection("graphing.sources").findOne({owner})).toMatchObject({sourceRevision:2});
+});
+
+test("previous JSON cards remain readable only for matching unedited originals, never after a revision changes",async()=>{
+  const {db,graph}=await fixture();
+  const card=validateCard({name:"Mira",nameQuote:"Met Mira.",facts:[]},content);
+  const {createHash}=await import("node:crypto");
+  await db.collection<{_id:string;owner:string;digest:string;providerVersion:string;card:ContactCard}>("graphing.sources").insertOne({_id:"old",owner,digest:createHash("sha256").update(JSON.stringify(content)).digest("hex"),providerVersion:"contact-v2:old-model",card});
+  expect(await graph._card({owner,source:"old",content,referenceDate:"2026-10-20",revision:0})).toEqual({card});
+  expect(await graph._card({owner,source:"old",content,referenceDate:"2026-10-20",revision:1})).toEqual({card:null});
+  expect(await graph._card({owner:"foreign",source:"old",content})).toEqual({card:null});
 });

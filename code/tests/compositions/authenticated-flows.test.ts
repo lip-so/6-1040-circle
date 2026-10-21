@@ -21,7 +21,7 @@ const NOTE = "Met Faustin, founder of an AI-chip startup. We talked about system
 const applications: ReturnType<typeof assembleApplication>[] = [];
 afterEach(async () => { for (const app of applications.splice(0)) await app.beginDrain(); });
 
-async function setup(failure?: "ingest" | "trace" | "ingest-once" | "withdraw-once", databaseOverride?: Db) {
+async function setup(failure?: "ingest" | "trace" | "ingest-once" | "withdraw-once" | "edit-ingest-once", databaseOverride?: Db) {
   const database = databaseOverride ?? await testDatabase();
   const commons = new MemoryProvider();
   const graph = new GraphingConcept(database, new FixtureBrain());
@@ -32,6 +32,10 @@ async function setup(failure?: "ingest" | "trace" | "ingest-once" | "withdraw-on
       if (!failed) { failed = true; throw new Error("index unavailable"); }
       return original(input);
     };
+  }
+  if (failure === "edit-ingest-once") {
+    const original = graph.ingest.bind(graph); let failed = false;
+    graph.ingest = async function ingest(input) { if (!failed && input.content.startsWith("Person:")) { failed = true; throw new Error("edit processing unavailable"); } return original(input); };
   }
   if (failure === "ingest") graph.ingest = async function ingest() { throw new Error("index unavailable"); };
   if (failure === "trace") graph.recall = async function recall() { throw new Error("search unavailable"); };
@@ -380,4 +384,48 @@ test("an organization failure followed by repaired short-name evidence retries t
   expect(before.body.memories).toHaveLength(1);
   expect(await sam.post("/memories/remember",input)).toMatchObject({status:200,body:{memory:before.body.memories[0].memory}});
   expect(await database.collection("remembering.memories").countDocuments({owner,content})).toBe(1);
+});
+
+test("form edit is owner-scoped, prefills JSON, preserves original, rejects stale revisions and invalidates search",async()=>{
+  const {browser,database}=await setup();const sam=browser(),leo=browser(),anon=browser();
+  const owner=await sam.signIn(SAM);await leo.signIn(LEO);
+  const saved=await sam.post("/memories/remember",{content:NOTE,timeZone:"America/New_York"});const memory=saved.body.memory;
+  expect(await anon.post("/memories/prepare-edit",{memory})).toMatchObject({status:401});
+  expect(await leo.post("/memories/prepare-edit",{memory})).toMatchObject({status:404});
+  const prepared=await sam.post("/memories/prepare-edit",{memory});
+  expect(prepared).toMatchObject({status:200,body:{memory,revision:0,original:NOTE,card:{name:"Faustin"}}});
+  const content="Person: Faustin\nWhen:\nDoes: Marine biologist\nDiscussed: Ocean sensors";
+  const input={memory,revision:0,submission:crypto.randomUUID(),content};
+  expect(await leo.post("/memories/edit",input)).toMatchObject({status:404});
+  expect(await sam.post("/memories/edit",{...input,owner})).toMatchObject({status:400});
+  expect(await sam.post("/memories/edit",input)).toMatchObject({status:200,body:{memory}});
+  expect(await sam.post("/memories/edit",input)).toMatchObject({status:200});
+  expect(await sam.post("/memories/edit",{...input,submission:crypto.randomUUID(),content:"Stale overwrite"})).toMatchObject({status:409});
+  const rows=(await sam.post("/memories/list",{after:""})).body.memories;
+  expect(rows).toMatchObject([{memory,content,original:NOTE,revision:1,card:{name:"Faustin"}}]);
+  expect((await sam.post("/needs/seek",{description:"systems engineering"})).body.results.suggestions).toEqual([]);
+  expect((await sam.post("/needs/seek",{description:"ocean sensors"})).body.results.suggestions).toMatchObject([{source:memory,content,original:NOTE}]);
+  expect(await database.collection("remembering.memories").countDocuments({owner})).toBe(1);
+  expect(await sam.post("/memories/forget",{memory})).toMatchObject({status:200});
+  expect(await sam.post("/memories/edit",input)).toMatchObject({status:404});
+});
+
+test("invalid timezone/revision inputs fail before effects",async()=>{
+  const {browser,database}=await setup();const sam=browser();await sam.signIn(SAM);
+  expect(await sam.post("/memories/remember",{content:NOTE,timeZone:"Not/AZone"})).toMatchObject({status:400});
+  expect(await database.collection("remembering.memories").countDocuments()).toBe(0);
+  const memory=(await sam.post("/memories/remember",{content:NOTE})).body.memory;
+  for(const revision of [-1,1.1,"0",null])expect(await sam.post("/memories/edit",{memory,revision,content:"changed",submission:crypto.randomUUID()})).toMatchObject({status:400});
+});
+
+test("processing failure after an edit preserves current form and original, same edit retry never increments twice",async()=>{
+  const {browser,database}=await setup("edit-ingest-once");const sam=browser();const owner=await sam.signIn(SAM);
+  const memory=(await sam.post("/memories/remember",{content:NOTE})).body.memory;
+  const content="Person: Faustin\nWhen:\nDoes: Builds solar panels\nDiscussed:";
+  const input={memory,revision:0,submission:crypto.randomUUID(),content};
+  expect(await sam.post("/memories/edit",input)).toMatchObject({status:500});
+  expect((await sam.post("/memories/list",{after:""})).body.memories).toMatchObject([{memory,content,original:NOTE,revision:1,card:null}]);
+  expect(await sam.post("/memories/edit",input)).toMatchObject({status:200});
+  expect((await sam.post("/memories/list",{after:""})).body.memories).toMatchObject([{memory,content,original:NOTE,revision:1,card:{name:"Faustin"}}]);
+  expect(await database.collection("remembering.memories").countDocuments({owner})).toBe(1);
 });

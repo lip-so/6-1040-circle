@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { OpenAIProvider, BrainUnavailable, InvalidModelOutput } from "../../src/concepts/brain-provider.ts";
+import { OpenAIProvider, BrainUnavailable, InvalidModelOutput } from "../../src/providers/brain-provider.ts";
 const card = { name: "Mira", nameQuote: "Met Mira.", facts: [{kind:"discussion" as const,value:"ocean sensors",quote:"We discussed ocean sensors."}] };
 const answer = (value: unknown) => Response.json({ status: "completed", output: [{type:"message",role:"assistant",content:[{type:"output_text",text:JSON.stringify(value)}]}] });
 test("OpenAI requests strict stateless source-linked JSON without account credentials in model input", async () => {

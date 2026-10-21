@@ -1,0 +1,1 @@
+P3-02 resolved: omitted Graphing metadata means referenceDate empty/unknown and revision zero, never skip checks. Circle explicitly passes current owned referenceDate/revision on saved cards and result joins. Compatibility only applies to unchanged unversioned revision-zero evidence. Source already implements these defaults and passes revision at all three card joins.

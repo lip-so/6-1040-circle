@@ -2,7 +2,9 @@
 
 ## Purpose
 
-Let people sign in with an account they already have on another site, and come back to the same account each time.
+Let people sign in with an account they already have on another site, and come back to the same local account each time.
+
+Circle instantiates this reusable concept as CommonsFederating with the Commons provider. Account registration and session creation belong to the application’s compositions, not direct calls from Federating to peer concepts.
 
 *Prevents:* someone opens a link that finishes a sign-in another person started, and ends up in that person's account; someone reads a code meant for another person, such as from their browser's history, and signs in as them; a person's details change on the other site, and they get a second account; someone links another person's account on the other site to an account they control.
 
@@ -32,8 +34,9 @@ a set of Links with
   a unique subject String
   a User
 
-Rule: an attempt, its nonce, and its verifier are unguessable. start returns the attempt and its nonce only to its caller, and finish refuses an attempt without its nonce. The verifier is sent only to the other site, with the code.
-Rule: Federating may delete an attempt once it has expired.
+Rule: attempt, nonce and verifier each use 32 random bytes encoded as base64url. start returns attempt, expiresAt and address; the nonce appears as state in that address and the verifier appears only as its S256 hash. The raw verifier is sent only during provider code redemption.
+Rule: finish checks unconfirmed status, matching nonce and expiresAt strictly later than its current clock before contacting the provider. Its confirmation write checks that the attempt still exists and is unconfirmed, without another expiry check; two overlapping finishes cannot both confirm it. A refused provider redemption leaves the attempt unconfirmed.
+Rule: confirmed-attempt reads and link do not recheck expiry while the record remains stored. _linkable additionally requires an unexpired attempt. The TTL index schedules deletion 60 seconds after expiresAt as grace for in-flight work; cleanup is asynchronous and not an authorization clock. Link uniqueness is enforced by a database index on the external subject.
 ```
 
 ## Actions
@@ -59,7 +62,7 @@ finish(attempt: Attempt, nonce: String, code: String) : returns (username: Strin
     returns username
 
 link(attempt: Attempt, user: User) : returns (user: User)
-  where attempt is not in Confirmed Attempts
+  where attempt is unknown or not in Confirmed Attempts
   then
     refuses NOT_CONFIRMED "This sign-in hasn't been confirmed."
   where a link has the attempt's subject
@@ -75,7 +78,7 @@ link(attempt: Attempt, user: User) : returns (user: User)
 
 ```queries
 _user(attempt: Attempt) : optional (user: User)
-  Returns the user linked to a confirmed attempt's subject, or no row when the attempt is unconfirmed or its subject is unlinked.
+  Returns the user linked to a stored confirmed attempt's subject, or no row when the attempt is unknown/unconfirmed or its subject is unlinked. This read does not recheck expiry; it stops returning a user once the attempt is deleted.
 
 _linkable(attempt: Attempt) : one (linkable: Flag)
   Returns true when the attempt is confirmed, unexpired, and its subject unlinked, and false otherwise.

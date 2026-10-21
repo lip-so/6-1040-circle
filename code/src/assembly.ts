@@ -1,5 +1,6 @@
 import { assemble } from "@mit-sdg/sync-engine/assembly";
 import type { Db } from "mongodb";
+import { executionLimits } from "./execution.ts";
 import { composition } from "./compositions/Circle.ts";
 import { composition as accounts } from "./compositions/reusable/accounts.ts";
 import { composition as commons } from "./compositions/reusable/commons.ts";
@@ -10,7 +11,7 @@ import { RegisteringConcept } from "./concepts/Registering/Registering.ts";
 import { CommonsProvider, type Provider } from "./concepts/Federating/provider.ts";
 import { CommonsFederating, Sessioning, applicationConceptSet } from "./concepts.ts";
 
-import { type BrainProvider, type Transcriber } from "./concepts/brain-provider.ts";
+import { type BrainProvider, type Transcriber } from "./providers/brain-provider.ts";
 
 export function assembleApplication(database: Db, options: {
   commons?: Provider;
@@ -27,6 +28,7 @@ export function assembleApplication(database: Db, options: {
 } = {}) {
   return assemble({
     conceptSet: applicationConceptSet,
+    executionLimits,
     instances: {
       Registering: new RegisteringConcept(database),
       CommonsFederating: new CommonsFederating(database, options.commons ?? new CommonsProvider({
@@ -39,7 +41,7 @@ export function assembleApplication(database: Db, options: {
       Graphing: new GraphingConcept(database, options.brain),
       ...options.instances,
     },
-    redaction: { fields: ["attempt", "nonce", "state", "code", "session", "content", "savedContent", "description", "notes", "audio", "card", "reason", "label", "facts", "selection", "memories", "results"] },
+    redaction: { fields: ["attempt", "nonce", "state", "code", "session", "content", "original", "fields", "editSubmission", "savedContent", "description", "notes", "audio", "card", "reason", "label", "facts", "selection", "memories", "results"] },
     composition: { reusable: { accounts, commons }, Circle: composition },
   });
 }

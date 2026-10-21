@@ -2,7 +2,7 @@ import { expect, test } from "bun:test";
 import { useRecentPeople } from "../../frontend/src/recent-people.ts";
 import { attempt, RequestScope } from "../../frontend/src/request-scope.ts";
 
-const row = (memory: string, content = "Met Alex. We discussed robotics.") => ({ memory, content, card: null });
+const row = (memory: string, content = "Met Alex. We discussed robotics.") => ({ memory, content, original: content, revision: 0, referenceDate: "", card: null });
 function deferred<T>() {
   let resolve!: (value: T) => void;
   const promise = new Promise<T>(done => { resolve = done; });

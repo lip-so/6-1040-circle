@@ -1,0 +1,133 @@
+{
+  "state": "finalized",
+  "work": {
+    "slug": "p3-encounter-editing",
+    "path": "/private/tmp/circle-p3-edit/code/.sync-engine/work/p3-encounter-editing"
+  },
+  "role": "critic",
+  "phase": "contracts",
+  "execution": "delegated",
+  "independent": true,
+  "harness": "codex",
+  "timeoutSeconds": 1800,
+  "prompt": {
+    "path": "/private/tmp/circle-p3-edit/code/.sync-engine/work/p3-encounter-editing/2026-10-20T13-21-40Z-critic-contracts.prompt.md",
+    "sha256": "475e56f4b213b1832ae2cc6bfd65a0ebf1bc2c525a7136e79b4f921677ea8e37"
+  },
+  "capabilities": {
+    "path": "/private/tmp/circle-p3-edit/code/.sync-engine/work/p3-encounter-editing/2026-10-20T13-21-40Z-critic-contracts.capabilities.json",
+    "sha256": "d7cf3660e4b9a27975c910d26dbf5ec2b6f9684d8995b1beff878b70c33e26ce"
+  },
+  "grant": {
+    "readableAreas": [
+      {
+        "area": "design",
+        "path": "compositions"
+      },
+      {
+        "area": "design",
+        "path": "concepts"
+      },
+      {
+        "area": "design",
+        "path": "types.md"
+      }
+    ],
+    "writableAreas": [],
+    "toolKinds": [
+      "repository-read"
+    ],
+    "projectShell": "none",
+    "network": false,
+    "generatedOutput": false,
+    "longRunningProcesses": false
+  },
+  "response": {
+    "path": "/private/tmp/circle-p3-edit/code/.sync-engine/work/p3-encounter-editing/2026-10-20T13-21-40Z-critic-contracts.response.md",
+    "sha256": "8042b18a027891bf332556353bdf30786e4690088684ecaef8e590d55c64fad8",
+    "bytes": 2049
+  },
+  "retainedSources": [
+    {
+      "inputId": "brief",
+      "displayName": ".sync-engine/work/p3-encounter-editing/brief.md",
+      "sha256": "765664d5ecd7552f4f5d6d9a033aab4edb73745e7bb018f84f99e85e1865e550"
+    },
+    {
+      "inputId": "context",
+      "displayName": "design/types.md",
+      "sha256": "d8079722d50f5149305dc0be2ff94dbf4a15777f8c6c54c7a15518a7eaf93261"
+    }
+  ],
+  "policy": {
+    "review": "required",
+    "execution": "mixed"
+  },
+  "workspace": {
+    "root": "/private/tmp/circle-p3-edit/code",
+    "baseline": {
+      "path": "/private/tmp/circle-p3-edit/code/.sync-engine/work/p3-encounter-editing/2026-10-20T13-21-40Z-critic-contracts.baseline.json",
+      "sha256": "c988200ab268027ecc5869fed2cecc66e297b432ddd509fca4f71f375e5cd601"
+    }
+  },
+  "design": {
+    "root": "/private/tmp/circle-p3-edit/code/design",
+    "before": "0f6fa8b3ab7f6a839c4958a795b39d3cf556639997ddacb29da34abca9741c3c",
+    "beforeFiles": [
+      {
+        "path": "compositions/Circle.md",
+        "sha256": "2b8e16a4c1901604a63bc5589ca9b206e9f7385d239d02e1704f876dba9e8121"
+      },
+      {
+        "path": "compositions/reusable/accounts.md",
+        "sha256": "b4c3fc51af033e41c525bdc848fcbe005365250e2f04eaf0bc1f9dec26af2cc2"
+      },
+      {
+        "path": "compositions/reusable/commons.md",
+        "sha256": "1231b51781afb5c08b02e790fce544b4db57be64dc13f86d36df5b59ac5b40f2"
+      },
+      {
+        "path": "concepts/Federating.md",
+        "sha256": "fdd29a2154b9d7c68938d278eaada07e80779250ec03c16f3b0f8e2768c3b699"
+      },
+      {
+        "path": "concepts/Graphing.md",
+        "sha256": "060f0f3cd347e00e38f5b28aec98f6312330c5ccf61d9cd849cb6b16a3dbb2c5"
+      },
+      {
+        "path": "concepts/Registering.md",
+        "sha256": "72e2f72dba60dc1c7def945510c7337ae1805d7d30fd757f6f5beac83d86e9cb"
+      },
+      {
+        "path": "concepts/Remembering.md",
+        "sha256": "6fb116c22931e515a2c729336dd2a0ec0cba8df1da2aadcae01ae0d7c6dd6b6a"
+      },
+      {
+        "path": "concepts/Seeking.md",
+        "sha256": "6e48265bde19914ef7642bf8a5616b13e2429edb4b18a05b3304c0682936032c"
+      },
+      {
+        "path": "concepts/Sessioning.md",
+        "sha256": "b47a9125cadab0e938b6298ac2cd782d7592eefdbd76caa879d4c8366e0ef9bc"
+      },
+      {
+        "path": "types.md",
+        "sha256": "d8079722d50f5149305dc0be2ff94dbf4a15777f8c6c54c7a15518a7eaf93261"
+      }
+    ]
+  },
+  "review": {
+    "subject": "design",
+    "digest": "0f6fa8b3ab7f6a839c4958a795b39d3cf556639997ddacb29da34abca9741c3c"
+  },
+  "relationship": {
+    "kind": "continuation",
+    "recordPath": "/private/tmp/circle-p3-edit/code/.sync-engine/work/p3-encounter-editing/2026-10-20T13-06-37Z-critic-verification.record.json",
+    "targetHarness": "codex",
+    "targetAgentId": "/root/p3_edit_contracts"
+  },
+  "status": "completed",
+  "result": "revise",
+  "agentId": "/root/p3_edit_contracts",
+  "enforcement": "prompt-guided"
+}

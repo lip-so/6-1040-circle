@@ -69,3 +69,13 @@ describe("Circle result composition", () => {
     expect(await application().form(NeedResults({ owner: "ralph", need, recall: "unknown" }))).toMatchObject({ need, suggestions: [] });
   });
 });
+
+test("results hide stale organization while an edited current original awaits reprocessing",async()=>{
+  const owner="ralph",memories=new RememberingConcept(db),graph=new GraphingConcept(db,new FixtureBrain());
+  const {memory}=await memories.remember({owner,content:encounter,submission:crypto.randomUUID(),capturedAt:new Date()});
+  const {need}=await new SeekingConcept(db).seek({owner,description:"systems engineering"});
+  const {recall}=await graph.recall({owner,description:"systems engineering",...(await memories._corpus({owner}))});
+  expect(await application().form(NeedResults({owner,need,recall}))).toMatchObject({suggestions:[{source:memory}]});
+  await memories.edit({owner,memory,content:"Person: Faustin\nWhen:\nDoes: Marine biologist\nDiscussed:",revision:0,submission:crypto.randomUUID(),capturedAt:new Date()});
+  expect(await application().form(NeedResults({owner,need,recall}))).toMatchObject({suggestions:[]});
+});

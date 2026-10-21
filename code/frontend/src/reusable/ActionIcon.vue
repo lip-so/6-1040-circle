@@ -1,6 +1,8 @@
 <script setup lang="ts">
-defineProps<{ name: "arrow" | "search" | "trash" | "mic" | "stop" | "text" }>();
+defineProps<{ name: "arrow" | "search" | "trash" | "mic" | "stop" | "text" | "form" | "edit" }>();
 const paths = {
+  edit: "m15 4 5 5M4 20l4-1L21 6l-5-5L3 14v6h6",
+  form: "M5 4h14v16H5ZM8 8h8M8 12h8M8 16h5",
   text: "M4 5h16M12 5v15M8 20h8",
   mic: "M9 5a3 3 0 0 1 6 0v7a3 3 0 0 1-6 0ZM5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8",
   stop: "M6 6h12v12H6Z",

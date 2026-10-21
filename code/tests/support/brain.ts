@@ -1,4 +1,4 @@
-import type { BrainProvider, ContactMemory, ContactCard } from "../../src/concepts/brain-provider.ts";
+import type { BrainProvider, ContactMemory, ContactCard } from "../../src/providers/brain-provider.ts";
 /** Explicit test stand-in. It is never imported by the application or runtime configuration. */
 export class FixtureBrain implements BrainProvider {
   version = "test-fixture-v1";

@@ -26,34 +26,3 @@ The full saved account for a person: original note, edit or hide, delete, and a 
 
 ![Check the Memory: details, edit, hide, delete, reach out](UI-assets/page-4.png)
 
-## Alpha implementation: Recent people
-
-The Remember / Find switch is centered above the form. Recent people uses the
-rounded, stacked encounter cards from the Find Someone sketch: name, recorded
-When / Does / Discussed details, and Your note to expand the complete memo.
-Each save is a separate card, including two different people with the same name
-or another encounter with the same person. Context distinguishes cards; names
-never merge identities.
-
-New entries appear first by save time, independently of the free-text encounter
-date. Older notes without saved timestamps stay visible after dated saves, with
-no invented dates or inferred order. Unparsed notes are still accessible as
-Saved encounter. Long previews are shortened visually; the full original stays
-available. Load more keeps all saved encounters reachable, 20 cards at a time.
-Loading, an empty account, and a failed request have separate states; failures
-have Retry. Returning to the tab rechecks the account before refreshing.
-
-Repeated clicks are blocked while saving. Retrying the same draft after a lost
-response or indexing failure uses the same submission token, so it reuses the
-saved note. The list reads saved notes directly, so an unindexed encounter is
-still visible. Signing out clears the screen and ignores pending replies.
-Editing, deleting, contact links, and automatic person merging remain deferred.
-
-
-### Optional contact information
-
-Remember also has an optional Contact field for a phone number, LinkedIn URL,
-or other contact text. It saves with the memo and appears as a Contact row on
-both recent-person and search-result cards. Existing notes without it still
-work. Contact is displayed as entered; no external lookup, new contact concept,
-or graph inference is added.

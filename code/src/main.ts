@@ -2,9 +2,10 @@ import { resolve } from "node:path";
 import { createGateway } from "@mit-sdg/sync-engine/boundary";
 import { createHttpHandler } from "@mit-sdg/sync-engine-http/handler";
 import type { CircleWire } from "../generated/wire.ts";
-import { OpenAIProvider } from "./concepts/brain-provider.ts";
+import { OpenAIProvider } from "./providers/brain-provider.ts";
 import { assembleApplication } from "./assembly.ts";
 import { client, db } from "./db.ts";
+import { executionLimits } from "./execution.ts";
 import { circleHttpPolicy } from "./host/http.ts";
 
 const site = resolve(import.meta.dir, "../frontend/dist");
@@ -16,7 +17,7 @@ const apiKey = process.env.OPENAI_API_KEY?.trim();
 const brain = apiKey ? new OpenAIProvider({ apiKey, textModel: process.env.OPENAI_TEXT_MODEL, transcriptionModel: process.env.OPENAI_TRANSCRIBE_MODEL }) : undefined;
 if (!brain) console.warn("OPENAI_API_KEY is not configured; contact processing and voice are unavailable.");
 const application = assembleApplication(db, { brain, transcriber: brain });
-const gateway = createGateway<CircleWire>({ application });
+const gateway = createGateway<CircleWire>({ application, executionLimits });
 const handleApi = createHttpHandler({
   application,
   gateway,

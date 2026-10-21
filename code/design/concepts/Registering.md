@@ -2,13 +2,13 @@
 
 ## Purpose
 
-Let people choose a username that others can find them by.
+Assign a stable local user identity to each unique username. Circle’s account composition uses this when linking a Commons identity; Registering itself does not handle sign-in or read another concept.
 
 *Prevents:* two people end up with the same username.
 
 ## Principle
 
-Maya registers the username `maya`. When Sam types `maya`, Registering returns Maya's user, and her username appears beside the files she shares with him. Ben tries to register `maya` too, and is refused with "That username is taken.", so he registers `ben`.
+Maya registers the username `maya`. Looking up `maya` returns her local user identity, and looking up that identity returns `maya`. Ben tries to register `maya` too and is refused with "That username is taken.", so he registers `ben`.
 
 ## Types
 
@@ -20,6 +20,8 @@ Maya registers the username `maya`. When Sam types `maya`, Registering returns M
 ```state
 a set of Users with
   a unique username String
+
+Rule: usernames are exact and case-sensitive; Maya and maya are different. Registration does not trim or normalize them. A unique database index enforces uniqueness even for concurrent registrations.
 ```
 
 ## Actions
@@ -29,7 +31,7 @@ register(username: String) : returns (user: User)
   where username is not 3 to 32 ASCII letters, digits, underscores, or hyphens
   then
     refuses INVALID_USERNAME "A username must have 3 to 32 letters, digits, underscores, or hyphens."
-  where some user has username
+  where username is accepted and some user has exactly username
   then
     refuses USERNAME_TAKEN "That username is taken."
   where username is accepted and no user has username

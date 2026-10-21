@@ -1,3 +1,4 @@
+import { validTimeZone } from "../calendar.ts";
 import type { EndpointValidator } from "@mit-sdg/sync-engine/boundary";
 
 function sessionFields(value: unknown, fields: string[]): value is Record<string, unknown> {
@@ -9,7 +10,7 @@ function sessionFields(value: unknown, fields: string[]): value is Record<string
 }
 
 export const rememberInput: EndpointValidator = value => ({ ok:
-  sessionFields(value, ["content", "submission"]) &&
+  sessionFields(value, ["content", "submission", "timeZone"]) && validTimeZone(value.timeZone) &&
   (value.content as string).length <= 20_000 &&
   /^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/iu.test(value.submission as string),
 });
@@ -38,3 +39,9 @@ export const memoryIdentityInput: EndpointValidator = value => ({ ok:
 export const transcriptionInput: EndpointValidator = value => ({ ok:
   sessionFields(value, ["audio", "mediaType"]) && (value.audio as string).length <= 5_592_408 && (value.mediaType as string).length <= 30,
 });
+
+export const editInput: EndpointValidator = value => {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return { ok: false };
+  const { revision, memory, ...rest } = value as Record<string, unknown>;
+  return { ok: Number.isSafeInteger(revision) && (revision as number) >= 0 && typeof memory === "string" && /^[\da-f-]{1,64}$/iu.test(memory) && rememberInput(rest).ok };
+};

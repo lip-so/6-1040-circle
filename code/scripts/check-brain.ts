@@ -1,7 +1,7 @@
 /** Explicit live check: synthetic notes only, uniquely named disposable database. */
 import { MongoClient } from "mongodb";
 import { GraphingConcept } from "../src/concepts/Graphing.ts";
-import { OpenAIProvider } from "../src/concepts/brain-provider.ts";
+import { OpenAIProvider } from "../src/providers/brain-provider.ts";
 const apiKey = process.env.OPENAI_API_KEY?.trim();
 if (!apiKey || !process.env.TEST_MONGODB_URL) throw new Error("Configure OPENAI_API_KEY and TEST_MONGODB_URL locally before running this check.");
 const client = new MongoClient(process.env.TEST_MONGODB_URL, {serverSelectionTimeoutMS:3000});

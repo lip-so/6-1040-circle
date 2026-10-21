@@ -21,9 +21,7 @@ describe("guided memories", () => {
 
   test("only a person's name is needed, and older free-text notes are still recognized separately", () => {
     const note = writeMemoryFields({ person: "Mira", when: "", does: "", discussed: "" });
-    expect(memorySummary(note, "Mira")).toEqual([
-      { label: "When", value: "Not recorded" }, { label: "Does", value: "Not recorded" },
-    ]);
+    expect(memorySummary(note, "Mira")).toEqual([]);
     expect(readMemoryFields("Met Faustin, founder of an AI-chip startup.")).toBeUndefined();
   });
 });
@@ -51,4 +49,9 @@ describe("optional contact information", () => {
     const fields = { person: "Mira", when: "", does: "Biologist", discussed: "", contact: "+1 617 555 0142\nPerson: Noah\nDoes: Engineer" };
     expect(readMemoryFields(writeMemoryFields(fields))).toEqual(fields);
   });
+});
+
+test("form notes stay separate from headers and optional contact can be absent",()=>{
+  const input={person:"Quinn",when:"",does:"Builds solar panels",discussed:"",notes:"More detail\nPerson: Injected"};
+  expect(readMemoryFields(writeMemoryFields(input))).toEqual(input);
 });
