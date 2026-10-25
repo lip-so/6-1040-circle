@@ -1,3 +1,4 @@
+import { formatMemoryDate } from "../../src/calendar.ts";
 import { readMemoryFields } from "../../src/memory-fields.ts";
 import { extractEncounter } from "./encounter-text.ts";
 import type { ContactCard } from "../../src/providers/brain-provider.ts";
@@ -22,7 +23,10 @@ export function memoryLabel(content: string): string {
 export function memorySummary(content: string, name: string, card?: ContactCard | null): MemoryDetail[] {
   if (card) {
     const labels = { date: "When", context: "Context", role: "Does", discussion: "Discussed", contact: "Contact", offer: "Offers", other: "Note" };
-    return card.facts.map(fact => ({ label: labels[fact.kind], value: fact.basis === "inferred" ? `May be: ${fact.value}` : fact.value }));
+    return card.facts.map(fact => {
+      const value = fact.kind === "date" ? formatMemoryDate(fact.value) : fact.value;
+      return { label: labels[fact.kind], value: fact.basis === "inferred" ? `May be: ${value}` : value };
+    });
   }
   const guided = readMemoryFields(content);
   if (guided && guided.person === name) {

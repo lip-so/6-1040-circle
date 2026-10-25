@@ -1,13 +1,18 @@
 <script setup lang="ts">
+import { validMemoryDate } from "../../../src/calendar.ts";
 import type { MemoryFields } from "../../../src/memory-fields.ts";
 const fields = defineModel<MemoryFields>({ required: true });
 defineProps<{ prefix: string; disabled: boolean }>();
+function validateDate(event: Event) {
+  const input = event.target as HTMLInputElement;
+  input.setCustomValidity(input.value === "" || validMemoryDate(input.value) ? "" : "Enter a real date in MM/DD/YYYY format, or leave it blank.");
+}
 </script>
 <template>
   <fieldset class="encounter-fields" :disabled="disabled">
     <div class="field-pair">
       <div><label :for="`${prefix}-person`">Person</label><input :id="`${prefix}-person`" v-model="fields.person" required maxlength="200" placeholder="Name" /></div>
-      <div><label :for="`${prefix}-when`">When / where</label><input :id="`${prefix}-when`" v-model="fields.when" maxlength="1000" placeholder="Date or context (optional)" /></div>
+      <div><label :for="`${prefix}-when`">Date (MM/DD/YYYY)</label><input :id="`${prefix}-when`" v-model="fields.when" maxlength="10" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="MM/DD/YYYY (optional)" @input="validateDate" /></div>
     </div>
     <label :for="`${prefix}-does`">Does</label><textarea :id="`${prefix}-does`" v-model="fields.does" rows="2" maxlength="4000" placeholder="What they work on or do" />
     <label :for="`${prefix}-discussed`">Discussed</label><textarea :id="`${prefix}-discussed`" v-model="fields.discussed" rows="2" maxlength="4000" placeholder="What you talked about" />

@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import type { CircleWireHttp } from "../../generated/wire.ts";
 import { api } from "./api/client.ts";
 import { memoryLabel, memorySummary } from "./memory-summary.ts";
+import { validMemoryDate } from "../../src/calendar.ts";
 import { writeMemoryFields } from "../../src/memory-fields.ts";
 import { emptyFields, fieldsFromCard } from "./encounter-form.ts";
 import EncounterFields from "./reusable/EncounterFields.vue";
@@ -130,6 +131,7 @@ async function remember() {
   if (busy.value) return;
   saveError.value = "";
   notice.value = "";
+  if (inputMode.value === "form" && formDraft.value.when !== "" && !validMemoryDate(formDraft.value.when)) { saveError.value = "Enter a real date in MM/DD/YYYY format, or leave it blank."; return; }
   const content = inputMode.value === "form" ? writeMemoryFields(formDraft.value) : draft.value;
   if (!(inputMode.value === "form" ? formDraft.value.person.trim() : content.trim())) { saveError.value = "Add a note or person first."; return; }
   if (content.length > 20_000) { saveError.value = "Please shorten this note before saving."; return; }
@@ -257,6 +259,7 @@ function closeEdit() {
 async function saveEdit() {
   if (!editing.value || editingBusy.value) return;
   const { memory, revision, fields } = editing.value;
+  if (fields.when !== "" && !validMemoryDate(fields.when)) { editError.value = "Enter a real date in MM/DD/YYYY format, or leave it blank."; return; }
   const content = writeMemoryFields(fields);
   if (!fields.person.trim() || content.length > 20_000) { editError.value = "Add a name and keep the note under 20,000 characters."; return; }
   if (!pendingEdit || pendingEdit.memory !== memory || pendingEdit.content !== content) pendingEdit = { memory, revision, content, submission: crypto.randomUUID() };

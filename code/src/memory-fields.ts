@@ -1,3 +1,5 @@
+import { validMemoryDate } from "./calendar.ts";
+
 export interface MemoryFields {
   person: string;
   when: string;
@@ -13,6 +15,7 @@ const fields = [
 
 /** A readable memo; continuation lines cannot turn into a different field. */
 export function writeMemoryFields(values: MemoryFields): string {
+  if (values.when !== "" && !validMemoryDate(values.when)) throw new Error("Enter a real date in MM/DD/YYYY format, or leave it blank.");
   return fields.filter(([, key]) => !["contact", "notes"].includes(key) || values[key]?.trim()).map(([label, key]) => {
     const [first, ...rest] = (values[key] ?? "").trim().replace(/\r\n?/gu, "\n").split("\n");
     return [`${label}:${first ? ` ${first}` : ""}`, ...rest.map(line => `  ${line}`)].join("\n");

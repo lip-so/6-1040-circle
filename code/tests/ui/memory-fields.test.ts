@@ -3,8 +3,8 @@ import { readMemoryFields, writeMemoryFields } from "../../src/memory-fields.ts"
 import { memorySummary } from "../../frontend/src/memory-summary.ts";
 
 describe("guided memories", () => {
-  test("the fields display exactly what was entered, without requiring natural-language trigger phrases", () => {
-    const fields = { person: "mira chen", when: "after the hackathon", does: "Marine biologist", discussed: "Ocean sensors" };
+  test("the fields preserve a standardized encounter date", () => {
+    const fields = { person: "mira chen", when: "10/24/2026", does: "Marine biologist", discussed: "Ocean sensors" };
     const note = writeMemoryFields(fields);
     expect(readMemoryFields(note)).toEqual(fields);
     expect(memorySummary(note, fields.person)).toEqual([
@@ -29,7 +29,7 @@ describe("guided memories", () => {
 describe("optional contact information", () => {
   for (const contact of ["+1 (617) 555-0142", "https://www.linkedin.com/in/mira-example"]) {
     test(`preserves and displays ${contact.startsWith("https:") ? "a LinkedIn URL" : "a phone number"}`, () => {
-      const fields = { person: "Mira", when: "after the hackathon", does: "Biologist", discussed: "Ocean sensors", contact };
+      const fields = { person: "Mira", when: "10/24/2026", does: "Biologist", discussed: "Ocean sensors", contact };
       const note = writeMemoryFields(fields);
       expect(readMemoryFields(note)).toEqual(fields);
       expect(memorySummary(note, "Mira")).toContainEqual({ label: "Contact", value: contact });

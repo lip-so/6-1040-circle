@@ -191,3 +191,40 @@ test("long removal confirmation scrolls in a short viewport and traps keyboard f
   expect(await dialog.evaluate(el=>el.scrollWidth <= el.clientWidth)).toBe(true);
   await page.keyboard.press("Escape");await expect(dialog).toHaveCount(0);
 });
+
+
+test("new Form dates reject impossible dates and save MM/DD/YYYY", async ({page}) => {
+  const state = await setup(page);
+  await page.getByRole("button", {name:"Remember", exact:true}).click();
+  await page.getByRole("button", {name:"Form input"}).click();
+  await page.getByLabel("Person", {exact:true}).fill("Mira");
+  const date = page.getByLabel("Date (MM/DD/YYYY)", {exact:true});
+  for (const invalid of ["2/3/2026", "02/30/2026", "02/29/2026"]) {
+    await date.fill(invalid);
+    await page.getByRole("button", {name:"Save", exact:true}).click();
+    expect(await date.evaluate(input => input.checkValidity())).toBe(false);
+    expect(state.calls.filter(c => c.path === "/memories/remember")).toHaveLength(0);
+  }
+  await date.fill("02/29/2024");
+  await page.getByRole("button", {name:"Save", exact:true}).click();
+  await expect(page.getByText("Memory saved.")).toBeVisible();
+  expect(state.calls.find(c => c.path === "/memories/remember").input.content).toContain("When: 02/29/2024");
+});
+
+test("editing converts ISO dates, preserves context and validates corrections", async ({page}) => {
+  const state = await setup(page);
+  state.rows[0].card.facts.push({kind:"date", value:"2026-10-24", quote:"Met Mira Chen."}, {kind:"context", value:"At the workshop", quote:"Met Mira Chen."});
+  await page.getByRole("button", {name:"Edit Mira Chen", exact:true}).click();
+  const dialog = page.getByRole("dialog", {name:"Edit encounter"});
+  const date = dialog.getByLabel("Date (MM/DD/YYYY)", {exact:true});
+  await expect(date).toHaveValue("10/24/2026");
+  await expect(dialog.getByLabel("Notes", {exact:true})).toHaveValue("At the workshop");
+  await date.fill("04/31/2026");
+  await dialog.getByRole("button", {name:"Save changes", exact:true}).click();
+  expect(await date.evaluate(input => input.checkValidity())).toBe(false);
+  expect(state.calls.filter(c => c.path === "/memories/edit")).toHaveLength(0);
+  await date.fill("04/30/2026");
+  await dialog.getByRole("button", {name:"Save changes", exact:true}).click();
+  await expect(dialog).toHaveCount(0);
+  expect(state.calls.find(c => c.path === "/memories/edit").input.content).toContain("When: 04/30/2026");
+});
