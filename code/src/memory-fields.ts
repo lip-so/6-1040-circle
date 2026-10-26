@@ -12,14 +12,27 @@ export interface MemoryFields {
 const fields = [
   ["Person", "person"], ["When", "when"], ["Does", "does"], ["Discussed", "discussed"], ["Contact", "contact"], ["Notes", "notes"],
 ] as const;
+export const memoryContentLimit = 20_000;
 
-/** A readable memo; continuation lines cannot turn into a different field. */
-export function writeMemoryFields(values: MemoryFields): string {
-  if (values.when !== "" && !validMemoryDate(values.when)) throw new Error("Enter a real date in MM/DD/YYYY format, or leave it blank.");
+/** Labels alone are not encounter content; an unnamed detail is sufficient. */
+export function hasMemoryFieldContent(values: MemoryFields): boolean {
+  return fields.some(([, key]) => Boolean(values[key]?.trim()));
+}
+
+function memoryFieldsText(values: MemoryFields): string {
   return fields.filter(([, key]) => !["contact", "notes"].includes(key) || values[key]?.trim()).map(([label, key]) => {
     const [first, ...rest] = (values[key] ?? "").trim().replace(/\r\n?/gu, "\n").split("\n");
     return [`${label}:${first ? ` ${first}` : ""}`, ...rest.map(line => `  ${line}`)].join("\n");
   }).join("\n");
+}
+
+/** Count the exact readable memo, even while its date is an invalid draft. */
+export function memoryFieldsLength(values: MemoryFields): number { return memoryFieldsText(values).length; }
+
+/** A readable memo; continuation lines cannot turn into a different field. */
+export function writeMemoryFields(values: MemoryFields): string {
+  if (values.when !== "" && !validMemoryDate(values.when)) throw new Error("Enter a real date in MM/DD/YYYY format, or leave it blank.");
+  return memoryFieldsText(values);
 }
 
 /** Recognize the complete guided memo format; older free-text notes remain valid. */
@@ -38,5 +51,5 @@ export function readMemoryFields(content: string): MemoryFields | undefined {
     } else return undefined;
   }
   // Contact is optional; the original four-field format remains readable.
-  return index >= 3 && values.person.trim() ? values : undefined;
+  return index >= 3 ? values : undefined;
 }

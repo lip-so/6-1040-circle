@@ -1,6 +1,6 @@
 # Verification output
 
-These files contain genuine captured execution output for the October 20, 2026 local verification (timestamps in the logs use UTC). See the [verification report](../../../design-docs/verification.md) for results, the advisory audit, expected injected-error logs and limitations.
+These files contain genuine captured execution output for the October 20, 2026 local verification (timestamps in the logs use UTC). No historical verification report is present; the captures below are the evidence for that dated run. See [P4 verification](../../../design-docs/p4-verification.md) for fresh results, advisory assessment and current limits.
 
 - generation.txt: existing artifact generation tooling.
 - checks.txt: concept/artifact checks and TypeScript/Vue types.

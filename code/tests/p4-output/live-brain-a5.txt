@@ -1,0 +1,14 @@
+UTC start: 2026-10-26T14:01:27.942530+00:00
+Directory: /private/tmp/circle-a1-5_k_0bi1/code
+Command: bun run check:brain
+Provider mode: LIVE synthetic fixtures
+$ bun scripts/check-brain.ts
+PASS ambiguous-name: interpretation, recall, repeat, isolation and removal
+PASS negation: interpretation, recall, repeat, isolation and removal
+PASS relative-date: interpretation, recall, repeat, isolation and removal
+PASS discussion-not-expertise: interpretation, recall, repeat, isolation and removal
+PASS prompt-injection: interpretation, recall, repeat, isolation and removal
+Only hand-authored synthetic notes were sent. No existing user notes were read.
+
+Exit code: 0
+UTC finish: 2026-10-26T14:01:48.876112+00:00

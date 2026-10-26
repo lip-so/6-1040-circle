@@ -4,8 +4,8 @@ import type { CircleWireHttp } from "../../generated/wire.ts";
 import { api } from "./api/client.ts";
 import { memoryLabel, memorySummary } from "./memory-summary.ts";
 import { validMemoryDate } from "../../src/calendar.ts";
-import { writeMemoryFields } from "../../src/memory-fields.ts";
-import { emptyFields, fieldsFromCard } from "./encounter-form.ts";
+import { hasMemoryFieldContent, writeMemoryFields } from "../../src/memory-fields.ts";
+import { editDateReviewMessage, editSizeMessage, emptyFields, hasRelativeEditDate, prepareEncounterEdit, type RawEditReview } from "./encounter-form.ts";
 import EncounterFields from "./reusable/EncounterFields.vue";
 import EditEncounter from "./reusable/EditEncounter.vue";
 import { VoiceCapture } from "./voice.ts";
@@ -26,7 +26,7 @@ const mode = ref<"remember" | "find">("find");
 const draft = ref("");
 const inputMode = ref<"text" | "voice" | "form">("text");
 const formDraft = ref(emptyFields());
-const editing = ref<{ memory: string; revision: number; fields: ReturnType<typeof emptyFields> } | null>(null);
+const editing = ref<{ memory: string; revision: number; fields: ReturnType<typeof emptyFields>; grouped: boolean; rawReview: RawEditReview | null; referenceDate: string } | null>(null);
 const preparingEdit = ref(false);
 const editingBusy = ref(false);
 const editError = ref("");
@@ -50,19 +50,20 @@ const { target: removalTarget } = confirmation;
 const busy = computed(() => saving.value || searching.value || removing.value || preparingEdit.value || editingBusy.value || signingOut.value || recording.value || openingMic.value || transcribing.value);
 const notice = ref("");
 const noteField = ref<HTMLTextAreaElement>();
+const rememberForm = ref<HTMLFormElement>();
 const needField = ref<HTMLInputElement>();
 const sessionScope = new RequestScope();
 let pendingSave: { submission: string; content: string } | null = null;
 const recent = useRecentPeople(input => api.memories.list(input), sessionEnded);
 const { memories, loading: loadingPeople, loaded: loadedPeople, error: peopleError, hasMore } = recent;
 const people = computed(() => memories.value.map(memory => {
-  const label = memory.card?.name || memoryLabel(memory.content);
+  const label = memoryLabel(memory.content, memory.card);
   return { ...memory, label, details: memorySummary(memory.content, label, memory.card) };
 }));
 type Results = CircleWireHttp["/needs/seek"]["output"]["results"];
 const results = ref<Results | null>(null);
 const suggestions = computed(() => results.value?.suggestions.map(suggestion => ({
-  ...suggestion, details: memorySummary(suggestion.content, suggestion.label, suggestion.card),
+  ...suggestion, label: memoryLabel(suggestion.content, suggestion.card), details: memorySummary(suggestion.content, suggestion.label, suggestion.card),
 })) ?? []);
 
 onMounted(() => {
@@ -123,8 +124,10 @@ async function switchMode(next: "remember" | "find") {
   mode.value = next;
   notice.value = "";
   await nextTick();
-  if (next === "remember") noteField.value?.focus();
-  else needField.value?.focus();
+  if (next === "find") needField.value?.focus();
+  else if (inputMode.value === "text") noteField.value?.focus();
+  else if (inputMode.value === "form") rememberForm.value?.querySelector<HTMLInputElement>("input")?.focus();
+  else rememberForm.value?.querySelector<HTMLButtonElement>(".voice-record")?.focus();
 }
 
 async function remember() {
@@ -173,7 +176,9 @@ async function seek() {
     if (answer.error === "UNAUTHORIZED") return sessionEnded();
     searchError.value = answer.error === "INVALID_REQUEST"
       ? "The search couldn't be accepted. Check your description and try again."
-      : "We couldn't finish this search. Your need may already be saved. Try searching again.";
+      : answer.error === "CONFLICT"
+        ? "Your saved collection is too large to search together. In Recent people, shorten long notes or remove encounters you no longer need, then retry. Changing this description won't fix the limit. Your need may already be saved."
+        : "We couldn't finish this search. Your need may already be saved, and note processing may still finish. Retry this search. If it keeps failing, review long saved notes or try again after the service recovers.";
     return;
   }
   results.value = answer.results;
@@ -235,16 +240,30 @@ async function openEdit(memory: string) {
   if (busy.value) return;
   editOpener = document.activeElement as HTMLElement;
   cancelVoice(); preparingEdit.value = true; editError.value = ""; saveError.value = "";
+  const loaded = memories.value.find(row => row.memory === memory);
+  const snapshot = loaded ? { ...loaded } : undefined;
   const current = sessionScope.current();
   const answer = await attempt(() => api.memories["prepare-edit"]({ memory }));
   if (!current()) return;
   preparingEdit.value = false;
-  if ("error" in answer || !answer.card) {
-    if ("error" in answer && answer.error === "UNAUTHORIZED") return sessionEnded();
-    editError.value = "Couldn't prepare this encounter for editing. Please try again."; return;
+  let source: CircleWireHttp["/memories/prepare-edit"]["output"];
+  let recoveryWarning = "";
+  if ("error" in answer) {
+    if (answer.error === "UNAUTHORIZED") return sessionEnded();
+    if (answer.error === "NOT_FOUND") { editError.value = "This encounter was removed. Reload Recent people before editing another encounter."; return; }
+    if (answer.error === "CONFLICT") { editError.value = "This encounter changed elsewhere. Reload Recent people and reopen it before editing."; return; }
+    if (answer.error === "FORBIDDEN" || answer.error === "INVALID_REQUEST" || !snapshot) {
+      editError.value = "Couldn't prepare this encounter for editing. Reload Recent people and try again."; return;
+    }
+    source = snapshot;
+    recoveryWarning = "Couldn't refresh this encounter. This form uses the last version loaded in Recent people; it may have changed since then. If saving says it changed elsewhere, close this form, reload Recent people and reopen it.";
+  } else {
+    source = answer;
   }
   pendingEdit = null;
-  editing.value = { memory, revision: answer.revision, fields: fieldsFromCard(answer.card, answer.content) };
+  const prepared = prepareEncounterEdit(source.card ?? { name: null, nameQuote: null, facts: [] }, source.content, source.referenceDate);
+  editing.value = { memory, revision: source.revision, fields: prepared.fields, grouped: prepared.grouped, rawReview: prepared.rawReview, referenceDate: source.referenceDate };
+  editError.value = [recoveryWarning, prepared.dateReview ? editDateReviewMessage : ""].filter(Boolean).join(" ");
 }
 function closeEdit() {
   if (editingBusy.value) return;
@@ -259,9 +278,12 @@ function closeEdit() {
 async function saveEdit() {
   if (!editing.value || editingBusy.value) return;
   const { memory, revision, fields } = editing.value;
+  const sizeError = editSizeMessage(fields);
+  if (sizeError) { editError.value = ""; return; }
+  if (hasRelativeEditDate(fields, editing.value.rawReview)) { editError.value = editDateReviewMessage; return; }
   if (fields.when !== "" && !validMemoryDate(fields.when)) { editError.value = "Enter a real date in MM/DD/YYYY format, or leave it blank."; return; }
+  if (!hasMemoryFieldContent(fields)) { editError.value = "Add at least one encounter detail before saving. A name is optional."; return; }
   const content = writeMemoryFields(fields);
-  if (!fields.person.trim() || content.length > 20_000) { editError.value = "Add a name and keep the note under 20,000 characters."; return; }
   if (!pendingEdit || pendingEdit.memory !== memory || pendingEdit.content !== content) pendingEdit = { memory, revision, content, submission: crypto.randomUUID() };
   editingBusy.value = true; editError.value = "";
   const current = sessionScope.current();
@@ -271,7 +293,7 @@ async function saveEdit() {
   results.value = null; recent.remove(memory); void recent.refresh();
   if ("error" in answer) {
     if (answer.error === "UNAUTHORIZED") return sessionEnded();
-    editError.value = answer.error === "CONFLICT" ? "This encounter changed elsewhere. Close and reopen it before editing." : answer.error === "NOT_FOUND" ? "This encounter was removed. Close this form." : "Your changes may be saved, but processing didn't finish. Retry the same form to finish.";
+    editError.value = answer.error === "CONFLICT" ? "This encounter changed elsewhere. Close and reopen it before editing." : answer.error === "NOT_FOUND" ? "This encounter was removed. Close this form." : answer.error === "INVALID_REQUEST" ? "The changes couldn't be accepted. Check the form and try again." : answer.error === "NETWORK_ERROR" ? "Couldn't confirm your changes because the connection failed. Retry the same form to finish." : "Your changes may be saved, but processing didn't finish. Retry the same form to finish.";
     return;
   }
   closeEdit(); notice.value = "Encounter updated.";
@@ -307,7 +329,7 @@ async function removeConnection(memory: string, label: string) {
 </script>
 
 <template>
-  <EditEncounter v-if="editing" v-model="editing.fields" :busy="editingBusy" :error="editError" @save="saveEdit" @cancel="closeEdit" />
+  <EditEncounter v-if="editing" v-model="editing.fields" :grouped="editing.grouped" :reference-date="editing.referenceDate" :busy="editingBusy" :error="editError" @save="saveEdit" @cancel="closeEdit" />
   <RemovalConfirmation v-if="removalTarget" :label="removalTarget.label" @confirm="confirmation.confirm" @cancel="confirmation.cancel" />
   <a class="skip" href="#main">Skip to content</a>
   <header class="topbar">
@@ -344,7 +366,7 @@ async function removeConnection(memory: string, label: string) {
         <button type="button" :aria-pressed="mode === 'find'" :disabled="saving || searching || removing || preparingEdit || editingBusy || signingOut" @click="switchMode('find')">Find</button>
       </div>
 
-      <form v-if="mode === 'remember'" class="memory-form" aria-label="Remember someone" :aria-busy="saving || transcribing" @submit.prevent="remember">
+      <form v-if="mode === 'remember'" ref="rememberForm" class="memory-form" aria-label="Remember someone" :aria-busy="saving || transcribing" @submit.prevent="remember">
         <div class="input-choice" role="group" aria-label="Note input">
           <button type="button" aria-label="Text input" title="Text input" :aria-pressed="inputMode === 'text'" :disabled="saving || searching || removing || preparingEdit || editingBusy || signingOut" @click="chooseInput('text')"><ActionIcon name="text" /><span>Text</span></button>
           <button type="button" aria-label="Voice input" title="Voice input" :aria-pressed="inputMode === 'voice'" :disabled="saving || searching || removing || preparingEdit || editingBusy || signingOut" @click="chooseInput('voice')"><ActionIcon name="mic" /><span>Voice</span></button>
@@ -388,10 +410,17 @@ async function removeConnection(memory: string, label: string) {
       </section>
 
       <section class="recent-people" aria-labelledby="recent-heading" :aria-busy="loadingPeople">
-        <div class="recent-heading"><h2 id="recent-heading" tabindex="-1">Recent people</h2></div>
+        <div class="recent-heading"><h2 id="recent-heading" tabindex="-1">Recent people</h2><button class="text-button" type="button" :disabled="loadingPeople || busy" title="Reload the newest encounters; this resets the list position." @click="recent.refresh">Reload from start</button></div>
         <p v-if="loadingPeople && !loadedPeople" class="status" role="status">Loading saved people…</p>
-        <p v-if="peopleError" class="refusal" role="alert">{{ peopleError }} <button class="text-button" type="button" :disabled="loadingPeople" @click="recent.refresh">Retry</button></p>
-        <p v-else-if="loadedPeople && !people.length && !loadingPeople" class="status">No saved people yet.</p>
+        <p v-if="peopleError" class="refusal" role="alert">{{ peopleError }} <button class="text-button" type="button" :disabled="loadingPeople" @click="recent.retry">Retry</button></p>
+        <div v-else-if="loadedPeople && !people.length && !loadingPeople" class="empty-people">
+          <p class="status">No saved people yet.</p>
+          <template v-if="mode === 'find'">
+            <p class="hint">Save an encounter first, then find people when you need them. For example: “Met Mira at a workshop. She builds sensors.”</p>
+            <button class="text-button" type="button" :disabled="busy" @click="switchMode('remember')">Remember your first encounter</button>
+          </template>
+        </div>
+        <p v-if="people.length" class="hint recent-guidance">AI summaries can be mistaken. Use Edit to review the current encounter; Personal notes shows the first saved wording.</p>
         <div v-if="people.length" class="contact-list">
           <ContactRow v-for="person in people" :key="person.memory" :label="person.label" :content="person.content" :original="person.original" :details="person.details" :busy="busy" @edit="openEdit(person.memory)" @remove="requestRemoval(person.memory, person.label)" />
         </div>

@@ -1,0 +1,17 @@
+UTC start: 2026-10-26T19:40:46.328110+00:00
+Directory: /private/tmp/circle-p4-clean-0w5omdil/code
+Command: bun install --frozen-lockfile
+Provider mode: injected/test providers
+bun install v1.4.2 (744846f84)
+
++ @types/bun@1.4.3
++ @types/node@24.19.2
++ typescript@6.0.3
++ @mit-sdg/sync-engine@1.1.0
++ @mit-sdg/sync-engine-http@1.1.0
++ mongodb@7.7.0
+
+58 packages installed [69.00ms]
+
+Exit code: 0
+UTC finish: 2026-10-26T19:40:46.403193+00:00

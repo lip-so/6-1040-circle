@@ -1,0 +1,24 @@
+{
+  "checkedAtUTC": "2026-10-26T19:36:15.007846+00:00",
+  "origin": "https://circle.mit-sdg.dev",
+  "health": "ok",
+  "assets": [
+    {
+      "path": "/assets/index-l64jE0TV.js",
+      "sha256": "e6b92b22f01ecd488b6fa7a21ab1e9e6419533616ad3088d909affb84f2c630e",
+      "bytes": 111134
+    },
+    {
+      "path": "/assets/index-DlZbdJms.css",
+      "sha256": "360b889ba1940cee23b3a98fa2a309d770bfd36e71a94650f636d1563bf78659",
+      "bytes": 14200
+    }
+  ],
+  "releaseIdentity": "UNKNOWN frontend/backend revision; assets are not backend identity.",
+  "headers": [
+    "HTTP/2 200 ",
+    "cache-control: no-store",
+    "referrer-policy: no-referrer",
+    "server: cloudflare"
+  ]
+}

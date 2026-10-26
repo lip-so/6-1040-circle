@@ -1,0 +1,45 @@
+import { MongoClient } from "/private/tmp/circle-p4-clean-0w5omdil/code/node_modules/mongodb";
+const root = "/private/tmp/circle-p4-clean-0w5omdil";
+const dbName = `circle_p4_setup_${crypto.randomUUID().replaceAll("-", "")}`;
+if (!/^circle_p4_setup_[a-f0-9]{32}$/.test(dbName)) throw new Error("Unsafe setup database name");
+const parsed = new URL(process.env.TEST_MONGODB_URL!);
+if (!["localhost","127.0.0.1","[::1]"].includes(parsed.hostname)) throw new Error("Only local setup database allowed");
+parsed.pathname = `/${dbName}`;
+const environment = {...process.env, MONGODB_URL: parsed.href, PUBLIC_ORIGIN: "http://localhost:3000", HOST: "127.0.0.1", PORT: "3000"};
+delete environment.OPENAI_API_KEY;
+const client = new MongoClient(parsed.href);
+let child: ReturnType<typeof Bun.spawn> | undefined;
+const output: string[] = [];
+async function ready(url: string) {
+  const end = Date.now()+15000;
+  while (Date.now()<end) {
+    if (child?.exitCode !== null) throw new Error("Server exited before readiness");
+    try {const r=await fetch(url,{signal:AbortSignal.timeout(800)});if(r.ok)return await r.text();}catch{}
+    await Bun.sleep(120);
+  }
+  throw new Error(`Readiness timeout for ${url}`);
+}
+async function stop(){
+  if(!child)return;
+  child.kill("SIGTERM");
+  await Promise.race([child.exited,Bun.sleep(7000).then(()=>{throw new Error("Server did not stop");})]);
+  output.push(await new Response(child.stdout).text(),await new Response(child.stderr).text()); child=undefined;
+}
+try {
+ await client.connect();
+ for(const mode of ["start","dev"]){
+  child=Bun.spawn([process.execPath,"run",mode],{cwd:root,env:environment,stdout:"pipe",stderr:"pipe"});
+  const health=await ready("http://127.0.0.1:3000/health");if(health!=="ok")throw new Error("Unexpected health");
+  const origin=mode==="start"?"http://127.0.0.1:3000/":"http://localhost:5173/";
+  const html=await ready(origin);if(!html.includes('<div id="app"></div>'))throw new Error("Missing app mount");
+  const me=await fetch(new URL("api/auth/me",origin),{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"});
+  if(me.status!==401)throw new Error(`Unexpected anonymous status ${me.status}`);
+  console.log(`PASS bun run ${mode}: ${origin}, backend health ok, anonymous auth/me 401; no AI key/call or app records`);
+  await stop();
+ }
+} finally {
+ await stop();
+ await client.db(dbName).dropDatabase(); await client.close();
+ console.log("Clean startup index-only disposable database dropped after shutdown.");
+ for(const log of output)console.log(log.trim());
+}

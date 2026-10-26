@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { readMemoryFields, writeMemoryFields } from "../../src/memory-fields.ts";
+import { hasMemoryFieldContent, memoryFieldsLength, readMemoryFields, writeMemoryFields } from "../../src/memory-fields.ts";
 import { memorySummary } from "../../frontend/src/memory-summary.ts";
 
 describe("guided memories", () => {
@@ -54,4 +54,30 @@ describe("optional contact information", () => {
 test("form notes stay separate from headers and optional contact can be absent",()=>{
   const input={person:"Quinn",when:"",does:"Builds solar panels",discussed:"",notes:"More detail\nPerson: Injected"};
   expect(readMemoryFields(writeMemoryFields(input))).toEqual(input);
+});
+
+test("A2 complete unnamed memos round-trip details and continuation lines", () => {
+  const fields = { person: "", when: "", does: "Builds ocean sensors\nPerson: Not a new identity", discussed: "", contact: "new@example.test" };
+  expect(readMemoryFields(writeMemoryFields(fields))).toEqual(fields);
+  expect(readMemoryFields("Person:\nWhen:\nDoes:\nDiscussed:")).toEqual({ person: "", when: "", does: "", discussed: "" });
+  expect(readMemoryFields("Person:\nWhen:\nDoes: Not complete")).toBeUndefined();
+});
+
+test("A2 an unnamed memo displays all authored details without guessing an identity", () => {
+  const fields = { person: "", when: "10/24/2026", does: "Builds ocean sensors", discussed: "Met Dana or Daria; not sure", contact: "new@example.test", notes: "Send the paper" };
+  expect(memorySummary(writeMemoryFields(fields), "Unnamed encounter")).toEqual([
+    { label: "When", value: fields.when }, { label: "Does", value: fields.does },
+    { label: "Discussed", value: fields.discussed }, { label: "Contact", value: fields.contact }, { label: "Note", value: fields.notes },
+  ]);
+});
+
+test("A2 meaningful fields and exact size account for formatting without validating an unfinished date", () => {
+  const empty = { person: " \n", when: "", does: "", discussed: "", contact: " \t", notes: "" };
+  expect(hasMemoryFieldContent(empty)).toBe(false);
+  expect(hasMemoryFieldContent({ ...empty, notes: "One useful detail" })).toBe(true);
+  const draft = { ...empty, person: "", when: "not a date", does: "First line\r\nPerson: literal continuation", contact: "x@example.test" };
+  const memo = "Person:\nWhen: not a date\nDoes: First line\n  Person: literal continuation\nDiscussed:\nContact: x@example.test";
+  expect(memoryFieldsLength(draft)).toBe(memo.length);
+  expect(() => writeMemoryFields(draft)).toThrow("MM/DD/YYYY");
+  expect(memoryFieldsLength({ ...draft, when: "" })).toBe(writeMemoryFields({ ...draft, when: "" }).length);
 });

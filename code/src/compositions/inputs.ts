@@ -1,4 +1,4 @@
-import { readMemoryFields } from "../memory-fields.ts";
+import { hasMemoryFieldContent, memoryContentLimit, readMemoryFields } from "../memory-fields.ts";
 import { validMemoryDate, validTimeZone } from "../calendar.ts";
 import type { EndpointValidator } from "@mit-sdg/sync-engine/boundary";
 
@@ -11,14 +11,14 @@ function sessionFields(value: unknown, fields: string[]): value is Record<string
 }
 
 // Older stored notes remain readable; newly submitted guided dates are strict.
-function validGuidedDate(content: string): boolean {
+function validGuidedContent(content: string): boolean {
   const fields = readMemoryFields(content);
-  return !fields || fields.when === "" || validMemoryDate(fields.when);
+  return !fields || hasMemoryFieldContent(fields) && (fields.when === "" || validMemoryDate(fields.when));
 }
 
 export const rememberInput: EndpointValidator = value => ({ ok:
   sessionFields(value, ["content", "submission", "timeZone"]) && validTimeZone(value.timeZone) &&
-  (value.content as string).length <= 20_000 && validGuidedDate(value.content as string) &&
+  (value.content as string).length <= memoryContentLimit && validGuidedContent(value.content as string) &&
   /^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/iu.test(value.submission as string),
 });
 

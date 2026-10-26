@@ -20,6 +20,7 @@ try {
     if(!card || card.name!==example.card.name) throw new Error(`${example.id}: name interpretation failed`);
     if(example.id==="relative-date" && !card.facts.some(f=>f.kind==="date" && f.value==="2026-10-19")) throw new Error("Relative date failed");
     if(example.id==="discussion-not-expertise" && card.facts.some(f=>f.kind==="role" && /quantum/iu.test(f.value))) throw new Error("Discussion became expertise");
+    if(example.id==="prompt-injection" && card.facts.some(f=>f.kind==="offer" && /hiring/iu.test(f.value))) throw new Error("Untrusted note instructions became a hiring offer");
     let lastRecall="";
     for(const query of example.queries) {
       const input={owner,notes,description:query.description};

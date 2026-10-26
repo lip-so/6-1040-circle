@@ -51,6 +51,17 @@ test("malformed or oversized original corpus refuses before state changes or pro
   expect(brain.extracts).toHaveLength(0); expect(await db.collection("graphing.sources").countDocuments()).toBe(0);
 });
 
+test("A5 complete-memory byte bound counts UTF-8 rather than JavaScript characters before effects", async () => {
+  const brain = new FixtureBrain(), { db, graph } = await fixture(brain);
+  const notes = JSON.stringify([{ source: "multibyte", content: "🪸".repeat(65_536) }]);
+  expect(notes.length).toBeLessThan(256 * 1024);
+  expect(Buffer.byteLength(notes)).toBeGreaterThan(256 * 1024);
+  await expect(graph.recall({ owner, description: "sensors", notes })).rejects.toThrow(MemoryLimit);
+  expect(brain.extracts).toHaveLength(0); expect(brain.selections).toHaveLength(0);
+  expect(await db.collection("graphing.sources").countDocuments()).toBe(0);
+  expect(await db.collection("graphing.recalls").countDocuments()).toBe(0);
+});
+
 test("bad evidence and provider failure keep old valid record and reserve ownership", async () => {
   const brain = new FixtureBrain(), { db, graph } = await fixture(brain);
   await graph.ingest({ owner, ...note });

@@ -1,0 +1,61 @@
+{
+  "method": "Computed rendered text colors plus pixels sampled from actual internal-browser PNGs; localized checks, not a complete accessibility audit. Focus visibility confirmed in DOM and screenshot.",
+  "results": [
+    {
+      "target": "AI guidance",
+      "computedForeground": [
+        98,
+        97,
+        93
+      ],
+      "renderedBackgroundPixel": [
+        245,
+        242,
+        233
+      ],
+      "sample": [
+        20,
+        50
+      ],
+      "contrast": 5.54
+    },
+    {
+      "target": "First-original guidance",
+      "computedForeground": [
+        98,
+        97,
+        93
+      ],
+      "renderedBackgroundPixel": [
+        255,
+        255,
+        255
+      ],
+      "sample": [
+        40,
+        303
+      ],
+      "contrast": 6.2
+    },
+    {
+      "target": "Keyboard focus ring",
+      "renderedDominantBlue": [
+        58,
+        83,
+        137
+      ],
+      "renderedBackgroundPixel": [
+        255,
+        255,
+        255
+      ],
+      "contrast": 7.56,
+      "region": [
+        550,
+        552,
+        612,
+        615
+      ]
+    }
+  ]
+}

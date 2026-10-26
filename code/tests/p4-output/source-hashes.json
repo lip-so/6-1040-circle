@@ -1,0 +1,395 @@
+{
+  "baseCommit": "ad4d2412b1c1a43ea813526abafb8244352eb2e8",
+  "status": "uncommitted A1\u2013A7 candidate",
+  "applicationFiles": [
+    {
+      "path": "code/src/assembly.ts",
+      "sha256": "e3eaaf6c9864c00b55a347175392cc8a11a785a9f143b571b8cfa9a87e89cd1d"
+    },
+    {
+      "path": "code/src/calendar.ts",
+      "sha256": "268ba55c9135d55991cfccc202de48deba805695879628b07ebe05b22825e6da"
+    },
+    {
+      "path": "code/src/compositions/Circle.ts",
+      "sha256": "1bff40723811ad835c04c7aa95bec2553ef63f9b91a1f2717024cea31a2243db"
+    },
+    {
+      "path": "code/src/compositions/inputs.ts",
+      "sha256": "bb5ee46b7504c519ed925e5d12880f8bb4d55b25aa308b339aee7156117f50eb"
+    },
+    {
+      "path": "code/src/compositions/reusable/accounts.ts",
+      "sha256": "45056e7503a3a8c32eca2854187975d4631cc407ecd4a74fb8edb42c992bb8ea"
+    },
+    {
+      "path": "code/src/compositions/reusable/commons.ts",
+      "sha256": "eb423414cf6133f0d15c8c2c6b482f9ff1abb64d8d71363e00371988d6110a77"
+    },
+    {
+      "path": "code/src/compositions/reusable/inputs.ts",
+      "sha256": "7b0f76d8c1317b24f9708e4fcf0c50cff55de2a04368e95f987d2ea47dba82a2"
+    },
+    {
+      "path": "code/src/concepts/Federating/Federating.ts",
+      "sha256": "108313d4bfeb7d9f0fa625a9ad36e449ac8b6939812c42e4720243142c5edae6"
+    },
+    {
+      "path": "code/src/concepts/Federating/provider.ts",
+      "sha256": "c22bb65b3cf6191e074aeec6b5b18344d604791ab47e27af0561004d9e681f68"
+    },
+    {
+      "path": "code/src/concepts/Graphing.ts",
+      "sha256": "a91217d1978cf4b7fcb46112f0070f45d1f4440030ef9b918f4bc09889fad466"
+    },
+    {
+      "path": "code/src/concepts/Registering/Registering.ts",
+      "sha256": "88697449195c030bd5e3a6081a3626c3de95e6d6a198e1abb0e360f2093aa72e"
+    },
+    {
+      "path": "code/src/concepts/Remembering.ts",
+      "sha256": "a48a8c6b13d10586caf58cbf7cfcbab0142cebf55d5c4c6d913f1a4957a1ef15"
+    },
+    {
+      "path": "code/src/concepts/Seeking.ts",
+      "sha256": "0adbddc15577554f64d745e597e46f8c5d94679a62cc1d41b42c3c48ce09b371"
+    },
+    {
+      "path": "code/src/concepts/Sessioning/Sessioning.ts",
+      "sha256": "9b3e2539bb95e22fba71b4e1b6e70cccc3d6a8ecf9de8e4e86bd7cfa27982225"
+    },
+    {
+      "path": "code/src/concepts.ts",
+      "sha256": "a4f50b92e8991c0f8e1fa2153db3531f337f926e2bc6f0a62e1791773759abae"
+    },
+    {
+      "path": "code/src/db.ts",
+      "sha256": "84b28ad4b10997639f26f04d56d2a7e0384ed80ed5866eb0a08e9a8da9550ce0"
+    },
+    {
+      "path": "code/src/execution.ts",
+      "sha256": "617230d82b844aa3c83050369287a8458b78dfd3c924f539dbde95f969fc66b4"
+    },
+    {
+      "path": "code/src/host/http.ts",
+      "sha256": "854187cc7b720278afe83335ecc2bd70f08da57f818e343e32d2b6045529c483"
+    },
+    {
+      "path": "code/src/main.ts",
+      "sha256": "496ef682b1c279029c063c9a34ecda6d147a68d8c399d99bdc518f587cd95740"
+    },
+    {
+      "path": "code/src/memory-fields.ts",
+      "sha256": "01dd4fc0e4221429445bc2a1d33c667659f5b40c40b90abbdf98015e588c1155"
+    },
+    {
+      "path": "code/src/providers/README.md",
+      "sha256": "a99cfeaa7c9a3f6b3dc2881d958988e3265e3e2b7f62564d89970f794220465b"
+    },
+    {
+      "path": "code/src/providers/brain-provider.ts",
+      "sha256": "2311dd9c8cc540e9325c635a7c13270d5b35d80d0bbd40276c36daff4400c203"
+    },
+    {
+      "path": "code/src/text.d.ts",
+      "sha256": "21757631b0551048169422a47c4808bbc43340e93b76429aa9a8da393f29f5f6"
+    },
+    {
+      "path": "code/design/compositions/Circle.md",
+      "sha256": "ff3ce374911964b5ac9663afafdcd81329eba0d602198fe1df7914350b0ef408"
+    },
+    {
+      "path": "code/design/compositions/reusable/accounts.md",
+      "sha256": "b76f0c4188d1530aa8a185b4132ddd659fe551eca2166b8912e2a493d5a9484b"
+    },
+    {
+      "path": "code/design/compositions/reusable/commons.md",
+      "sha256": "a3be01f4b61194fae90ca40628c82eaef1d2b62d81467b40a427d465271e7239"
+    },
+    {
+      "path": "code/design/concepts/Federating.md",
+      "sha256": "1d2abec9b0621c77086843704afed153a4815af1576b67dcef0cd9b920f330f6"
+    },
+    {
+      "path": "code/design/concepts/Graphing.md",
+      "sha256": "65608b6b7f81a29efeae2738892a269c9ba885b0eff333190f06f83934802787"
+    },
+    {
+      "path": "code/design/concepts/Registering.md",
+      "sha256": "8e97e4230d0d241067b00cff5ab541130d4c63e2b05de5e03c8f4d588e780652"
+    },
+    {
+      "path": "code/design/concepts/Remembering.md",
+      "sha256": "e830e347758b03b73aa0afce7ce05d3368e5d9c5d64bfff7e09be5b290c6d881"
+    },
+    {
+      "path": "code/design/concepts/Seeking.md",
+      "sha256": "ecedf8c759042f70daa7a5b474aaac5cc969d751bc230873cbb134fd5cc00735"
+    },
+    {
+      "path": "code/design/concepts/Sessioning.md",
+      "sha256": "1dff807e5c50404c7b19d5f8254868007cf3692e52a835080258b0e834cb759c"
+    },
+    {
+      "path": "code/design/types.md",
+      "sha256": "d8079722d50f5149305dc0be2ff94dbf4a15777f8c6c54c7a15518a7eaf93261"
+    },
+    {
+      "path": "code/generated/circle.md",
+      "sha256": "4fefe34cca2703b6f7a4463274700c196793d10beb09ebcfb0755d4fd26bc385"
+    },
+    {
+      "path": "code/generated/wire.ts",
+      "sha256": "b5ad0302e262d7b872ccd0d7893fbfe508ba38649dd2caf404e15cb0cd06ea68"
+    },
+    {
+      "path": "code/frontend/src/App.vue",
+      "sha256": "befeb9ad21d7e8207efc06de873c6f67b30160cc42b8414d9a7408c34a7fca6c"
+    },
+    {
+      "path": "code/frontend/src/api/client.ts",
+      "sha256": "f5e87dc11ecac33347e02250d12e4456f512f19b7bf872267b880972df1b09c2"
+    },
+    {
+      "path": "code/frontend/src/assets/fonts/Handlee-License.txt",
+      "sha256": "d8e9f75e6725aca39b10e77c15cf7fc4459db5148b5a4dded2f95c0ca6c584cb"
+    },
+    {
+      "path": "code/frontend/src/assets/fonts/Handlee.ttf",
+      "sha256": "9fa2f002d39596efc70913ec5ebec824250d3c131e50e448308c7f31e57eac5b"
+    },
+    {
+      "path": "code/frontend/src/assets/fonts/Urbanist-OFL.txt",
+      "sha256": "eaa1030f26d3573ffded91e10e3c2d0072314f49a3433b374829622b86552741"
+    },
+    {
+      "path": "code/frontend/src/assets/fonts/Urbanist.ttf",
+      "sha256": "957b3b61aa307baa7bf667fe4fe04a4e7091d153d911e9040c0c0cef0f6688ac"
+    },
+    {
+      "path": "code/frontend/src/encounter-form.ts",
+      "sha256": "0ce9b111b991e42ad82ff0cbf04cf853bcac35c3fc3fd3a808084cdf758fe85e"
+    },
+    {
+      "path": "code/frontend/src/encounter-text.ts",
+      "sha256": "4f6b28c0012315b3591eafa8c2be009cada6c5a141360be1fb502ccfb1b914a7"
+    },
+    {
+      "path": "code/frontend/src/main.ts",
+      "sha256": "41a79ccb7d440dcb55dd3a28c6a62056c59b4e877d9fcbe17c9cd5d7fbbe2c14"
+    },
+    {
+      "path": "code/frontend/src/memory-summary.ts",
+      "sha256": "1ab67b14e327ed7d0c54624f107ed3e5d87d18aaee552792909bb99e5c1ab0f5"
+    },
+    {
+      "path": "code/frontend/src/recent-people.ts",
+      "sha256": "ff8f0760ccaf92faf106ba105e08b3814e136b65487e4bf8892ecbd0ed51d1f1"
+    },
+    {
+      "path": "code/frontend/src/removal-confirmation.ts",
+      "sha256": "859438a255c0809ebe4e74150a30577de6696bdaf5464858fb3d7977c8c0e740"
+    },
+    {
+      "path": "code/frontend/src/request-scope.ts",
+      "sha256": "1527bd67613be91b5a8381d63927426614bc77cf82f59d6d03e6882625612e31"
+    },
+    {
+      "path": "code/frontend/src/reusable/ActionIcon.vue",
+      "sha256": "d1acd0783d7bcc8c3ac5c44d064920b2be98dbf5d749a8e77ac18353b94f5964"
+    },
+    {
+      "path": "code/frontend/src/reusable/AnimatedBackdrop.vue",
+      "sha256": "c04be9de94b474d39d6fe435ec59e97b2e7f8c9cd960cd8fe3d92134ae830b62"
+    },
+    {
+      "path": "code/frontend/src/reusable/CommonsButton.vue",
+      "sha256": "c281120e9b39bfa6349e3fc807ab33d5cc451122b23466b8a88f416125a4fd11"
+    },
+    {
+      "path": "code/frontend/src/reusable/CommonsCallback.vue",
+      "sha256": "b3724ac4fa3b034ce17581e60f2ca04d2b93bcb0a213f555a56c483535f7fa78"
+    },
+    {
+      "path": "code/frontend/src/reusable/CommonsMark.vue",
+      "sha256": "98baf7b992246757f43b54d7c4e996dae60b7951ce67f29d19296712e981d72a"
+    },
+    {
+      "path": "code/frontend/src/reusable/ContactRow.vue",
+      "sha256": "b7f01d041448ec83ec6b869e7ac671c37bebb0ca5d782eee87cec1b0d67efe46"
+    },
+    {
+      "path": "code/frontend/src/reusable/EditEncounter.vue",
+      "sha256": "ac8ce4d86557f01437b264d910daede73ef26b6549ec88e7546577f193af11d9"
+    },
+    {
+      "path": "code/frontend/src/reusable/EncounterFields.vue",
+      "sha256": "8c63b58f22f96aadb96bfbda721f27252f94163c4872a4b4c0a151bed34b2c0e"
+    },
+    {
+      "path": "code/frontend/src/reusable/RemovalConfirmation.vue",
+      "sha256": "02758bb8b1d3893acfcbc1ec866b51e3d449dd7be19b884bb59c474acc2dbdd4"
+    },
+    {
+      "path": "code/frontend/src/reusable/dialog-focus.ts",
+      "sha256": "1c58337a47a33e02e288f9f00f94a1c31cdded94340f997ed9b0bd0b9a4c1af6"
+    },
+    {
+      "path": "code/frontend/src/reusable/session.ts",
+      "sha256": "ee7941e324c3d007901104bb81b6761d96becbf301664235d1c4128784ed45e8"
+    },
+    {
+      "path": "code/frontend/src/style.css",
+      "sha256": "fe77ace20d0121ae1c5d907628993551e61a68eed89bdd9d7ef28685d7e2369e"
+    },
+    {
+      "path": "code/frontend/src/voice.ts",
+      "sha256": "228d714f10f9dd8da65068711d30f0cc9d56a4268912c941fa7dcbba205a3292"
+    },
+    {
+      "path": "code/frontend/tests/browser/interactions.pw.mjs",
+      "sha256": "f2ee66bcbe3dcf9407817bdc9e94ed2628a02650c1525259eb5ab5899c1045ec"
+    },
+    {
+      "path": "code/frontend/tests/browser/p4-usability.pw.mjs",
+      "sha256": "b171e10b78073f063c54452b1752ad4d0cde8e807fe8ec3b687578b9e3811a40"
+    },
+    {
+      "path": "code/tests/compositions/Circle.test.ts",
+      "sha256": "75152badaa96b8bbeca9397d5d43ea3ba509f1117310a8e49290d46669903bfe"
+    },
+    {
+      "path": "code/tests/compositions/authenticated-flows.test.ts",
+      "sha256": "4ad3bf78c6b531f5dc871b3b8dbd79abf896ee21861c4a3d0e01b25e29ea57f7"
+    },
+    {
+      "path": "code/tests/concepts/CommonsProvider.test.ts",
+      "sha256": "8e6dcf7abf84dcd37d2c6715f3a722c9e57ac005a22b493c48980ad115cc1e56"
+    },
+    {
+      "path": "code/tests/concepts/Federating.test.ts",
+      "sha256": "e7672bb0e924e6265680c8344fef90998c4dea405d26a3fb22849b971a67402b"
+    },
+    {
+      "path": "code/tests/concepts/Graphing.test.ts",
+      "sha256": "f801f80f6506607b8044725b80cb5e0838e5fc90203337a54d740fae34178c12"
+    },
+    {
+      "path": "code/tests/concepts/Registering.test.ts",
+      "sha256": "46a9e784a48df84aa47986ab1401ee6acb2a3046a4855a2f0fa1f26c9c34fcfa"
+    },
+    {
+      "path": "code/tests/concepts/Remembering.test.ts",
+      "sha256": "b24738e15abd39843695375652902f40524823b276de36f0c992664719286eb9"
+    },
+    {
+      "path": "code/tests/concepts/Seeking.test.ts",
+      "sha256": "d14f5e35f4bd012f88bcc85a1231396895492480122272fdd553e58754b103a9"
+    },
+    {
+      "path": "code/tests/concepts/Sessioning.test.ts",
+      "sha256": "8a7aa6cc0a5c9b9dd54518d3672746f4108ac31390064696f4481dbdc024c7b5"
+    },
+    {
+      "path": "code/tests/concepts/calendar.test.ts",
+      "sha256": "9d9f8cca616547786e981917e746896b09e300e87a39918722dbebe7f2a408b8"
+    },
+    {
+      "path": "code/tests/providers/BrainProvider.test.ts",
+      "sha256": "99a09530c2d1d29185e87cd12f86bcb3ec651d3f274148106383756d5adfa263"
+    },
+    {
+      "path": "code/tests/providers/SyntheticEvaluation.test.ts",
+      "sha256": "b905c289fc854fec3aac52045cf02ae4de84c9c8c8a4967f4b725e42da4d9940"
+    },
+    {
+      "path": "code/tests/support/brain.ts",
+      "sha256": "17c8bd8a13c9b92a6216a52ecf0303453ee9e898021834863f87e862e0fcd839"
+    },
+    {
+      "path": "code/tests/support/reusable/mongo.ts",
+      "sha256": "9f86ef271f0d2ce5d22428cab0775f1a1e77baec1e52a4b63051a17223736621"
+    },
+    {
+      "path": "code/tests/support/reusable/race.ts",
+      "sha256": "57851028b310f3496f648fa709a13fd7f7dd26ae5262d32378a0470fe7b7515d"
+    },
+    {
+      "path": "code/tests/ui/encounter-form.test.ts",
+      "sha256": "9b72361a2b0ab5866703bbc6aae841c017efc43695ae5940f9e335e4ebdf4645"
+    },
+    {
+      "path": "code/tests/ui/memory-date.test.ts",
+      "sha256": "1e0916ebae65c6bcf3733516e52c6413e64d18a4aaa927dbcaaf6ba476be7716"
+    },
+    {
+      "path": "code/tests/ui/memory-fields.test.ts",
+      "sha256": "e3306d500091f1d4d27d12642e78cc856ca6600f4d91ba818639603cda151043"
+    },
+    {
+      "path": "code/tests/ui/memory-summary.test.ts",
+      "sha256": "9cdf72b6753d1b286c97e6987b0a75306c4152cb70706ff0d8930ac38bcbaf5c"
+    },
+    {
+      "path": "code/tests/ui/recent-people.test.ts",
+      "sha256": "84a830df493585ea2f14a4e4e56e49ce9513a073ff7dea2791be87373a069d2a"
+    },
+    {
+      "path": "code/tests/ui/removal-confirmation.test.ts",
+      "sha256": "2a13f49cadfaf51ba044103053432235e49c33dea8ab177914eb7c8045766ae0"
+    },
+    {
+      "path": "code/tests/ui/voice.test.ts",
+      "sha256": "833903a639ab1599e2ac1c918e5f86a39f504894267eb16ddfe40929dc886b02"
+    },
+    {
+      "path": "code/scripts/check-brain.ts",
+      "sha256": "993ec8863cd64407d873d0e614ebb460c4b754479367d6fb780361ec3be1c315"
+    },
+    {
+      "path": "code/scripts/check-contrast.ts",
+      "sha256": "afe85279b3afd2fe1126ac52051616c55cac03a8aec1140a3cc1f9779643854b"
+    },
+    {
+      "path": "code/scripts/dev.ts",
+      "sha256": "ec73296109854bd484943bf40491961d78a27b048d318e28e8933328d3c98125"
+    },
+    {
+      "path": "code/scripts/p4-search-probe.ts",
+      "sha256": "3ecd90435a77b4995ed83733cf4dffa1aded04c08d16aab08615eeea75c8b30a"
+    },
+    {
+      "path": "code/scripts/synthetic-brain-cases.ts",
+      "sha256": "ad4229604d1a1cada6c9154f9dcb82543ee63c18ddc6728e6f20d1a70c763cf9"
+    },
+    {
+      "path": "package.json",
+      "sha256": "027a1c35330f2a6b477f8a6b2deb900f8f0b5a20638cfc0dc8dc958652854331"
+    },
+    {
+      "path": "code/package.json",
+      "sha256": "8dc4bfe6bea4ad8303a2a8cb3a38998d6e401907167d41398599eb73b1bd8f14"
+    },
+    {
+      "path": "code/bun.lock",
+      "sha256": "2248408fe098534a013a1fe1df5781c0f7495569e94afff4fc8013bf1964f1ec"
+    },
+    {
+      "path": "code/frontend/package.json",
+      "sha256": "afc1a89957b161f9daa70b306932caba20e1ff0df8627bb7d774cd2f42726ab7"
+    },
+    {
+      "path": "code/frontend/bun.lock",
+      "sha256": "b9fa4184015b6ca0f1905daa8166a4adbee2779eb3a00840415c0a63ad75e335"
+    },
+    {
+      "path": "code/frontend/playwright.config.ts",
+      "sha256": "e6e09d3518eebbd29efa2859cda28fec138b0aa775a5953c3579382f0a18140b"
+    },
+    {
+      "path": "code/frontend/vite.config.ts",
+      "sha256": "c50d17f36ebd940b36c6446d60efc9158a09e21c7c8abfc3f8a70e7344041d6e"
+    }
+  ],
+  "note": "Source/design/generated/test/script files match actual repository byte-for-byte. Candidate has two extra review-only dev dependencies; their manifest/lock are excluded from application patch. Package/lock hashes here identify actual repository versions."
+}

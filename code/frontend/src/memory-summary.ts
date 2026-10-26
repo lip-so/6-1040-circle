@@ -6,9 +6,11 @@ import type { ContactCard } from "../../src/providers/brain-provider.ts";
 export interface MemoryDetail { label: string; value: string }
 
 /** A display name must be explicit in the original; this fallback only formats older unorganized notes. */
-export function memoryLabel(content: string): string {
-  const guided = readMemoryFields(content)?.person;
-  if (guided?.trim()) return guided.trim();
+export function memoryLabel(content: string, card?: ContactCard | null): string {
+  const guided = readMemoryFields(content);
+  if (guided && !guided.person.trim()) return "Unnamed encounter";
+  if (card) return card.name?.trim() || "Unnamed encounter";
+  if (guided) return guided.person.trim() || "Unnamed encounter";
   const extracted = extractEncounter(content).entities.find(entity => entity.kind === "PERSON")?.label;
   if (extracted?.trim()) return extracted.trim();
   // Older free-form notes may start with a lowercase name. Stop before context,
@@ -29,7 +31,7 @@ export function memorySummary(content: string, name: string, card?: ContactCard 
     });
   }
   const guided = readMemoryFields(content);
-  if (guided && guided.person === name) {
+  if (guided) {
     const rows = [
       { label: "When", value: guided.when },
       { label: "Does", value: guided.does },

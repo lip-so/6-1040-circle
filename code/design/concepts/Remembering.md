@@ -32,8 +32,8 @@ a set of Removed Memories
 
 Rule: only Memories outside Removed have content. Removing an encounter erases its content while retaining its owner and identity to reject stale save retries.
 Rule: new memories use an identity derived from owner and submission. Names and note text are not identities. A different submission creates a separate encounter, even for the same person or the same text.
-Rule: capturedAt is the initial save time and never changes on edit. referenceDate is the calendar anchor for the current content: derive it from capturedAt on first save and from the supplied edit time on each successful new edit. Circle supplies engine time and validates the IANA timezone; omitted timeZone defaults to America/New_York. A same-token retry keeps the existing anchor. Relative dates never depend on a later search day.
-Rule: older memories may lack capturedAt, revision, referenceDate or original. Reads default revision to zero and original to current content; an explicit original field is stored on first edit and remains unchanged afterward. If referenceDate is missing, derive it from initial capturedAt in America/New_York, or return an empty anchor when no timestamp exists. Never invent missing timestamps.
+Rule: capturedAt is the initial save time and never changes on edit. referenceDate is the encounter's saved source calendar anchor: derive it from capturedAt on first save using the supplied validated IANA timeZone, defaulting to America/New_York. Every edit and retry preserves the existing effective anchor instead of deriving a new day from edit time or timezone. Thus unchanged relative wording never acquires the meaning of a later edit or search day. Newly entered relative wording also uses that fixed encounter anchor; an explicit calendar date is needed to express another day. Edit capturedAt and optional timeZone remain accepted for interface compatibility but cannot replace the source anchor.
+Rule: older memories may lack capturedAt, revision, referenceDate or original. Reads default revision to zero and original to current content; an explicit original field is stored on first edit and remains unchanged afterward. If referenceDate is absent, derive the effective anchor from initial capturedAt in America/New_York, or use an empty anchor when no timestamp exists. An edit stores and preserves this same effective anchor; an existing empty anchor remains empty. Never substitute the edit clock or invent a missing timestamp or calendar day.
 Rule: guided memo content may include optional contact information such as a phone number or LinkedIn URL. Keep it with the original account; existing memories without it remain valid.
 ```
 
@@ -93,7 +93,7 @@ edit(owner: User, memory: Memory, content: String, submission: String, revision:
   where memory is live and owned, content is not blank, the effective revision matches and submission differs from the last editSubmission
   then
     atomically replace current content, increment revision and record editSubmission
-    preserve first original text, owner, identity and initial capturedAt; set referenceDate from this edit time and validated timeZone
+    preserve first original text, owner, identity, initial capturedAt and the effective existing referenceDate, including an empty anchor; when the stored anchor is absent, store the same initial-capturedAt/default-timezone or empty fallback exposed by _record, never an edit-day anchor
     after a failed atomic update, reread the owned live record: removal gives MEMORY_NOT_FOUND, the same submission with identical content acknowledges the applied edit, and any other revision/content race gives EDIT_CONFLICT; no edit write recreates a removed record
     returns memory
 

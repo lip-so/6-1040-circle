@@ -306,6 +306,6 @@ export type CircleWireHttp = {
         }[];
       };
     };
-    error: { error: HttpAppWideError | "INVALID_REQUEST" | "UNAUTHORIZED" };
+    error: { error: HttpAppWideError | "CONFLICT" | "INVALID_REQUEST" | "UNAUTHORIZED" };
   };
 };

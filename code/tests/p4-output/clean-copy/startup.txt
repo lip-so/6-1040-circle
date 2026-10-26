@@ -1,0 +1,24 @@
+UTC start: 2026-10-26T19:44:40.964987+00:00
+Directory: /private/tmp/circle-p4-clean-0w5omdil
+Command: bun /private/tmp/a11-start-smoke.ts
+Provider mode: injected/test providers
+PASS bun run start: http://127.0.0.1:3000/, backend health ok, anonymous auth/me 401; no AI key/call or app records
+PASS bun run dev: http://localhost:5173/, backend health ok, anonymous auth/me 401; no AI key/call or app records
+Clean startup index-only disposable database dropped after shutdown.
+Circle API listening on http://127.0.0.1:3000/ for http://localhost:3000
+$ bun run --cwd code start
+$ bun src/main.ts
+OPENAI_API_KEY is not configured; contact processing and voice are unavailable.
+Circle API listening on http://127.0.0.1:3000/ for http://localhost:5173
+
+  VITE v8.3.4  ready in 193 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+$ bun code/scripts/dev.ts
+$ vite
+OPENAI_API_KEY is not configured; contact processing and voice are unavailable.
+error: script "dev" exited with code 143
+
+Exit code: 0
+UTC finish: 2026-10-26T19:44:48.596470+00:00

@@ -168,7 +168,7 @@ test("edits preserve original text/identity/time, use revisions and permit an un
   const edit={owner,memory,revision:0,content:"Person: Mira\nWhen: 2026-10-18\nDoes: Builds sensors\nDiscussed:",submission:crypto.randomUUID(),capturedAt:new Date("2026-10-22T12:00:00Z"),timeZone:"America/New_York"};
   await remembering.edit(edit);await remembering.edit({...edit,capturedAt:new Date("2030-01-01")});
   const record=await remembering.inspect({owner,memory});
-  expect(record).toMatchObject({content:edit.content,original:content,revision:1,referenceDate:"2026-10-22"});
+  expect(record).toMatchObject({content:edit.content,original:content,revision:1,referenceDate:"2026-10-19"});
   expect(await db.collection<{_id:string;capturedAt:Date}>("remembering.memories").findOne({_id:memory})).toMatchObject({capturedAt});
   await expect(remembering.edit({...edit,submission:crypto.randomUUID(),content:"changed"})).rejects.toThrow(EditConflict);
   await expect(remembering.edit({...edit,content:"reused token changed"})).rejects.toThrow(EditConflict);
@@ -196,6 +196,31 @@ test("concurrent edits accept one revision, retries retain the first saved local
   expect(await db.collection("remembering.memories").findOne({_id:memory} as any)).toMatchObject({capturedAt:input.capturedAt});
 });
 
+
+for (const scenario of [
+  { name: "saved source day", metadata: { capturedAt: new Date("2026-10-20T02:00:00Z"), referenceDate: "2026-10-19" }, expected: "2026-10-19" },
+  { name: "legacy initial timestamp", metadata: { capturedAt: new Date("2026-01-01T02:00:00Z") }, expected: "2025-12-31" },
+  { name: "missing timestamp", metadata: {}, expected: "" },
+  { name: "explicitly empty source day", metadata: { capturedAt: new Date("2026-10-20T02:00:00Z"), referenceDate: "" }, expected: "" },
+]) test(`A2 preserves ${scenario.name} across later-day/timezone edits, retry and fresh reads`, async () => {
+  const owner = "sam", memory = crypto.randomUUID();
+  const content = "Person: Mira\nWhen:\nDoes: Discussed batteries yesterday\nDiscussed:";
+  const collection = db.collection<{ _id: string; owner: string; content: string; capturedAt?: Date; referenceDate?: string }>("remembering.memories");
+  await collection.insertOne({ _id: memory, owner, content, ...scenario.metadata });
+  expect((await remembering.inspect({ owner, memory })).referenceDate).toBe(scenario.expected);
+  const edit = { owner, memory, content: `${content}\nContact: mira@example.test`, revision: 0, submission: crypto.randomUUID(), capturedAt: new Date("2030-02-01T12:00:00Z"), timeZone: "Asia/Tokyo" };
+  await remembering.edit(edit);
+  const applied = await remembering.inspect({ owner, memory });
+  expect(applied).toEqual({ content: edit.content, original: content, revision: 1, referenceDate: scenario.expected });
+  await remembering.edit({ ...edit, capturedAt: new Date("2035-07-01T23:00:00Z"), timeZone: "Pacific/Honolulu" });
+  expect(await remembering.inspect({ owner, memory })).toEqual(applied);
+  const nextContent = `${edit.content}\nNotes: Send the paper today`;
+  await remembering.edit({ ...edit, content: nextContent, revision: 1, submission: crypto.randomUUID() });
+  const fresh = new RememberingConcept(db);
+  expect(await fresh._record({ owner, memory })).toEqual([{ content: nextContent, original: content, revision: 2, referenceDate: scenario.expected }]);
+  expect(JSON.parse((await fresh._corpus({ owner })).notes)).toEqual([{ source: memory, content: nextContent, revision: 2, referenceDate: scenario.expected }]);
+  expect((await collection.findOne({ _id: memory, owner }))?.capturedAt).toEqual((scenario.metadata as { capturedAt?: Date }).capturedAt);
+});
 
 test("blank edits refuse EmptyContent without changing original, timestamp or revision", async () => {
   const input={owner:"sam",content:"Met Mira.",submission:crypto.randomUUID(),capturedAt:new Date("2026-10-20T12:00:00Z")};

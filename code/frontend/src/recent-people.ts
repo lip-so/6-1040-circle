@@ -12,9 +12,11 @@ export function useRecentPeople(read: PageReader, unauthorized: () => void) {
   const error = ref("");
   const hasMore = ref(false);
   const scope = new RequestScope();
+  let failedPage: { after: string; append: boolean } | null = null;
 
   function clear() {
     scope.invalidate();
+    failedPage = null;
     memories.value = [];
     error.value = "";
     loading.value = false;
@@ -24,12 +26,15 @@ export function useRecentPeople(read: PageReader, unauthorized: () => void) {
 
   function remove(memory: string) {
     scope.invalidate();
+    failedPage = null;
+    error.value = "";
     loading.value = false;
     memories.value = memories.value.filter(row => row.memory !== memory);
   }
 
   async function page(after: string, append: boolean) {
     scope.invalidate();
+    failedPage = null;
     const current = scope.current();
     loading.value = true;
     error.value = "";
@@ -38,6 +43,7 @@ export function useRecentPeople(read: PageReader, unauthorized: () => void) {
     loading.value = false;
     if ("error" in answer) {
       if (answer.error === "UNAUTHORIZED") { clear(); unauthorized(); return; }
+      failedPage = { after, append };
       error.value = "Couldn't load your saved people. Try again.";
       return;
     }
@@ -51,5 +57,6 @@ export function useRecentPeople(read: PageReader, unauthorized: () => void) {
   const refresh = () => page("", false);
   const more = () => loading.value || !hasMore.value ? Promise.resolve()
     : page(memories.value.at(-1)?.memory ?? "", true);
-  return { memories, loading, loaded, error, hasMore, clear, remove, refresh, more };
+  const retry = () => loading.value || !failedPage ? Promise.resolve() : page(failedPage.after, failedPage.append);
+  return { memories, loading, loaded, error, hasMore, clear, remove, refresh, more, retry };
 }

@@ -54,3 +54,18 @@ test("lowercase direct names/activities work while unknown placeholders stay abs
   expect(memoryLabel("david works on solar panels")).toBe("david");
   expect(memorySummary("Person: david\nWhen:\nDoes: works on papers\nDiscussed:","david")).toEqual([{label:"Does",value:"works on papers"}]);
 });
+
+test("A2 complete unnamed guided content never falls back to a name found in another field", () => {
+  expect(memoryLabel("Person:\nWhen:\nDoes: Builds sensors\nDiscussed: Met Dana at the workshop.")).toBe("Unnamed encounter");
+});
+
+test("A2 an organized null name overrides a heuristic guess from an ambiguous introduction", () => {
+  expect(memoryLabel("Met Dana or Daria at the workshop.", { name: null, nameQuote: null, facts: [] })).toBe("Unnamed encounter");
+  expect(memoryLabel("Met Mira at the workshop.", { name: "Mira", nameQuote: "Met Mira at the workshop.", facts: [] })).toBe("Mira");
+});
+
+test("A2 explicitly empty guided Person overrides a card name extracted from another field", () => {
+  const content = "Person:\nWhen:\nDoes: Met Dana at the workshop.\nDiscussed:";
+  expect(memoryLabel(content, { name: "Dana", nameQuote: "Does: Met Dana at the workshop.", facts: [] })).toBe("Unnamed encounter");
+  expect(memoryLabel(content, { name: null, nameQuote: null, facts: [] })).toBe("Unnamed encounter");
+});

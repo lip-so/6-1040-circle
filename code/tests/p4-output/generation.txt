@@ -1,0 +1,8 @@
+UTC start: 2026-10-26T19:30:47.973169+00:00
+Directory: /private/tmp/circle-a1-5_k_0bi1/code
+Command: bun run generate
+Provider mode: injected/test providers
+$ sync-engine artifacts pin
+
+Exit code: 0
+UTC finish: 2026-10-26T19:30:48.666797+00:00

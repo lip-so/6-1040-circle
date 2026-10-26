@@ -1,0 +1,14 @@
+{"phase":"cold","milliseconds":185,"extracts":4,"selections":1}
+{"phase":"warm","milliseconds":28,"extracts":0,"selections":0}
+{"phase":"edited","milliseconds":95,"extracts":1,"selections":1}
+{"phase":"provider-version","milliseconds":175,"extracts":4,"selections":1}
+{"phase":"original-count-overflow","characters":11456,"bytes":11456,"error":"MemoryLimit","newExtractions":0}
+{"phase":"multibyte-byte-overflow","characters":131109,"bytes":262181,"error":"MemoryLimit","newExtractions":0}
+{"phase":"structured-overflow","error":"MemoryChanged","organizedRecords":5,"selections":0}
+{"phase":"deadline-extraction-complete","milliseconds":41070,"count":1}
+{"phase":"deadline-extraction-complete","milliseconds":82106,"count":2}
+{"phase":"caller-deadline","milliseconds":120069,"answer":{"ok":false,"error":{"kind":"framework","code":"TIMED_OUT"}},"organizedRecords":2}
+{"phase":"deadline-extraction-complete","milliseconds":123125,"count":3}
+{"requestId":"da721657-76e8-4e5e-826a-33236fdfe877","level":"warn","message":"Reaction \"Circle.Seek#4\" answered a request on \"?\" after it stopped pending. Reactions that can answer the same request must partition their conditions; registration order never decides. A timeout can also make an answer arrive late.","timestamp":"2026-10-26T13:43:19.855Z"}
+{"phase":"after-work-idle","milliseconds":164182,"organizedRecords":3,"recalls":1}
+{"phase":"manual-retry","milliseconds":30,"ok":true,"extracts":0,"selections":0,"notes":3,"needs":2}

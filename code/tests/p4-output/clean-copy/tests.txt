@@ -1,0 +1,377 @@
+UTC start: 2026-10-26T19:41:50.107134+00:00
+Directory: /private/tmp/circle-p4-clean-0w5omdil
+Command: env CIRCLE_BROWSER_PREVIEW=1 bun run test
+Provider mode: injected/test providers
+$ bun run --cwd code test && bun run --cwd code/frontend test:browser
+$ bun test
+bun test v1.4.2 (744846f84)
+
+tests/ui/recent-people.test.ts:
+(pass) recent people distinguish a failed initial load from a genuinely empty account and can retry [0.41ms]
+(pass) Load more uses the last displayed identity and keeps different encounters with the same name [0.41ms]
+(pass) a failed refresh retains visible notes and offers retry rather than showing an empty account [0.09ms]
+(pass) sign-out or an account change ignores a pending list response [0.09ms]
+(pass) an older refresh cannot replace a newer response [0.06ms]
+(pass) expired sessions clear previous results and request sign-in [0.05ms]
+(pass) the shared request guard invalidates pending save/search replies and network errors settle [0.04ms]
+(pass) removing a row invalidates a pending page so it cannot restore the deleted encounter [0.14ms]
+(pass) A3 Retry resumes a failed third page without replacing the first forty rows or duplicating requests [0.43ms]
+(pass) A3 initial and explicit refresh failures retry replacement intent while preserving visible rows until success [0.34ms]
+(pass) A3 retry deduplicates encounter identities while retaining equal-name encounters [0.13ms]
+(pass) A3 account clear discards failed intent and invalidates an in-flight retry [0.23ms]
+(pass) A3 removal clears failed retry state and cannot restore a removed row [0.17ms]
+(pass) A3 removal clears pending retry state and cannot restore a removed row [0.06ms]
+(pass) A3 unauthorized retry clears prior rows and cannot be retried with an old cursor [0.09ms]
+(pass) A3 a stale retry error cannot replace a newer successful refresh or become retryable [0.06ms]
+
+tests/ui/encounter-form.test.ts:
+(pass) guided unchanged save and Contact-only edit retain every current multiline field despite a shorter card [0.37ms]
+(pass) guided intentional empties and absent optional fields never refill from card facts [0.02ms]
+(pass) a second guided edit uses cleared current values and never restores stale card or original details [0.04ms]
+(pass) raw one-line shared evidence retains the omitted reminder once with the activity [0.36ms]
+(pass) raw multiline allocation keeps whole exact lines in source order and omitted reminders in Notes [0.05ms]
+(pass) cross-line and overlapping evidence joins shared source lines once, with activity priority [0.04ms]
+(pass) discussion/contact shared source goes wholly to Discussed without derivative duplicates [0.02ms]
+(pass) raw missing, unmatched or ambiguous role evidence uses the whole current source fallback: [] [0.02ms]
+(pass) raw missing, unmatched or ambiguous role evidence uses the whole current source fallback: [{"kind":"role","value":"Builds solar panels","quote":"A quote absent from current text."}] [0.01ms]
+(pass) raw missing, unmatched or ambiguous role evidence uses the whole current source fallback: [{"kind":"role","value":"Builds solar panels","quote":"Mira builds solar panels."}]
+(pass) replacing grouped Does removes the old activity and a second edit does not restore it [0.04ms]
+(pass) retained raw detail is not truncated to a field limit [0.10ms]
+(pass) all raw source allocations explain grouped editing, including discussion/contact shared groups [0.04ms]
+(pass) supported raw dates are stabilized after exact quote allocation in every retained field [0.17ms]
+(pass) guided authored prose stays authoritative while legacy When keeps its date adaptation [0.04ms]
+(pass) evidenced literal Today survives raw allocation, Contact-only edit and guided reopening with missing anchor [0.13ms]
+(pass) evidenced literal Today survives raw fallback, Contact-only edit and guided reopening with missing anchor [0.03ms]
+(pass) evidenced literal Today survives raw allocation, Contact-only edit and guided reopening with 2026-10-24 anchor [0.03ms]
+(pass) evidenced literal Today survives raw fallback, Contact-only edit and guided reopening with 2026-10-24 anchor [0.03ms]
+(pass) evidenced literal Yesterday survives raw allocation, Contact-only edit and guided reopening with missing anchor [0.10ms]
+(pass) evidenced literal Yesterday survives raw fallback, Contact-only edit and guided reopening with missing anchor [0.03ms]
+(pass) evidenced literal Yesterday survives raw allocation, Contact-only edit and guided reopening with 2026-10-24 anchor [0.04ms]
+(pass) evidenced literal Yesterday survives raw fallback, Contact-only edit and guided reopening with 2026-10-24 anchor [0.02ms]
+(pass) protect only the evidenced Today span while nearby actual today/yesterday receives date handling with missing anchor [0.05ms]
+(pass) protect only the evidenced Today span while nearby actual today/yesterday receives date handling with 2026-10-24 anchor [0.03ms]
+(pass) protect only the evidenced Yesterday span while nearby actual today/yesterday receives date handling with missing anchor [0.03ms]
+(pass) protect only the evidenced Yesterday span while nearby actual today/yesterday receives date handling with 2026-10-24 anchor [0.03ms]
+(pass) date conversion updates the exact name context while protecting only the uniquely evidenced full name [0.09ms]
+(pass) ambiguous name/date occurrences remain visible and require correction even with a valid anchor [0.03ms]
+(pass) name evidence does not exempt copied or duplicated occurrences in an edited raw draft [0.03ms]
+(pass) cross-line name evidence remains together and preserves its name while stabilizing nearby dates [0.05ms]
+(pass) missing/invalid anchor requires visible correction without changing supported wording:  [0.02ms]
+(pass) missing/invalid anchor requires visible correction without changing supported wording: missing
+(pass) missing/invalid anchor requires visible correction without changing supported wording: 2026-02-30 [0.01ms]
+(pass) relative date review uses whole words and does not parse other natural-language dates [0.02ms]
+(pass) guided literal name Today and email/URL identifiers survive date conversion and save review [0.04ms]
+(pass) guided literal name Yesterday and email/URL identifiers survive date conversion and save review [0.02ms]
+(pass) raw source and Contact identifiers stay literal while nearby date wording is stabilized or gated [0.07ms]
+(pass) guided bare domain/path links remain literal with source anchor missing [0.04ms]
+(pass) guided bare domain/path links remain literal with source anchor 2026-10-24 [0.02ms]
+(pass) retained raw bare links preserve identifiers and distinguish nearby date wording with anchor missing [0.03ms]
+(pass) retained raw bare links preserve identifiers and distinguish nearby date wording with anchor 2026-10-24 [0.02ms]
+(pass) A2 exact 20k raw source stays intact with a specific form-overhead warning [112.20ms]
+(pass) A2 long existing fields and multiline Person preserve current authored values [0.08ms]
+(pass) A2 inferred activity conversion retains uncertainty instead of promoting the card summary [0.23ms]
+(pass) A2 source-day guidance names the saved day and never fabricates a missing anchor [0.03ms]
+
+tests/ui/memory-fields.test.ts:
+(pass) guided memories > the fields preserve a standardized encounter date [0.04ms]
+(pass) guided memories > multiline entries cannot overwrite the person or another field [0.02ms]
+(pass) guided memories > only a person's name is needed, and older free-text notes are still recognized separately [0.01ms]
+(pass) optional contact information > preserves and displays a phone number [0.03ms]
+(pass) optional contact information > preserves and displays a LinkedIn URL [0.01ms]
+(pass) optional contact information > reads the original four-field format and keeps contact optional [0.02ms]
+(pass) optional contact information > contact text cannot overwrite the person or other fields [0.01ms]
+(pass) form notes stay separate from headers and optional contact can be absent [0.02ms]
+(pass) A2 complete unnamed memos round-trip details and continuation lines [0.02ms]
+(pass) A2 an unnamed memo displays all authored details without guessing an identity [0.02ms]
+(pass) A2 meaningful fields and exact size account for formatting without validating an unfinished date [0.06ms]
+
+tests/ui/memory-date.test.ts:
+(pass) accepts a real standardized date: 10/24/2026 [1.66ms]
+(pass) accepts a real standardized date: 02/29/2024 [0.06ms]
+(pass) accepts a real standardized date: 02/29/2000 [0.05ms]
+(pass) accepts a real standardized date: 01/01/2026 [0.04ms]
+(pass) accepts a real standardized date: 12/31/2026 [0.05ms]
+(pass) rejects malformed or impossible dates in new saves and edits: 2/3/2026 [0.06ms]
+(pass) rejects malformed or impossible dates in new saves and edits: 2026-10-24 [0.04ms]
+(pass) rejects malformed or impossible dates in new saves and edits: October 24, 2026 [0.04ms]
+(pass) rejects malformed or impossible dates in new saves and edits: yesterday [0.04ms]
+(pass) rejects malformed or impossible dates in new saves and edits: 02/30/2026 [0.04ms]
+(pass) rejects malformed or impossible dates in new saves and edits: 02/29/2026 [0.04ms]
+(pass) rejects malformed or impossible dates in new saves and edits: 02/29/1900 [0.04ms]
+(pass) rejects malformed or impossible dates in new saves and edits: 04/31/2026 [0.05ms]
+(pass) rejects malformed or impossible dates in new saves and edits: 13/01/2026 [0.04ms]
+(pass) rejects malformed or impossible dates in new saves and edits: 00/12/2026 [0.04ms]
+(pass) rejects malformed or impossible dates in new saves and edits: 01/00/2026 [0.03ms]
+(pass) rejects malformed or impossible dates in new saves and edits: 10/24/26 [0.04ms]
+(pass) rejects malformed or impossible dates in new saves and edits: 10/24/2026
+Notes: injected
+(pass) rejects malformed or impossible dates in new saves and edits:  10/24/2026  [0.04ms]
+(pass) date remains optional; free text and older guided originals remain readable [0.07ms]
+(pass) A2 an empty Person cannot bypass guided date validation: 02/30/2026 [0.05ms]
+(pass) A2 an empty Person cannot bypass guided date validation: yesterday [0.04ms]
+(pass) A2 an empty Person cannot bypass guided date validation: 2026-10-24 [0.05ms]
+(pass) A2 headers alone are not meaningful guided content but an unnamed detail is [0.06ms]
+(pass) edit preparation and card display use MM/DD/YYYY; context survives in Notes [0.05ms]
+
+tests/ui/memory-summary.test.ts:
+(pass) short encounter details > the demo note gives a role and discussion without inventing an encounter date [0.72ms]
+(pass) short encounter details > a meeting date is kept as written; a company founding date is not used as the meeting date [0.07ms]
+(pass) short encounter details > discussing a topic does not become employment or expertise [0.02ms]
+(pass) short encounter details > another person's role and negated work are not attributed to the person [0.02ms]
+(pass) explicit lowercase encounter names remain visible without guessing unnamed notes [0.32ms]
+(pass) literal activities display under Does without requiring or inventing a date or profession [0.02ms]
+(pass) lowercase direct names/activities work while unknown placeholders stay absent [0.03ms]
+(pass) A2 complete unnamed guided content never falls back to a name found in another field
+(pass) A2 an organized null name overrides a heuristic guess from an ambiguous introduction [0.01ms]
+(pass) A2 explicitly empty guided Person overrides a card name extracted from another field [0.01ms]
+
+tests/ui/voice.test.ts:
+(pass) cancelling while microphone permission is pending stops the late stream and never starts capture [0.25ms]
+(pass) finishing produces bounded recording data and stops microphone tracks; cancellation discards a later recording [0.28ms]
+
+tests/ui/removal-confirmation.test.ts:
+(pass) the basket requests confirmation; cancel does nothing and confirm removes exactly the selected encounter once [0.08ms]
+
+tests/compositions/Circle.test.ts:
+(pass) Circle result composition > joins an owned need, graph match, and exact original note [76.10ms]
+(pass) Circle result composition > returns an empty list when an owned need has no matching encounters [12.45ms]
+(pass) Circle result composition > does not form results for another owner's need [12.11ms]
+(pass) Circle result composition > does not read another owner's graph [27.13ms]
+(pass) results hide stale organization while an edited current original awaits reprocessing [40.95ms]
+(pass) saved former preserves timestamp/identity paging order and drops disappeared rows [18.46ms]
+(pass) results former retains provider relevance order through joins [42.33ms]
+(pass) list formation omits a record removed after enumeration without dropping the whole answer [8.87ms]
+
+tests/compositions/authenticated-flows.test.ts:
+(pass) Circle authenticated flows > Commons sign-in, save, index, search, original note, and sign-out work from an empty database [86.99ms]
+(pass) Circle authenticated flows > a guided memo keeps its entered fields through save, indexing, and an owned search [64.87ms]
+(pass) Circle authenticated flows > two signed-in users get only their own notes and graph, including the same person's name [86.17ms]
+(pass) Circle authenticated flows > a body cannot pick the owner or source, supply a session without its cookie, or invoke indexing [39.09ms]
+(pass) Circle authenticated flows > unauthenticated and expired sessions save nothing; blank notes and needs use their declared refusals [44.58ms]
+{"action":"ingest","actionId":"8593a1ba-f2ab-488b-8e5b-4c74938c8357","error":{"name":"Error"},"level":"error","message":"Consequence action faulted","timestamp":"2026-10-26T19:41:50.972Z"}
+(pass) Circle authenticated flows > indexing failure keeps the original note and returns an error [45.37ms]
+{"action":"recall","actionId":"8d1beee1-a207-4a89-8c64-c3bd06ff9e0b","error":{"name":"Error"},"level":"error","message":"Consequence action faulted","timestamp":"2026-10-26T19:41:51.017Z"}
+(pass) Circle authenticated flows > search failure keeps the saved need and returns an error [44.42ms]
+(pass) Circle authenticated flows > a missing original source is omitted from otherwise owned search results [54.98ms]
+(pass) Circle authenticated flows > Commons' stable subject returns to the same Circle owner after its username changes [68.06ms]
+(pass) Circle authenticated flows > sign-in is bound to its browser and PKCE verifier; HTTP hides credentials and refuses other origins [32.48ms]
+(pass) Circle authenticated flows > a duplicate Commons username uses the blueprint's choose flow without linking the wrong user [45.85ms]
+(pass) Saved people HTTP edge cases > listing authenticates first, rejects owner/timestamp input, and never returns another user's notes [56.15ms]
+{"action":"ingest","actionId":"bc035347-16bd-4088-9c2e-4fa6b715b5e5","error":{"name":"Error"},"level":"error","message":"Consequence action faulted","timestamp":"2026-10-26T19:41:51.315Z"}
+(pass) Saved people HTTP edge cases > a note remains visible after indexing failure and a manual retry does not duplicate it [53.53ms]
+(pass) Connection removal > the authenticated basket route removes one encounter and its evidence, never another owner's or same-name encounter [89.98ms]
+{"action":"withdraw","actionId":"c65376b5-fc33-4984-a5e4-b002c7b75b46","error":{"name":"Error"},"level":"error","message":"Consequence action faulted","timestamp":"2026-10-26T19:41:51.471Z"}
+(pass) Connection removal > failed withdrawal hides the removed original and same-memory retry finishes cleanup [71.00ms]
+(pass) HTTP removal erases MongoDB data durably across closing and reopening the connection [91.10ms]
+(pass) voice authenticates before transcription, returns editable text and never saves audio or a note [51.12ms]
+{"action":"ingest","actionId":"9a8fed0a-f5f2-468d-ae90-3f2e1f83aba0","error":{"name":"Error"},"level":"error","message":"Consequence action faulted","timestamp":"2026-10-26T19:41:51.674Z"}
+(pass) an organization failure followed by repaired short-name evidence retries the same token without duplicating the original [53.83ms]
+(pass) form edit is owner-scoped, prefills JSON, preserves original, rejects stale revisions and invalidates search [97.99ms]
+(pass) invalid timezone/revision inputs fail before effects [44.92ms]
+{"action":"ingest","actionId":"dd82da63-63cf-4125-9a27-0a1246414c3f","error":{"name":"Error"},"level":"error","message":"Consequence action faulted","timestamp":"2026-10-26T19:41:51.874Z"}
+(pass) processing failure after an edit preserves current form and original, same edit retry never increments twice [56.74ms]
+(pass) A1 HTTP prepare/edit/seek retains current guided detail and removes deliberately replaced activity [116.47ms]
+(pass) A1 HTTP prepare/edit/seek retains current raw detail and removes deliberately replaced activity [107.95ms]
+(pass) disappear-save returns a response within two seconds rather than the 120-second deadline [41.36ms]
+(pass) disappear-edit returns a response within two seconds rather than the 120-second deadline [50.28ms]
+(pass) disappear-prepare returns a response within two seconds rather than the 120-second deadline [54.34ms]
+(pass) disappear-results returns a response within two seconds rather than the 120-second deadline [61.73ms]
+{"action":"respond","actionId":"a93abac3-6583-4863-bd6c-4c41d54d7a52","error":{"name":"FormerFault"},"level":"error","message":"Reaction \"Circle.Seek#4\": consequence input former failed","timestamp":"2026-10-26T19:41:52.376Z"}
+(pass) disappear-need returns a response within two seconds rather than the 120-second deadline [58.92ms]
+(pass) account disappearance after sign-in returns UNAUTHORIZED without waiting [32.46ms]
+(pass) A2 HTTP unnamed uncertain source survives Contact edits, validation and reorganization without invented certainty [64.94ms]
+(pass) A2 HTTP legacy guided relative dates keep their source day across later timezone edits, retry and search [73.90ms]
+(pass) A5 complete-memory count overflow reports capacity after saving the need, before organization [50.73ms]
+{"action":"ingest","actionId":"e61dfe2b-6183-4a1e-a1f4-6dc4040b8efd","error":{"name":"InvalidModelOutput"},"level":"error","message":"Consequence action faulted","timestamp":"2026-10-26T19:41:52.650Z"}
+{"action":"ingest","actionId":"3a418fd1-3050-4129-af0e-8095d8e1daa4","error":{"name":"InvalidModelOutput"},"level":"error","message":"Consequence action faulted","timestamp":"2026-10-26T19:41:52.665Z"}
+(pass) A5 an unsupported long-line card preserves the source for revision-checked correction and same-token retry [75.54ms]
+
+tests/providers/BrainProvider.test.ts:
+(pass) OpenAI requests strict stateless source-linked JSON without account credentials in model input [0.42ms]
+(pass) provider rejects malformed, incomplete and refusal responses without retry or local fallback [0.33ms]
+(pass) transcription uploads only ephemeral audio and returns bounded editable text [0.22ms]
+
+tests/providers/SyntheticEvaluation.test.ts:
+(pass) deterministic synthetic transport/validation: ambiguous-name [0.12ms]
+(pass) deterministic synthetic transport/validation: negation [0.09ms]
+(pass) deterministic synthetic transport/validation: relative-date [0.03ms]
+(pass) deterministic synthetic transport/validation: discussion-not-expertise [0.03ms]
+(pass) deterministic synthetic transport/validation: prompt-injection [0.03ms]
+
+tests/concepts/Seeking.test.ts:
+(pass) Seeking > saves and retrieves the owner's exact need description [5.29ms]
+(pass) Seeking > refuses empty descriptions without saving [0.92ms]
+(pass) Seeking > refuses whitespace-only descriptions without saving [0.88ms]
+(pass) Seeking > does not return another owner's need [1.08ms]
+(pass) Seeking > returns no row for an unknown need [0.78ms]
+(pass) Seeking > saves separate needs without overwriting earlier ones [1.66ms]
+(pass) Seeking > reads a saved need after closing its writing connection [8.17ms]
+(pass) identical repeated needs have separate identities and preserve both exact descriptions [2.77ms]
+
+tests/concepts/Sessioning.test.ts:
+(pass) Sessioning > its principle: Maya stays signed in until she signs out, leaves a session unused for a week, or reaches 90 days [42.32ms]
+(pass) Sessioning > a session's identity is 32 random bytes in base64url [8.01ms]
+(pass) Sessioning > every use sets lastUsed to now, so the week of idleness counts from the latest use [7.73ms]
+(pass) Sessioning > a refused use or end changes no session [7.86ms]
+(pass) Sessioning > Sessioning refuses to use or end an unknown or ended session [8.36ms]
+(pass) Sessioning > of two ends of one session at once, Sessioning accepts one and refuses the other with NOT_SIGNED_IN [8.32ms]
+
+tests/concepts/Federating.test.ts:
+(pass) Federating > its principle: Sam comes back to the same user after his Commons username changes, and neither Leo's link nor Sam's code read by Leo finishes a sign-in [21.79ms]
+(pass) Federating > start returns an address carrying a fresh nonce and challenge in the forms Commons accepts, and an attempt that expires in 10 minutes [11.55ms]
+(pass) Federating > finish refuses an unknown, expired, or confirmed attempt, or another nonce, with SIGN_IN_EXPIRED before contacting the other site [13.10ms]
+(pass) Federating > finish refuses a code the other site doesn't confirm with SIGN_IN_REFUSED, and the attempt stays unconfirmed [11.05ms]
+(pass) Federating > of two finishes of one attempt at once, one confirms it and the other is refused [10.96ms]
+(pass) Federating > link refuses an unconfirmed attempt with NOT_CONFIRMED and a subject already linked with ALREADY_LINKED [14.30ms]
+(pass) Federating > _linkable is true only for a confirmed, unexpired attempt whose subject is unlinked, and link still links after expiry [15.90ms]
+(pass) routing actions return one snapshot or a typed expiry without new links [16.04ms]
+
+tests/concepts/Registering.test.ts:
+(pass) Registering > its principle: Sam finds Maya by her username, and Ben registers another when hers is taken [13.22ms]
+(pass) Registering > a username must have 3 to 32 ASCII letters, digits, underscores, or hyphens [6.31ms]
+(pass) Registering > usernames are case-sensitive, so `Maya` is a different username from `maya` [5.97ms]
+(pass) Registering > of two registrations of one username at once, one succeeds and the other is refused with USERNAME_TAKEN [8.79ms]
+(pass) Registering > _username and _byUsername return no row for an unknown user or username [1.17ms]
+
+tests/concepts/calendar.test.ts:
+(pass) calendar anchoring respects local midnight, DST, month/year and leap boundaries [0.72ms]
+(pass) relative date canonicalization uses the original reference day and omits unanchored dates [0.35ms]
+(pass) summaries and marked conclusions retain their exact source evidence [0.07ms]
+
+tests/concepts/CommonsProvider.test.ts:
+(pass) CommonsProvider > the sign-in address names the app by its origin, carries the nonce as state, and the verifier's S256 challenge [2.50ms]
+(pass) CommonsProvider > redeeming posts exactly the code, the app, and the verifier, and returns Commons' user as the subject [1.04ms]
+Commons at http://localhost:65300 didn't redeem a sign-in code: Error: status 503
+Commons at http://localhost:65300 didn't redeem a sign-in code: Error: no user in the answer
+(pass) CommonsProvider > a refused code, an error, or an answer without a user returns undefined, and nothing is retried [0.55ms]
+Commons at http://localhost:65300 didn't redeem a sign-in code: TimeoutError: The operation timed out.
+(pass) CommonsProvider > Commons not answering within the timeout returns undefined [51.73ms]
+Commons at http://127.0.0.1:9 didn't redeem a sign-in code: TypeError: Unable to connect. Is the computer able to access the url?
+(pass) CommonsProvider > a Commons that can't be reached returns undefined [0.95ms]
+
+tests/concepts/Remembering.test.ts:
+(pass) Remembering > retrieves an encounter exactly as its owner wrote it [6.95ms]
+(pass) Remembering > refuses empty content without saving anything [1.29ms]
+(pass) Remembering > refuses whitespace-only content without saving anything [1.00ms]
+(pass) Remembering > does not return another owner's memory [1.52ms]
+(pass) Remembering > returns no row for an unknown memory [0.81ms]
+(pass) Remembering > creates separate memories for separate saves [2.10ms]
+(pass) Remembering > keeps the note after closing the writing connection and opening a new one [10.38ms]
+(pass) Remembering saved-list edge cases > concurrent retries make one note and keep the original timestamp [12.17ms]
+(pass) Remembering saved-list edge cases > the same token from different owners cannot collide or reveal another user's note [2.61ms]
+(pass) Remembering saved-list edge cases > same-name encounters remain separate; legacy notes and exact text stay available without graph extraction [2.58ms]
+(pass) Remembering saved-list edge cases > every older note remains reachable when a new save arrives between pages [12.73ms]
+(pass) forget erases an owned original, keeps other same-name encounters and rejects stale retries [6.75ms]
+(pass) edits preserve original text/identity/time, use revisions and permit an unchanged same-token retry [6.32ms]
+(pass) concurrent edits accept one revision, retries retain the first saved local day [4.45ms]
+(pass) A2 preserves saved source day across later-day/timezone edits, retry and fresh reads [7.09ms]
+(pass) A2 preserves legacy initial timestamp across later-day/timezone edits, retry and fresh reads [5.29ms]
+(pass) A2 preserves missing timestamp across later-day/timezone edits, retry and fresh reads [4.95ms]
+(pass) A2 preserves explicitly empty source day across later-day/timezone edits, retry and fresh reads [4.64ms]
+(pass) blank edits refuse EmptyContent without changing original, timestamp or revision [2.55ms]
+(pass) canonical audio byte boundaries and transcript boundaries never persist notes [145.42ms]
+
+tests/concepts/Graphing.test.ts:
+(pass) stores validated JSON once, reuses equivalent searches and persists IDs/evidence [26.94ms]
+(pass) new contacts change the corpus, repeated names remain separate, foreign memory never reaches provider [18.43ms]
+(pass) malformed or oversized original corpus refuses before state changes or provider calls [0.98ms]
+(pass) A5 complete-memory byte bound counts UTF-8 rather than JavaScript characters before effects [1.04ms]
+(pass) bad evidence and provider failure keep old valid record and reserve ownership [8.85ms]
+(pass) literal validation rejects fabricated/partial quotes, schemas and invented selection IDs or indexes [0.17ms]
+(pass) concurrent equivalent extraction/search reuses the first validated stored selection [21.04ms]
+(pass) withdrawal erases JSON/caches and wins over delayed extraction [15.89ms]
+(pass) withdrawal during selection cannot resurrect a result or save source text in cache [8.63ms]
+(pass) structured overflow keeps organized records but never sends a partial selection corpus [16.30ms]
+(pass) short-name evidence from both reported notes expands to the exact complete original without a date [16.62ms]
+(pass) expanding name evidence never accepts a fabricated name, fabricated quote or partial fact evidence [0.09ms]
+(pass) a cached newer revision returning to A blocks delayed older extraction for B [9.68ms]
+(pass) previous JSON cards remain readable only for matching unedited originals, never after a revision changes [6.14ms]
+(pass) blank queries refuse before extraction, selection or any graph mutation [1.00ms]
+(pass) provider-version changes invalidate extraction and selection caches while same-version repeats are read-only [20.46ms]
+
+ 231 pass
+ 0 fail
+ 1245 expect() calls
+Ran 231 tests across 19 files. [3.35s]
+$ playwright test
+[WebServer] (node:2387) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 69 tests using 1 worker
+
+(node:2388) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/browser/interactions.pw.mjs:41:1 › Text, Voice, Form preserve independent drafts and are named, pressed and keyboard reachable (670ms)
+  ✓   2 tests/browser/interactions.pw.mjs:60:1 › search announces pending, success, empty and failure distinctly (352ms)
+  ✓   3 tests/browser/interactions.pw.mjs:78:1 › edit prefills, cancels without writes, recovers a conflict and saves the fresh revision (578ms)
+  ✓   4 tests/browser/interactions.pw.mjs:100:1 › removal names contact, Cancel and Escape restore focus, duplicate clicks make one request (327ms)
+  ✓   5 tests/browser/interactions.pw.mjs:114:66 › account switch discards pending save and clears drafts (308ms)
+  ✓   6 tests/browser/interactions.pw.mjs:114:66 › account switch discards pending edit and clears drafts (393ms)
+  ✓   7 tests/browser/interactions.pw.mjs:114:66 › account switch discards pending search and clears drafts (334ms)
+  ✓   8 tests/browser/interactions.pw.mjs:114:66 › account switch discards pending transcription and clears drafts (466ms)
+  ✓   9 tests/browser/interactions.pw.mjs:141:40 › responsive layout 320px: long content, dialog scroll and focus remain usable (380ms)
+  ✓  10 tests/browser/interactions.pw.mjs:141:40 › responsive layout 390px: long content, dialog scroll and focus remain usable (390ms)
+  ✓  11 tests/browser/interactions.pw.mjs:141:40 › responsive layout 640px: long content, dialog scroll and focus remain usable (380ms)
+  ✓  12 tests/browser/interactions.pw.mjs:141:40 › responsive layout 1280px: long content, dialog scroll and focus remain usable (426ms)
+  ✓  13 tests/browser/interactions.pw.mjs:161:1 › switching away from pending Voice preserves typed draft and ignores the late transcript (489ms)
+  ✓  14 tests/browser/interactions.pw.mjs:172:26 › enlarged 200% CSS zoom keeps forms and dialogs operable (357ms)
+  ✓  15 tests/browser/interactions.pw.mjs:172:26 › enlarged 400% CSS zoom keeps forms and dialogs operable (339ms)
+  ✓  16 tests/browser/interactions.pw.mjs:185:1 › long removal confirmation scrolls in a short viewport and traps keyboard focus (240ms)
+  ✓  17 tests/browser/interactions.pw.mjs:198:1 › new Form dates reject impossible dates and save MM/DD/YYYY (382ms)
+  ✓  18 tests/browser/interactions.pw.mjs:216:1 › editing converts ISO dates, preserves context and validates corrections (366ms)
+  ✓  19 tests/browser/interactions.pw.mjs:251:1 › A1 guided outgoing content retains full fields, multiline Contact, clearing and current-source reopening (599ms)
+  ✓  20 tests/browser/interactions.pw.mjs:279:1 › A1 raw grouped outgoing content retains an omitted reminder once and replacing Does removes old work on reopen (442ms)
+  ✓  21 tests/browser/interactions.pw.mjs:302:1 › A1 cross-line and discussion/contact groups are visible once and stay together in outgoing content (335ms)
+  ✓  22 tests/browser/interactions.pw.mjs:321:1 › A1 source-anchored relative dates survive processing retry, preserved anchor and second edit (563ms)
+  ✓  23 tests/browser/interactions.pw.mjs:351:1 › A1 missing-anchor date review preserves the full draft and sends no edit until explicitly corrected (399ms)
+  ✓  24 tests/browser/interactions.pw.mjs:372:1 › A1 an edit connection failure preserves the reviewed draft and submission identity on retry (358ms)
+  ✓  25 tests/browser/interactions.pw.mjs:387:1 › A1 literal Person, email and URL identifiers are preserved and do not trigger date gating (300ms)
+  ✓  26 tests/browser/interactions.pw.mjs:401:3 › A1-I01 Today survives allocation Contact edit, cancellation and guided reload with missing anchor (591ms)
+  ✓  27 tests/browser/interactions.pw.mjs:401:3 › A1-I01 Today survives fallback Contact edit, cancellation and guided reload with missing anchor (627ms)
+  ✓  28 tests/browser/interactions.pw.mjs:401:3 › A1-I01 Today survives allocation Contact edit, cancellation and guided reload with 2026-10-24 anchor (564ms)
+  ✓  29 tests/browser/interactions.pw.mjs:401:3 › A1-I01 Today survives fallback Contact edit, cancellation and guided reload with 2026-10-24 anchor (634ms)
+  ✓  30 tests/browser/interactions.pw.mjs:401:3 › A1-I01 Yesterday survives allocation Contact edit, cancellation and guided reload with missing anchor (569ms)
+  ✓  31 tests/browser/interactions.pw.mjs:401:3 › A1-I01 Yesterday survives fallback Contact edit, cancellation and guided reload with missing anchor (554ms)
+  ✓  32 tests/browser/interactions.pw.mjs:401:3 › A1-I01 Yesterday survives allocation Contact edit, cancellation and guided reload with 2026-10-24 anchor (567ms)
+  ✓  33 tests/browser/interactions.pw.mjs:401:3 › A1-I01 Yesterday survives fallback Contact edit, cancellation and guided reload with 2026-10-24 anchor (556ms)
+  ✓  34 tests/browser/interactions.pw.mjs:441:3 › A1-I01 evidenced Today remains literal while real relative dates are reviewed with missing anchor (351ms)
+  ✓  35 tests/browser/interactions.pw.mjs:441:3 › A1-I01 evidenced Today remains literal while real relative dates are reviewed with 2026-10-24 anchor (337ms)
+  ✓  36 tests/browser/interactions.pw.mjs:441:3 › A1-I01 evidenced Yesterday remains literal while real relative dates are reviewed with missing anchor (364ms)
+  ✓  37 tests/browser/interactions.pw.mjs:441:3 › A1-I01 evidenced Yesterday remains literal while real relative dates are reviewed with 2026-10-24 anchor (386ms)
+  ✓  38 tests/browser/interactions.pw.mjs:462:1 › A1-I01 ambiguous name/date evidence stays visible and requires explicit correction without an edit request (370ms)
+  ✓  39 tests/browser/interactions.pw.mjs:479:3 › A2 unnamed Contact edits preserve unknown identity and reopen without inventing a name (680ms)
+  ✓  40 tests/browser/interactions.pw.mjs:479:3 › A2 unnamed Contact edits preserve ambiguous identity and reopen without inventing a name (611ms)
+  ✓  41 tests/browser/interactions.pw.mjs:513:1 › A2 existing long fields have no creation caps and submit their complete edited content (393ms)
+  ✓  42 tests/browser/interactions.pw.mjs:528:1 › A2 exact 20k conversion warns before writing, keeps invalid-date drafts visible, and saves only after explicit shortening (1.5s)
+  ✓  43 tests/browser/interactions.pw.mjs:551:1 › A2 multiline Person opens focused and retains the same control after its last newline is removed (471ms)
+  ✓  44 tests/browser/interactions.pw.mjs:567:42 › A2 guided relative wording keeps its source-day interpretation and discloses 2025-12-31 day (436ms)
+  ✓  45 tests/browser/interactions.pw.mjs:567:42 › A2 guided relative wording keeps its source-day interpretation and discloses missing day (346ms)
+  ✓  46 tests/browser/interactions.pw.mjs:585:1 › A2 inferred summary stays visibly uncertain and is not inserted into reviewed source (280ms)
+  ✓  47 tests/browser/interactions.pw.mjs:602:1 › A2 an oversized draft after a processing failure makes no further write and does not misstate the prior save (354ms)
+  ✓  48 tests/browser/interactions.pw.mjs:621:1 › A2 empty guided Person remains authoritative in recent and search labels despite a card name elsewhere (214ms)
+  ✓  49 tests/browser/interactions.pw.mjs:635:1 › A2-I01 oversized raw draft is refused promptly before date review and remains fully editable (361ms)
+  ✓  50 tests/browser/interactions.pw.mjs:664:1 › A3 actual Retry retains two loaded pages and resumes the failed cursor once (424ms)
+  ✓  51 tests/browser/interactions.pw.mjs:696:1 › A3 Reload from start recovers older notes after another tab removes the paging anchor (579ms)
+  ✓  52 tests/browser/interactions.pw.mjs:722:1 › A3 a failed explicit reload retains the list and Retry preserves replacement intent (452ms)
+  ✓  53 tests/browser/interactions.pw.mjs:741:1 › A5 search capacity, invalid input and partial processing have distinct next actions without automatic retries (423ms)
+  ✓  54 tests/browser/interactions.pw.mjs:766:50 › A5 processing preparation failure permits shortening the full last-loaded unorganized source (751ms)
+  ✓  55 tests/browser/interactions.pw.mjs:766:50 › A5 network preparation failure permits shortening the full last-loaded unorganized source (716ms)
+  ✓  56 tests/browser/interactions.pw.mjs:788:1 › A5 successful null-card preparation uses its fresh source and revision instead of the last-loaded row (267ms)
+  ✓  57 tests/browser/interactions.pw.mjs:807:64 › A5 NOT_FOUND preparation never falls back to the loaded source (256ms)
+  ✓  58 tests/browser/interactions.pw.mjs:807:64 › A5 CONFLICT preparation never falls back to the loaded source (266ms)
+  ✓  59 tests/browser/interactions.pw.mjs:807:64 › A5 UNAUTHORIZED preparation never falls back to the loaded source (209ms)
+  ✓  60 tests/browser/interactions.pw.mjs:817:1 › A5 failed preparation without a matching loaded row keeps the retry path instead of inventing a source (304ms)
+  ✓  61 tests/browser/interactions.pw.mjs:831:1 › A5 account change discards a pending failed preparation and its previous-account snapshot (227ms)
+  ✓  62 tests/browser/p4-usability.pw.mjs:75:1 › A6 empty-account keyboard action preserves drafts and saves only after explicit submission (300ms)
+  ✓  63 tests/browser/p4-usability.pw.mjs:96:1 › A6 first-encounter action retains Form and Voice choices and focuses their visible entry without opening the microphone (371ms)
+  ✓  64 tests/browser/p4-usability.pw.mjs:127:1 › A6 first-encounter guidance appears only after a successful empty read, not during loading or failure (217ms)
+  ✓  65 tests/browser/p4-usability.pw.mjs:142:1 › A6 ten distinct encounters retain uncertainty, edited-source meaning and independently collapsed original notes (543ms)
+  ✓  66 tests/browser/p4-usability.pw.mjs:176:33 › A6 dense 320px content and keyboard dialogs keep complete data reachable (514ms)
+  ✓  67 tests/browser/p4-usability.pw.mjs:176:33 › A6 dense 390px content and keyboard dialogs keep complete data reachable (500ms)
+  ✓  68 tests/browser/p4-usability.pw.mjs:208:1 › A6 reduced motion leaves artwork still while the task works without hovering it (362ms)
+  ✓  69 tests/browser/p4-usability.pw.mjs:226:3 › A6 touch-only interface › capture and review controls work without hover (531ms)
+
+  69 passed (32.2s)
+
+Exit code: 0
+UTC finish: 2026-10-26T19:42:26.217382+00:00

@@ -3,7 +3,11 @@ import { MongoClient, type Db } from "mongodb";
 import { RememberingConcept, SubmissionConflict } from "../../src/concepts/Remembering.ts";
 import { createGateway } from "@mit-sdg/sync-engine/boundary";
 import { createHttpHandler } from "@mit-sdg/sync-engine-http/handler";
-import { writeMemoryFields } from "../../src/memory-fields.ts";
+import { readMemoryFields, writeMemoryFields } from "../../src/memory-fields.ts";
+import { prepareEncounterEdit } from "../../frontend/src/encounter-form.ts";
+import type { BrainProvider, ContactCard, ContactMemory } from "../../src/providers/brain-provider.ts";
+import { relativeDate } from "../../src/calendar.ts";
+import { memoryLabel, memorySummary } from "../../frontend/src/memory-summary.ts";
 import { assembleApplication } from "../../src/assembly.ts";
 import { MemoryProvider, type Identity } from "../../src/concepts/Federating/provider.ts";
 import { GraphingConcept } from "../../src/concepts/Graphing.ts";
@@ -21,10 +25,10 @@ const NOTE = "Met Faustin, founder of an AI-chip startup. We talked about system
 const applications: ReturnType<typeof assembleApplication>[] = [];
 afterEach(async () => { for (const app of applications.splice(0)) await app.beginDrain(); });
 
-async function setup(failure?: "ingest" | "trace" | "ingest-once" | "withdraw-once" | "edit-ingest-once" | "disappear-save" | "disappear-edit" | "disappear-prepare" | "disappear-results" | "disappear-need", databaseOverride?: Db) {
+async function setup(failure?: "ingest" | "trace" | "ingest-once" | "withdraw-once" | "edit-ingest-once" | "disappear-save" | "disappear-edit" | "disappear-prepare" | "disappear-results" | "disappear-need", databaseOverride?: Db, brain: BrainProvider = new FixtureBrain()) {
   const database = databaseOverride ?? await testDatabase();
   const commons = new MemoryProvider();
-  const graph = new GraphingConcept(database, new FixtureBrain());
+  const graph = new GraphingConcept(database, brain);
   if (failure === "ingest-once") {
     const original = graph.ingest.bind(graph);
     let failed = false;
@@ -447,6 +451,66 @@ test("processing failure after an edit preserves current form and original, same
   expect(await database.collection("remembering.memories").countDocuments({owner})).toBe(1);
 });
 
+/** Synthetic summarization deliberately omits battery detail from role values,
+ * while keeping complete exact evidence. No production provider is called. */
+class LosslessEditBrain extends FixtureBrain {
+  version = "test-lossless-edit-v1";
+  async extract(content: string): Promise<ContactCard> {
+    this.extracts.push(content);
+    const fields = readMemoryFields(content);
+    if (!fields) return { name: "Mira Chen", nameQuote: "Met Mira Chen.", facts: [
+      { kind: "role", value: "Builds solar panels", quote: "Builds solar panels and designs batteries." },
+    ] };
+    const quote = (label: string) => content.match(new RegExp(`^${label}:[^\\n]*(?:\\n  [^\\n]*)*`, "mu"))![0];
+    const facts: ContactCard["facts"] = [];
+    for (const [key, label, kind] of [["does", "Does", "role"], ["discussed", "Discussed", "discussion"], ["contact", "Contact", "contact"], ["notes", "Notes", "other"]] as const) {
+      const value = fields[key];
+      if (value) facts.push({ kind, value: kind === "role" && value.includes("Builds solar panels") ? "Builds solar panels" : value, quote: quote(label) });
+    }
+    return { name: fields.person, nameQuote: quote("Person"), facts };
+  }
+}
+
+for (const source of [
+  writeMemoryFields({ person: "Mira Chen", when: "10/24/2026", does: "Builds solar panels and designs batteries\nTests storage prototypes", discussed: "Ocean sensors\nWorkshop follow-up", contact: "mira@example.test", notes: "Send the battery paper\nBring the blue notebook" }),
+  "Met Mira Chen.\nBuilds solar panels and designs batteries.\nSend the battery paper.",
+]) test(`A1 HTTP prepare/edit/seek retains current ${source.startsWith("Person:") ? "guided" : "raw"} detail and removes deliberately replaced activity`, async () => {
+  const brain = new LosslessEditBrain();
+  const { browser, database } = await setup(undefined, undefined, brain);
+  const sam = browser(); const owner = await sam.signIn(SAM);
+  const saved = await sam.post("/memories/remember", { content: source, timeZone: "America/New_York" });
+  expect(saved.status).toBe(200); const memory = saved.body.memory;
+  const prepared = await sam.post("/memories/prepare-edit", { memory });
+  expect(prepared).toMatchObject({ status: 200, body: { memory, content: source, original: source, revision: 0 } });
+  expect(prepared.body.card.facts.find((fact: any) => fact.kind === "role").value).toBe("Builds solar panels");
+  const edit = prepareEncounterEdit(prepared.body.card, prepared.body.content, prepared.body.referenceDate);
+  const content = writeMemoryFields({ ...edit.fields, contact: "new@example.test" });
+  expect(content).toContain("designs batteries"); expect(content).toContain("Send the battery paper");
+  const input = { memory, revision: prepared.body.revision, submission: crypto.randomUUID(), content, timeZone: "America/New_York" };
+  expect(await sam.post("/memories/edit", input)).toMatchObject({ status: 200, body: { memory } });
+  const afterEdit = await sam.post("/memories/prepare-edit", { memory });
+  expect(afterEdit).toMatchObject({ status: 200, body: { content, original: source, revision: 1 } });
+  expect(await sam.post("/memories/edit", input)).toMatchObject({ status: 200 });
+  expect(await database.collection("remembering.memories").findOne({ _id: memory })).toMatchObject({ owner, content, original: source, revision: 1 });
+  for (const description of ["batteries", "battery paper"]) {
+    const found = await sam.post("/needs/seek", { description });
+    expect(found).toMatchObject({ status: 200, body: { results: { suggestions: [{ source: memory, content, original: source }] } } });
+  }
+  // Reopen via the same frontend helper: replacing the activity must not leave
+  // immutable first-original or an automatic residual copy in current evidence.
+  const reopened = prepareEncounterEdit(afterEdit.body.card, afterEdit.body.content, afterEdit.body.referenceDate);
+  expect(reopened.fields).toEqual({ ...edit.fields, contact: "new@example.test" });
+  const corrected = writeMemoryFields({ ...reopened.fields, does: "Builds wind turbines" });
+  expect(corrected).not.toContain("designs batteries");
+  expect(await sam.post("/memories/edit", { ...input, revision: 1, submission: crypto.randomUUID(), content: corrected })).toMatchObject({ status: 200 });
+  expect((await sam.post("/needs/seek", { description: "batteries" })).body.results.suggestions).toEqual([]);
+  expect((await sam.post("/needs/seek", { description: "battery paper" })).body.results.suggestions).toMatchObject([{ source: memory, content: corrected }]);
+  expect((await sam.post("/needs/seek", { description: "wind turbines" })).body.results.suggestions).toMatchObject([{ source: memory, content: corrected }]);
+  const final = await sam.post("/memories/prepare-edit", { memory });
+  expect(final).toMatchObject({ status: 200, body: { content: corrected, original: source, revision: 2 } });
+  expect(prepareEncounterEdit(final.body.card, final.body.content, final.body.referenceDate).fields.does).toBe("Builds wind turbines");
+});
+
 
 for(const stage of ["disappear-save","disappear-edit","disappear-prepare","disappear-results","disappear-need"] as const) {
   test(`${stage} returns a response within two seconds rather than the 120-second deadline`,async()=>{
@@ -471,3 +535,120 @@ test("account disappearance after sign-in returns UNAUTHORIZED without waiting",
   await database.collection("registering.users").deleteOne({_id:owner} as any);
   expect(await sam.post("/auth/me")).toMatchObject({status:401,body:{error:"UNAUTHORIZED"}});
 },2_000);
+
+class A2EditBrain extends FixtureBrain {
+  version = "test-a2-edit-policy-v1";
+  referenceDays: string[] = [];
+  async extract(content: string, context?: { referenceDate: string }): Promise<ContactCard> {
+    this.extracts.push(content); this.referenceDays.push(context?.referenceDate ?? "");
+    const fields = readMemoryFields(content);
+    const line = (label: string) => content.match(new RegExp(`^${label}:[^\\n]*(?:\\n  [^\\n]*)*`, "mu"))?.[0] ?? "";
+    const facts: ContactCard["facts"] = [];
+    if (content.includes("may work on ocean sensors")) facts.push({ kind: "role", value: "Possible ocean-sensor work", quote: fields ? line("Does") : "They may work on ocean sensors; this is unconfirmed.", basis: "inferred" });
+    if (fields?.does === "Builds sensors") facts.push({ kind: "role", value: fields.does, quote: line("Does"), basis: "stated" });
+    if (fields?.contact) facts.push({ kind: "contact", value: fields.contact, quote: line("Contact"), basis: "stated" });
+    if (fields?.notes === "Met yesterday.") {
+      const quote = line("Notes"), date = relativeDate(quote, context?.referenceDate ?? "");
+      if (date) facts.push({ kind: "date", value: date, quote, basis: "stated" });
+    }
+    const name = fields?.person.trim() || null;
+    return { name, nameQuote: name ? line("Person") : null, facts };
+  }
+  async select(description: string, memory: ContactMemory[]) {
+    if (/^\d{4}-\d{2}-\d{2}$/u.test(description)) return { matches: memory.flatMap(row => {
+      const facts = row.card.facts.flatMap((fact,index) => fact.kind === "date" && fact.value === description ? [index] : []);
+      return facts.length ? [{ source: row.source, facts }] : [];
+    }) };
+    return super.select(description, memory);
+  }
+}
+
+test("A2 HTTP unnamed uncertain source survives Contact edits, validation and reorganization without invented certainty", async () => {
+  const brain = new A2EditBrain(), { browser, database } = await setup(undefined, undefined, brain);
+  const sam = browser(), owner = await sam.signIn(SAM);
+  const source = "Name was Dana or Daria. They may work on ocean sensors; this is unconfirmed.";
+  const saved = await sam.post("/memories/remember", { content: source });
+  expect(saved.status).toBe(200); const memory = saved.body.memory;
+  const prepared = await sam.post("/memories/prepare-edit", { memory });
+  expect(prepared).toMatchObject({ status: 200, body: { card: { name: null, nameQuote: null, facts: [{ basis: "inferred" }] } } });
+  const fields = prepareEncounterEdit(prepared.body.card, prepared.body.content, prepared.body.referenceDate).fields;
+  expect(fields.person).toBe("");
+  const content = writeMemoryFields({ ...fields, contact: "unnamed@example.test" });
+  expect(content).toContain("may work on ocean sensors; this is unconfirmed.");
+  expect(content).not.toContain("Possible ocean-sensor work");
+  const input = { memory, content, revision: 0, submission: crypto.randomUUID() };
+  expect(await sam.post("/memories/edit", input)).toMatchObject({ status: 200 });
+  expect(await sam.post("/memories/edit", input)).toMatchObject({ status: 200 });
+  const reopened = await sam.post("/memories/prepare-edit", { memory });
+  expect(reopened).toMatchObject({ status: 200, body: { content, original: source, revision: 1, card: { name: null, nameQuote: null } } });
+  expect(prepareEncounterEdit(reopened.body.card, content, reopened.body.referenceDate).fields).toEqual({ ...fields, contact: "unnamed@example.test" });
+  expect(memoryLabel(content, reopened.body.card)).toBe("Unnamed encounter");
+  expect(memorySummary(content, "Unnamed encounter", reopened.body.card)).toContainEqual({ label: "Does", value: "May be: Possible ocean-sensor work" });
+  const found = await sam.post("/needs/seek", { description: "ocean sensors" });
+  expect(found).toMatchObject({ status: 200, body: { results: { suggestions: [{ source: memory, content, original: source, card: { name: null, facts: [{ basis: "inferred" }, { kind: "contact" }] } }] } } });
+  const before = await database.collection("remembering.memories").findOne({ _id: memory, owner });
+  for (const invalid of ["Person:\nWhen:\nDoes:\nDiscussed:", "Person:\nWhen: 02/30/2026\nDoes: Builds sensors\nDiscussed:"]) {
+    expect(await sam.post("/memories/edit", { ...input, content: invalid, revision: 1, submission: crypto.randomUUID() })).toMatchObject({ status: 400 });
+    expect(await database.collection("remembering.memories").findOne({ _id: memory, owner })).toEqual(before);
+  }
+});
+
+test("A2 HTTP legacy guided relative dates keep their source day across later timezone edits, retry and search", async () => {
+  const brain = new A2EditBrain(), { browser, database } = await setup(undefined, undefined, brain);
+  const sam = browser(), owner = await sam.signIn(SAM);
+  const source = writeMemoryFields({ person: "Mira", when: "", does: "Builds sensors", discussed: "", notes: "Met yesterday." });
+  const saved = await sam.post("/memories/remember", { content: source });
+  expect(saved.status).toBe(200); const memory = saved.body.memory;
+  // An old, server-authored fixture; request bodies still cannot pick either date.
+  const capturedAt = new Date("2026-01-01T02:00:00Z");
+  await database.collection("remembering.memories").updateOne({ _id: memory, owner }, { $set: { capturedAt, referenceDate: "2025-12-31" } });
+  const prepared = await sam.post("/memories/prepare-edit", { memory });
+  expect(prepared).toMatchObject({ status: 200, body: { referenceDate: "2025-12-31", card: { facts: [{ kind: "role" }, { kind: "date", value: "2025-12-30" }] } } });
+  const fields = prepareEncounterEdit(prepared.body.card, source, prepared.body.referenceDate).fields;
+  expect(fields.notes).toBe("Met yesterday.");
+  const content = writeMemoryFields({ ...fields, contact: "mira@example.test" });
+  const input = { memory, content, revision: prepared.body.revision, submission: crypto.randomUUID(), timeZone: "Asia/Tokyo" };
+  expect(await sam.post("/memories/edit", input)).toMatchObject({ status: 200 });
+  expect(await sam.post("/memories/edit", { ...input, timeZone: "Pacific/Honolulu" })).toMatchObject({ status: 200 });
+  const reopened = await sam.post("/memories/prepare-edit", { memory });
+  expect(reopened).toMatchObject({ status: 200, body: { content, original: source, revision: 1, referenceDate: "2025-12-31" } });
+  expect(reopened.body.card.facts.find((fact: { kind: string }) => fact.kind === "date").value).toBe("2025-12-30");
+  expect(brain.referenceDays.at(-1)).toBe("2025-12-31");
+  expect(await database.collection("remembering.memories").findOne({ _id: memory, owner })).toMatchObject({ content, original: source, revision: 1, capturedAt, referenceDate: "2025-12-31" });
+  const found = await sam.post("/needs/seek", { description: "2025-12-30" });
+  expect(found).toMatchObject({ status: 200, body: { results: { suggestions: [{ source: memory, content, card: { facts: [{ kind: "role" }, { kind: "contact" }, { kind: "date", value: "2025-12-30" }] } }] } } });
+  expect((await sam.post("/needs/seek", { description: "2030-01-01" })).body.results.suggestions).toEqual([]);
+});
+
+test("A5 complete-memory count overflow reports capacity after saving the need, before organization", async () => {
+  const brain = new FixtureBrain(), { browser, database } = await setup(undefined, undefined, brain);
+  const sam = browser(), owner = await sam.signIn(SAM);
+  await database.collection<{ _id: string; owner: string; content: string; capturedAt: Date }>("remembering.memories").insertMany(
+    Array.from({ length: 257 }, (_, index) => ({ _id: index.toString(16).padStart(64, "0"), owner, content: `Met synthetic contact ${index}.`, capturedAt: new Date("2026-10-20T12:00:00Z") })),
+  );
+  expect(await sam.post("/needs/seek", { description: "sensors" })).toMatchObject({ status: 409, body: { error: "CONFLICT" } });
+  expect(await database.collection("seeking.needs").countDocuments({ owner })).toBe(1);
+  expect(await database.collection("remembering.memories").countDocuments({ owner })).toBe(257);
+  expect(await database.collection("graphing.sources").countDocuments()).toBe(0);
+  expect(await database.collection("graphing.recalls").countDocuments()).toBe(0);
+  expect(brain.extracts).toHaveLength(0); expect(brain.selections).toHaveLength(0);
+});
+
+test("A5 an unsupported long-line card preserves the source for revision-checked correction and same-token retry", async () => {
+  const brain = new FixtureBrain();
+  brain.extract = async source => ({ name: null, nameQuote: null, facts: [{ kind: "other", value: "Reminder", quote: source.slice(0, 100) }] });
+  const { browser, database } = await setup(undefined, undefined, brain), sam = browser();
+  const owner = await sam.signIn(SAM), original = "x".repeat(20_000);
+  expect(await sam.post("/memories/remember", { content: original })).toMatchObject({ status: 500, body: { error: "INTERNAL_ERROR" } });
+  const listed = await sam.post("/memories/list", { after: "" });
+  expect(listed.body.memories).toHaveLength(1);
+  const saved = listed.body.memories[0];
+  expect(saved).toMatchObject({ content: original, original, revision: 0, card: null });
+  expect(await sam.post("/memories/prepare-edit", { memory: saved.memory })).toMatchObject({ status: 500, body: { error: "INTERNAL_ERROR" } });
+  const content = writeMemoryFields({ person: "", when: "", does: "Keep this shorter reminder.", discussed: "", contact: "", notes: "" });
+  const correction = { memory: saved.memory, revision: saved.revision, content, submission: crypto.randomUUID() };
+  expect(await sam.post("/memories/edit", correction)).toMatchObject({ status: 200 });
+  expect(await sam.post("/memories/edit", correction)).toMatchObject({ status: 200 });
+  expect(await database.collection("remembering.memories").findOne({ _id: saved.memory })).toMatchObject({ owner, content, original, revision: 1 });
+  expect(await database.collection("remembering.memories").countDocuments({ owner })).toBe(1);
+});

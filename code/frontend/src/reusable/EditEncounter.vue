@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import { trapDialogFocus } from "./dialog-focus.ts";
-import { onMounted, onBeforeUnmount, ref } from "vue";
+import { computed, onMounted, onBeforeUnmount, ref } from "vue";
 import type { MemoryFields } from "../../../src/memory-fields.ts";
+import { editReferenceDateMessage, editSizeMessage } from "../encounter-form.ts";
 import EncounterFields from "./EncounterFields.vue";
 const fields = defineModel<MemoryFields>({ required: true });
-const props = defineProps<{ busy: boolean; error: string }>();
+const props = defineProps<{ busy: boolean; error: string; grouped: boolean; referenceDate: string }>();
 const emit = defineEmits<{ save: []; cancel: [] }>();
 const dialog = ref<HTMLDialogElement>();
-onMounted(() => { dialog.value?.showModal(); dialog.value?.querySelector<HTMLInputElement>("input")?.focus(); });
+const multilineContact = /[\r\n]/u.test(fields.value.contact ?? "");
+const multilinePerson = /[\r\n]/u.test(fields.value.person);
+const sizeError = computed(() => editSizeMessage(fields.value));
+const referenceDay = computed(() => editReferenceDateMessage(props.referenceDate));
+onMounted(() => { dialog.value?.showModal(); dialog.value?.querySelector<HTMLInputElement | HTMLTextAreaElement>("input, textarea")?.focus(); });
 onBeforeUnmount(() => dialog.value?.close());
 function cancel(event: Event) { event.preventDefault(); if (!props.busy) emit("cancel"); }
 </script>
@@ -15,7 +20,10 @@ function cancel(event: Event) { event.preventDefault(); if (!props.busy) emit("c
   <dialog ref="dialog" @keydown="trapDialogFocus" class="edit-dialog" aria-labelledby="edit-title" @cancel="cancel">
     <h2 id="edit-title">Edit encounter</h2>
     <form :aria-busy="busy" @submit.prevent="$emit('save')">
-      <EncounterFields v-model="fields" prefix="edit" :disabled="busy" />
+      <p v-if="grouped" class="hint">Some details from your note are kept together in one field. Review the whole field before replacing it; all text shown there will be changed together.</p>
+      <p class="hint">{{ referenceDay }}</p>
+      <EncounterFields v-model="fields" prefix="edit" :disabled="busy" editing :multiline-person="multilinePerson" :multiline-contact="multilineContact" />
+      <p v-if="sizeError" class="refusal" role="alert">{{ sizeError }}</p>
       <p v-if="error" class="refusal" role="alert">{{ error }}</p>
       <div class="dialog-actions"><button class="button cancel-button" type="button" :disabled="busy" @click="$emit('cancel')">Cancel</button><button class="button primary" :disabled="busy">{{ busy ? "Saving…" : "Save changes" }}</button></div>
     </form>
