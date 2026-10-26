@@ -10,3 +10,5 @@ Start with [P4 verification](p4-verification.md) and its [separate output](../co
 The navigation review found no tracked configured `.env`, dependency directory or build directory. A configured-credential value scan passed all 327 historical work files and the new text evidence. This is a bounded scan, not a universal privacy guarantee. Logs intentionally contain synthetic IDs, timing, local paths and expected faults. No real notes or participant identities were added to public evidence. Dependency caches, `.env`, temporary traces and build outputs stay ignored. Do not publish real session cookies, provider keys or participant records in follow-up evidence.
 
 Historical P1/P2/P3 documents and source comparisons remain reachable through the [README](../README.md) and [version map](p4-version-map.md). No submitted Git history or personal notebook was rewritten.
+
+[Participant readiness kit](p4-participant-kit/) contains synthetic setup, neutral tasks and a blank printable observation sheet. These are preparation, not completed research. The final code/spec/provider version is in the [immutable source map](p4-version-map.md).

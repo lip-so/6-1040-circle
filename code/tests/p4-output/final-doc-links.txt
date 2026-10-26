@@ -1,0 +1,2 @@
+Checked 97 local file/directory/anchor links across 9 Markdown files.
+Errors: 0. Remote links are separate; GitHub renderer anchors may require manual review.

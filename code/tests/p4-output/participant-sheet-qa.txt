@@ -1,0 +1,4 @@
+Artifact: output/pdf/p4-observation-sheet.pdf
+Generated: October 26, 2026
+Format: US Letter, one page (612 x 792 points)
+Verification: pypdf reports exactly 1 page and required headings; Poppler rendered observation-1.png at 1200 pixels. Visually inspected the final rendered page: readable type, aligned tables/rules, complete text, no clipping/overlap/black squares. All outcome/observation fields are blank. No participant data, completed research, live outcome or interactive-field capability is claimed. Bundled Poppler emitted font-cache warnings but produced the complete inspected page.

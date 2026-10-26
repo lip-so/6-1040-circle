@@ -87,7 +87,7 @@ Six static concept instances remain, with user/source bindings in `design/types.
 
 ### Remaining evidence limits
 
-Deployed HTTPS sign-in/returning-session behavior, actual production cookie settings, two real accounts, real microphone permissions and external-provider quality remain pending A9/B2. Local injected-provider results do not establish those outcomes. The reusable auth contract also contains a stale sentence saying callback codes remain in browser history despite its earlier cleanup description; align that prose with `replaceState` during A7.
+Deployed HTTPS sign-in/returning-session behavior, actual production cookie settings, two real accounts, real microphone permissions and external-provider quality remain pending A9/B2. Local injected-provider results do not establish those outcomes. At the A4 checkpoint, reusable auth prose still said callback codes remained in browser history. A7 subsequently aligned it with `replaceState` and independently reviewed the final contracts; no universal browser/network record erasure is promised.
 
 ## Findings
 

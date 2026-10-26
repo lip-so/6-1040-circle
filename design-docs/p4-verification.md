@@ -2,7 +2,7 @@
 
 ## Release and scope
 
-Verified October 26, 2026, **15:30–15:31 EDT / 19:30–19:31 UTC**. Git base: `ad4d2412b1c1a43ea813526abafb8244352eb2e8`, with uncommitted A1–A7 refinements. [Source fingerprints](../code/tests/p4-output/source-hashes.json) identify 97 source/configuration files; application/design/generated/test/script trees matched the actual repository byte-for-byte. Checks ran in an isolated candidate to preserve existing local/P3 output. Two review-only development dependencies exist only there; application dependencies/lockfiles remain unchanged. A11 will verify a clean installation from the actual manifests.
+Implementation source is local commit **`3d4ae7122705ff36a3151fd638b10786cefaf0de`**; [version links](p4-version-map.md) are ready for Sofia’s push. Fresh A8 verification ran October 26, 2026, **15:30–15:31 EDT / 19:30–19:31 UTC**. Its Git base was: `ad4d2412b1c1a43ea813526abafb8244352eb2e8`, with uncommitted A1–A7 refinements. [Source fingerprints](../code/tests/p4-output/source-hashes.json) identify 97 source/configuration files; application/design/generated/test/script trees matched the actual repository byte-for-byte. Checks ran in an isolated candidate to preserve existing local/P3 output. Two review-only development dependencies exist only there; application dependencies/lockfiles remain unchanged. A11 subsequently verified the same runtime through clean frozen installs from the actual manifests, including the metadata-only Bun pin alignment; details are below.
 
 This is local candidate evidence. **Final deployed frontend/backend identity, deployment ID and authenticated live validation are pending A9/B2.** No restart durability or successful deployment is inferred from `/health`, build assets or the results below.
 
@@ -68,3 +68,7 @@ October 26, 19:36 UTC / 15:36 EDT: the internal browser’s existing signed-in s
 ## A11 clean-install confirmation
 
 October 26, 19:40–19:44 UTC: fresh project installs from both existing lockfiles passed without the review-only development tools. Root source/artifact/types/build checks and the actual combined test command passed again (231 tests/1,245 assertions; 69 production-preview Chrome scenarios). Locks and runtime source are unchanged; only backend packageManager metadata is aligned to the already-tested Bun 1.4.2. Built 3000 and development localhost:5173 startup/proxy checks passed with a fresh index-only disposable database and no AI key. The first probe’s wrong-host timeout and the successful corrected probe are both retained. [Reproduction details](p4-reproducibility.md), [final source/config fingerprints](../code/tests/p4-output/release-source-hashes.json). Final deployment and human checks remain pending.
+
+## Committed implementation identity
+
+The reviewed implementation and A1–A11 evidence were committed locally as **`3d4ae7122705ff36a3151fd638b10786cefaf0de`**. [Immutable source map](p4-version-map.md) identifies this exact code/spec/provider version. No push/deployment has been performed by the agent. Later participant-kit and navigation-only commits do not change these application source fingerprints. Sofia should record the actual pushed/submitted and deployed identifiers; final live validation remains pending.
