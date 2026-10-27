@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { formatMatchSummary } from "../match-summary.ts";
 import { MongoServerError, type Collection, type Db } from "mongodb";
 import { unavailableBrain, validateCard, validateSelection, type BrainProvider, type ContactCard, type Match } from "../providers/brain-provider.ts";
 interface SourceRecord { _id: string; owner: string; withdrawn?: true; digest?: string; providerVersion?: string; sourceRevision?: number; card?: ContactCard }
@@ -106,7 +107,7 @@ export class GraphingConcept {
       const row = records.find(row => row._id === match.source && row.digest === match.digest && row.providerVersion === match.providerVersion && row.card && hash(row.card) === match.cardHash);
       if (!row?.card) return [];
       return [{ target: row._id, label: row.card.name ?? "Unnamed encounter", source: row._id, card: row.card,
-        reason: match.facts.length ? match.facts.map(i => { const fact = row.card!.facts[i]!; return `${fact.basis === "inferred" ? "May be relevant: " : ""}${fact.value}`; }).join(" · ") : "Name match" }];
+        reason: formatMatchSummary(match.facts.length ? match.facts.map(i => { const fact = row.card!.facts[i]!; return `${fact.basis === "inferred" ? "May be relevant: " : ""}${fact.value}`; }).join(" · ") : "Name match", row.card) }];
     });
   }
 }

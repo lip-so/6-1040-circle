@@ -864,3 +864,20 @@ test("grouped discussion details scan cleanly while the exact note stays in Pers
   await contact.locator(".personal-notes summary").click();
   await expect(contact.locator("blockquote")).toHaveText(original);
 });
+
+
+test("blue reason compacts an older referral response and keeps its exact note collapsed", async({page})=>{
+  const state=await setup(page);
+  const source="Met Rowan. Knows people in Chicago who are looking for interns for this summer.";
+  const quote="Knows people in Chicago who are looking for interns for this summer.";
+  const referralCard={name:"Rowan",nameQuote:"Met Rowan.",facts:[{kind:"offer",value:quote,quote}]};
+  state.handlers["/needs/seek"]=()=>({results:{need:"referral-need",description:"internship contacts",suggestions:[{target:"referral",source:"referral",label:"Rowan",content:source,original:source,revision:0,referenceDate:"2026-10-20",card:referralCard,reason:`${quote} — “${quote}”`}]}});
+  await page.getByLabel("Who could help?").fill("internship contacts");
+  await page.getByRole("button",{name:"Find connections",exact:true}).click();
+  const result=page.locator(".contact-row").filter({has:page.getByRole("heading",{name:"Rowan",exact:true})});
+  await result.locator(".contact-name").click();
+  await expect(result.locator(".match-reason")).toHaveText("Chicago internship contacts · this summer");
+  await expect(result.locator("blockquote")).not.toBeVisible();
+  await result.locator(".personal-notes summary").click();
+  await expect(result.locator("blockquote")).toHaveText(source);
+});

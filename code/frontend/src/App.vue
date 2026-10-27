@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import type { CircleWireHttp } from "../../generated/wire.ts";
 import { api } from "./api/client.ts";
 import { memoryLabel, memorySummary } from "./memory-summary.ts";
+import { formatMatchSummary } from "../../src/match-summary.ts";
 import { validMemoryDate } from "../../src/calendar.ts";
 import { hasMemoryFieldContent, writeMemoryFields } from "../../src/memory-fields.ts";
 import { editDateReviewMessage, editSizeMessage, emptyFields, hasRelativeEditDate, prepareEncounterEdit, type RawEditReview } from "./encounter-form.ts";
@@ -63,7 +64,7 @@ const people = computed(() => memories.value.map(memory => {
 type Results = CircleWireHttp["/needs/seek"]["output"]["results"];
 const results = ref<Results | null>(null);
 const suggestions = computed(() => results.value?.suggestions.map(suggestion => ({
-  ...suggestion, label: memoryLabel(suggestion.content, suggestion.card), details: memorySummary(suggestion.content, suggestion.label, suggestion.card),
+  ...suggestion, reason: formatMatchSummary(suggestion.reason, suggestion.card), label: memoryLabel(suggestion.content, suggestion.card), details: memorySummary(suggestion.content, suggestion.label, suggestion.card),
 })) ?? []);
 
 onMounted(() => {

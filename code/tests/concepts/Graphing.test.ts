@@ -211,3 +211,21 @@ test("provider-version changes invalidate extraction and selection caches while 
   expect(await graph.recall(input)).toEqual(second);
   expect(brain.selections).toHaveLength(2);
 });
+
+
+test("blue match reasons compact verbose cached referral values while preserving evidence and selections", async () => {
+  const brain=new FixtureBrain();
+  const content="Met Rowan. Knows people in Chicago who are looking for interns for this summer.";
+  const quote="Knows people in Chicago who are looking for interns for this summer.";
+  brain.extract=async()=>{brain.extracts.push(content);return {name:"Rowan",nameQuote:"Met Rowan.",facts:[{kind:"offer",value:quote,quote}]};};
+  const {graph}=await fixture(brain);
+  const input={owner,notes:JSON.stringify([{source:"referral",content}]),description:"interns"};
+  const recall=await graph.recall(input);
+  const [match]=await graph._matches({owner,...recall});
+  expect(match!.reason).toBe("Chicago internship contacts · this summer");
+  expect(match!.card.facts[0]!.value).toBe(quote);
+  expect(match!.card.facts[0]!.quote).toBe(quote);
+  expect(await graph.recall(input)).toEqual(recall);
+  expect(brain.extracts).toHaveLength(1);
+  expect(brain.selections).toHaveLength(1);
+});
