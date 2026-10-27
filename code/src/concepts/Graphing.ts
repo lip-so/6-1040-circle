@@ -106,7 +106,7 @@ export class GraphingConcept {
       const row = records.find(row => row._id === match.source && row.digest === match.digest && row.providerVersion === match.providerVersion && row.card && hash(row.card) === match.cardHash);
       if (!row?.card) return [];
       return [{ target: row._id, label: row.card.name ?? "Unnamed encounter", source: row._id, card: row.card,
-        reason: match.facts.length ? match.facts.map(i => { const fact = row.card!.facts[i]!; return `${fact.basis === "inferred" ? "May be relevant: " : ""}${fact.value} — “${fact.quote}”`; }).join(" ") : `“${row.card.nameQuote}”` }];
+        reason: match.facts.length ? match.facts.map(i => { const fact = row.card!.facts[i]!; return `${fact.basis === "inferred" ? "May be relevant: " : ""}${fact.value}`; }).join(" · ") : "Name match" }];
     });
   }
 }

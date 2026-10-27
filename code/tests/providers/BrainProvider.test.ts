@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { OpenAIProvider, BrainUnavailable, InvalidModelOutput } from "../../src/providers/brain-provider.ts";
+import { OpenAIProvider, BrainUnavailable, InvalidModelOutput, validateSelection, type ContactCard } from "../../src/providers/brain-provider.ts";
 const card = { name: "Mira", nameQuote: "Met Mira.", facts: [{kind:"discussion" as const,value:"ocean sensors",quote:"We discussed ocean sensors."}] };
 const answer = (value: unknown) => Response.json({ status: "completed", output: [{type:"message",role:"assistant",content:[{type:"output_text",text:JSON.stringify(value)}]}] });
 test("OpenAI requests strict stateless source-linked JSON without account credentials in model input", async () => {
@@ -35,4 +35,21 @@ test("transcription uploads only ephemeral audio and returns bounded editable te
   expect(await provider.transcribe(new Uint8Array([1,2,3]),"audio/webm")).toBe("Met Mira.");
   expect([...uploaded!.keys()].sort()).toEqual(["file","model"]);
   expect((uploaded!.get("file") as File).name).toBe("note.webm");
+});
+
+
+test("hiring searches accept explicit internship/student recruiting without exact is-hiring wording", () => {
+  for (const quote of ["Looking for interns for spring 2029.", "Will be looking for UROP students in summer 2028.", "We are recruiting software engineers.", "We are seeking PhD students.", "Internship positions are available.", "We are hiring."]) {
+    const card: ContactCard = {name:"Niko",nameQuote:"Met Niko.",facts:[{kind:"offer",value:quote,quote,basis:"stated"}]};
+    expect(validateSelection({matches:[{source:"one",facts:[0]}]},[{source:"one",card}],"Who is hiring?")).toEqual([{source:"one",facts:[0]}]);
+    card.facts[0]!.basis = "inferred";
+    expect(() => validateSelection({matches:[{source:"one",facts:[0]}]},[{source:"one",card}],"Who is hiring?")).toThrow(InvalidModelOutput);
+  }
+});
+
+test("hiring searches still reject negated recruiting, mere employment and discussion", () => {
+  for (const [kind,quote] of [["offer","We are not looking for interns."],["offer","We aren’t looking for UROP students."],["role","Works at an AI-chip startup."],["discussion","Discussed looking for internships."]] as const) {
+    const card: ContactCard = {name:"Niko",nameQuote:"Met Niko.",facts:[{kind,value:quote,quote}]};
+    expect(() => validateSelection({matches:[{source:"one",facts:[0]}]},[{source:"one",card}],"Who is hiring?")).toThrow(InvalidModelOutput);
+  }
 });

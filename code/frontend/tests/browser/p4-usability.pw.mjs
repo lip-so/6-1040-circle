@@ -45,6 +45,7 @@ async function setup(page, { empty = false, initialList } = {}) {
   const state = { rows: empty ? [] : structuredClone(encounters), calls: [], handlers: {} };
   if (initialList) state.handlers["/memories/list"] = initialList;
   await page.route("**/api/**", async route => {
+    if (!new URL(route.request().url()).pathname.startsWith("/api/")) return route.continue();
     const path = new URL(route.request().url()).pathname.slice(4), input = route.request().postDataJSON();
     state.calls.push({ path, input });
     let answer;

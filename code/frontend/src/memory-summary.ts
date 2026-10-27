@@ -25,10 +25,18 @@ export function memoryLabel(content: string, card?: ContactCard | null): string 
 export function memorySummary(content: string, name: string, card?: ContactCard | null): MemoryDetail[] {
   if (card) {
     const labels = { date: "When", context: "Context", role: "Does", discussion: "Discussed", contact: "Contact", offer: "Offers", other: "Note" };
-    return card.facts.map(fact => {
-      const value = fact.kind === "date" ? formatMemoryDate(fact.value) : fact.value;
-      return { label: labels[fact.kind], value: fact.basis === "inferred" ? `May be: ${value}` : value };
-    });
+    const rows: MemoryDetail[] = [];
+    for (const fact of card.facts) {
+      const label = labels[fact.kind];
+      const value = fact.kind === "date" ? formatMemoryDate(fact.value) : fact.value.trim();
+      const concise = fact.kind === "discussion" ? value.replace(/^Discussed\s*:?\s+/iu, "") : fact.kind === "other" ? value.replace(/^Notes?:\s*/iu, "") : value;
+      if (!concise) continue;
+      const displayed = fact.basis === "inferred" ? `May be: ${concise}` : concise;
+      const row = rows.find(row => row.label === label);
+      if (!row) rows.push({ label, value: displayed });
+      else if (!row.value.split("; ").some(part => part.toLocaleLowerCase("en") === displayed.toLocaleLowerCase("en"))) row.value += `; ${displayed}`;
+    }
+    return rows;
   }
   const guided = readMemoryFields(content);
   if (guided) {

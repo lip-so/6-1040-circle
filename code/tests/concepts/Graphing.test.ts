@@ -18,7 +18,9 @@ test("stores validated JSON once, reuses equivalent searches and persists IDs/ev
   const first = await graph.recall({ owner, notes, description: "ocean sensors" });
   const matches = await graph._matches({ owner, ...first });
   expect(matches).toMatchObject([{ source: "one", target: "one", label: "Mira", card: { name: "Mira" } }]);
-  expect(matches[0]!.reason).toContain("We discussed ocean sensors.");
+  expect(matches[0]!.reason).toBe("Met Mira. · We discussed ocean sensors.");
+  expect(matches[0]!.reason).not.toContain("— “");
+  expect(matches[0]!.card.facts[1]!.quote).toBe("We discussed ocean sensors.");
   expect(await graph.recall({ owner, notes, description: " OCEAN   sensors " })).toEqual(first);
   expect(brain.extracts).toHaveLength(1); expect(brain.selections).toHaveLength(1);
   const reader = new GraphingConcept(db);

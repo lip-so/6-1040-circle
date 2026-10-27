@@ -69,3 +69,19 @@ test("A2 explicitly empty guided Person overrides a card name extracted from ano
   expect(memoryLabel(content, { name: "Dana", nameQuote: "Does: Met Dana at the workshop.", facts: [] })).toBe("Unnamed encounter");
   expect(memoryLabel(content, { name: null, nameQuote: null, facts: [] })).toBe("Unnamed encounter");
 });
+
+
+test("organized details group repeated discussion rows, drop repeated labels and retain uncertainty", () => {
+  const card = {name:"Lana",nameQuote:"Met Lana.",facts:[
+    {kind:"role" as const,value:"PhD student, Cedar Lab",quote:"Lana is a PhD student at Cedar Lab."},
+    {kind:"discussion" as const,value:"Discussed robotics",quote:"We discussed robotics."},
+    {kind:"discussion" as const,value:"Discussed cinnamon buns",quote:"We discussed cinnamon buns."},
+    {kind:"discussion" as const,value:"Robotics",quote:"We discussed robotics."},
+    {kind:"discussion" as const,value:"Sensor design",quote:"Possibly sensor design.",basis:"inferred" as const},
+  ]};
+  expect(memorySummary("Met Lana.","Lana",card)).toEqual([
+    {label:"Does",value:"PhD student, Cedar Lab"},
+    {label:"Discussed",value:"robotics; cinnamon buns; May be: Sensor design"},
+  ]);
+  expect(card.facts).toHaveLength(5);
+});

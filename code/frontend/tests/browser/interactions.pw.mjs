@@ -846,3 +846,21 @@ test("A5 account change discards a pending failed preparation and its previous-a
   await expect(page.getByRole("button", {name:"Edit Mira Chen",exact:true})).toHaveCount(0);
   expect(outgoingEdits(state)).toHaveLength(0);
 });
+
+
+test("grouped discussion details scan cleanly while the exact note stays in Personal notes",async({page})=>{
+  const state=await setup(page);
+  state.rows[0].card.facts.push(
+    {kind:"discussion",value:"Discussed robotics",quote:"We discussed robotics."},
+    {kind:"discussion",value:"Discussed cinnamon buns",quote:"We discussed cinnamon buns."},
+  );
+  await page.evaluate(()=>window.dispatchEvent(new Event("focus")));
+  const contact=page.locator(".contact-row");
+  await contact.locator(".contact-name").click();
+  const discussion=contact.locator(".memory-details > div").filter({has:page.locator("dt",{hasText:"Discussed"})});
+  await expect(discussion).toHaveCount(1);
+  await expect(discussion.locator("dd")).toHaveText("sensors; robotics; cinnamon buns");
+  await expect(contact.locator("blockquote")).not.toBeVisible();
+  await contact.locator(".personal-notes summary").click();
+  await expect(contact.locator("blockquote")).toHaveText(original);
+});
