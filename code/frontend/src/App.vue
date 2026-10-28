@@ -27,7 +27,7 @@ const mode = ref<"remember" | "find">("find");
 const draft = ref("");
 const inputMode = ref<"text" | "voice" | "form">("text");
 const formDraft = ref(emptyFields());
-const editing = ref<{ memory: string; revision: number; fields: ReturnType<typeof emptyFields>; grouped: boolean; rawReview: RawEditReview | null; referenceDate: string } | null>(null);
+const editing = ref<{ memory: string; revision: number; fields: ReturnType<typeof emptyFields>; grouped: boolean; rawReview: RawEditReview | null } | null>(null);
 const preparingEdit = ref(false);
 const editingBusy = ref(false);
 const editError = ref("");
@@ -263,7 +263,7 @@ async function openEdit(memory: string) {
   }
   pendingEdit = null;
   const prepared = prepareEncounterEdit(source.card ?? { name: null, nameQuote: null, facts: [] }, source.content, source.referenceDate);
-  editing.value = { memory, revision: source.revision, fields: prepared.fields, grouped: prepared.grouped, rawReview: prepared.rawReview, referenceDate: source.referenceDate };
+  editing.value = { memory, revision: source.revision, fields: prepared.fields, grouped: prepared.grouped, rawReview: prepared.rawReview };
   editError.value = [recoveryWarning, prepared.dateReview ? editDateReviewMessage : ""].filter(Boolean).join(" ");
 }
 function closeEdit() {
@@ -330,7 +330,7 @@ async function removeConnection(memory: string, label: string) {
 </script>
 
 <template>
-  <EditEncounter v-if="editing" v-model="editing.fields" :grouped="editing.grouped" :reference-date="editing.referenceDate" :busy="editingBusy" :error="editError" @save="saveEdit" @cancel="closeEdit" />
+  <EditEncounter v-if="editing" v-model="editing.fields" :grouped="editing.grouped" :busy="editingBusy" :error="editError" @save="saveEdit" @cancel="closeEdit" />
   <RemovalConfirmation v-if="removalTarget" :label="removalTarget.label" @confirm="confirmation.confirm" @cancel="confirmation.cancel" />
   <a class="skip" href="#main">Skip to content</a>
   <header class="topbar">

@@ -14,7 +14,7 @@ function contactToggled(event: Event) { if (!(event.target as HTMLDetailsElement
       <summary class="contact-name"><component :is="heading">{{ label }}</component></summary>
       <div class="contact-body">
         <p v-if="reason" class="match-reason">{{ reason }}</p>
-        <dl class="memory-details"><div v-for="detail in details" :key="`${detail.label}:${detail.value}`"><dt>{{ detail.label }}</dt><dd>{{ detail.value }}</dd></div></dl>
+        <dl v-if="details.length" class="memory-details"><div v-for="detail in details" :key="`${detail.label}:${detail.value}`"><dt>{{ detail.label }}</dt><dd>{{ detail.value }}</dd></div></dl>
         <details ref="notes" class="personal-notes">
           <summary>Personal notes</summary>
           <p v-if="original !== undefined && original !== content" class="hint original-note-guidance">This is the first saved wording, kept for reference. Editing changes the current encounter, not this copy.</p>

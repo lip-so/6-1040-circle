@@ -4,7 +4,7 @@
 
 Circle helps students retain encounter context and later find relevant people from their own saved notes. Commons sign-in, Text/Voice/Form capture, AI-assisted recall, reviewed editing and confirmed removal form the current journey.
 
-Sofia Lipkevych’s 6.1040 Fall 2026 personal project. The design notebook is in the [private individual repository](https://github.com/lip-so/6-1040-sofia).
+Sofia Lipkevych’s 6.1040 Fall 2026 personal project. The [design journal](https://github.com/lip-so/6-1040-sofia/blob/main/reflections/design-notebook.md) is in the private individual repository.
 
 ## P4: current implementation and materials
 
@@ -21,7 +21,7 @@ Each saved original is a separate encounter; equal names are not merged and unkn
 
 ## Current behavior
 
-Remember accepts text, an editable voice transcript, or a form. Saving creates one encounter. Edit changes its current content while the nested **Personal notes** disclosure keeps the first saved wording. Removal asks for confirmation.
+Remember accepts text, an editable voice transcript, or a form. Saving creates one encounter. Edit changes its current content while the nested **Personal notes** disclosure keeps the first saved wording. The editor shows populated fields and offers **Add field** for missing details; empty values stay hidden on saved cards. Removal asks for confirmation.
 
 The `contact-v6` prompts organize each encounter into its own structured card with exact source evidence. They ask for compact phrases, grouped discussion topics, preserved organizations and opportunity dates, and clear distinctions between direct recruiting, planned recruiting and referrals. Search uses the saved cards and their evidence, with instructions to respect specific topics, dates and the requested relationship. Discussion or interest alone does not establish expertise. These are model instructions, so the resulting interpretation still needs review.
 

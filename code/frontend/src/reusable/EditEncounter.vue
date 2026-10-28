@@ -2,17 +2,16 @@
 import { trapDialogFocus } from "./dialog-focus.ts";
 import { computed, onMounted, onBeforeUnmount, ref } from "vue";
 import type { MemoryFields } from "../../../src/memory-fields.ts";
-import { editReferenceDateMessage, editSizeMessage } from "../encounter-form.ts";
+import { editSizeMessage } from "../encounter-form.ts";
 import EncounterFields from "./EncounterFields.vue";
 const fields = defineModel<MemoryFields>({ required: true });
-const props = defineProps<{ busy: boolean; error: string; grouped: boolean; referenceDate: string }>();
+const props = defineProps<{ busy: boolean; error: string; grouped: boolean }>();
 const emit = defineEmits<{ save: []; cancel: [] }>();
 const dialog = ref<HTMLDialogElement>();
 const multilineContact = /[\r\n]/u.test(fields.value.contact ?? "");
 const multilinePerson = /[\r\n]/u.test(fields.value.person);
 const sizeError = computed(() => editSizeMessage(fields.value));
-const referenceDay = computed(() => editReferenceDateMessage(props.referenceDate));
-onMounted(() => { dialog.value?.showModal(); dialog.value?.querySelector<HTMLInputElement | HTMLTextAreaElement>("input, textarea")?.focus(); });
+onMounted(() => { dialog.value?.showModal(); dialog.value?.querySelector<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>("input, textarea, select")?.focus(); });
 onBeforeUnmount(() => dialog.value?.close());
 function cancel(event: Event) { event.preventDefault(); if (!props.busy) emit("cancel"); }
 </script>
@@ -21,7 +20,6 @@ function cancel(event: Event) { event.preventDefault(); if (!props.busy) emit("c
     <h2 id="edit-title">Edit encounter</h2>
     <form :aria-busy="busy" @submit.prevent="$emit('save')">
       <p v-if="grouped" class="hint">Some details from your note are kept together in one field. Review the whole field before replacing it; all text shown there will be changed together.</p>
-      <p class="hint">{{ referenceDay }}</p>
       <EncounterFields v-model="fields" prefix="edit" :disabled="busy" editing :multiline-person="multilinePerson" :multiline-contact="multilineContact" />
       <p v-if="sizeError" class="refusal" role="alert">{{ sizeError }}</p>
       <p v-if="error" class="refusal" role="alert">{{ error }}</p>

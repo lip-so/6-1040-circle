@@ -85,3 +85,14 @@ test("organized details group repeated discussion rows, drop repeated labels and
   ]);
   expect(card.facts).toHaveLength(5);
 });
+
+
+test("empty and placeholder card values do not produce displayed fields", () => {
+  expect(memorySummary("Met Rowan.","Rowan",{name:"Rowan",nameQuote:"Met Rowan.",facts:[
+    {kind:"date",value:"   ",quote:"Met Rowan."},
+    {kind:"contact",value:"\t ",quote:"Met Rowan."},
+    {kind:"discussion",value:"Discussed   ",quote:"Met Rowan."},
+    {kind:"other",value:"Not recorded",quote:"Met Rowan."},
+    {kind:"role",value:"Builds sensors",quote:"Builds sensors."},
+  ]})).toEqual([{label:"Does",value:"Builds sensors"}]);
+});

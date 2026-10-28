@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { editReferenceDateMessage, editSizeMessage, fieldsFromCard, hasRelativeEditDate, prepareEncounterEdit } from "../../frontend/src/encounter-form.ts";
+import { editSizeMessage, fieldsFromCard, hasRelativeEditDate, prepareEncounterEdit } from "../../frontend/src/encounter-form.ts";
 import { readMemoryFields, writeMemoryFields } from "../../src/memory-fields.ts";
 import type { ContactCard } from "../../src/providers/brain-provider.ts";
 import { memorySummary } from "../../frontend/src/memory-summary.ts";
@@ -299,13 +299,4 @@ test("A2 inferred activity conversion retains uncertainty instead of promoting t
   expect(saved).not.toContain("Sensor engineer");
   expect(memorySummary(source, "Mira", card)).toEqual([{ label: "Does", value: "May be: Sensor engineer" }]);
   expect(prepareEncounterEdit(card, saved, "2026-10-24").fields.does).toBe(source);
-});
-
-test("A2 source-day guidance names the saved day and never fabricates a missing anchor", () => {
-  expect(editReferenceDateMessage("2026-10-24")).toContain("10/24/2026");
-  expect(editReferenceDateMessage("2026-10-24")).toContain("rather than the day you edit");
-  for (const anchor of ["", "2026-02-30", "unknown"]) {
-    expect(editReferenceDateMessage(anchor)).toContain("reference day is unavailable");
-    expect(editReferenceDateMessage(anchor)).toContain("explicit MM/DD/YYYY");
-  }
 });

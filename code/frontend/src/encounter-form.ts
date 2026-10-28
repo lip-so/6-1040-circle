@@ -1,4 +1,4 @@
-import { formatMemoryDate, relativeDate, validDate, validMemoryDate } from "../../src/calendar.ts";
+import { formatMemoryDate, relativeDate, validMemoryDate } from "../../src/calendar.ts";
 import type { ContactCard } from "../../src/providers/brain-provider.ts";
 import { type MemoryFields, memoryContentLimit, memoryFieldsLength, readMemoryFields } from "../../src/memory-fields.ts";
 export const emptyFields = (): MemoryFields => ({ person: "", when: "", does: "", discussed: "", contact: "", notes: "" });
@@ -6,11 +6,6 @@ export const editDateReviewMessage = "Review today/yesterday wording before savi
 export function editSizeMessage(fields: MemoryFields): string {
   const excess = memoryFieldsLength(fields) - memoryContentLimit;
   return excess > 0 ? `This form is ${excess.toLocaleString("en-US")} characters over the 20,000-character limit. Shorten it before saving. No text will be shortened automatically.` : "";
-}
-export function editReferenceDateMessage(referenceDate: string): string {
-  return validDate(referenceDate)
-    ? `In this encounter, words such as today and yesterday are based on the saved reference day, ${formatMemoryDate(referenceDate)}, rather than the day you edit. Use an explicit MM/DD/YYYY date for a different day.`
-    : "The original reference day is unavailable, so relative wording cannot establish a reliable date. Use an explicit MM/DD/YYYY date for new details.";
 }
 export interface RawEditReview {
   referenceDate: string;

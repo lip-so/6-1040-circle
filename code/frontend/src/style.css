@@ -30,7 +30,7 @@
 }
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 280px; background-image: radial-gradient(ellipse at 75% 18%, #e9dfc823, transparent 60%), radial-gradient(#8576500b .7px, transparent .8px); background-size: auto, 5px 5px; }
-button, input, textarea { font: inherit; }
+button, input, textarea, select { font: inherit; }
 button { cursor: pointer; touch-action: manipulation; }
 button:disabled { cursor: wait; opacity: .58; }
 a { color: inherit; }
@@ -220,3 +220,6 @@ blockquote { white-space: pre-wrap; overflow-wrap: anywhere; margin: 12px 0 0; p
 .account { min-width: 0; }
 .account > span { overflow-wrap: anywhere; }
 @media (max-width: 360px) { .topbar { flex-wrap: wrap; } .input-choice button { flex-direction: column; gap: 2px; padding: 8px 2px; } }
+
+.field-pair.single-field { grid-template-columns: minmax(0, 1fr); }
+.edit-add-field select { width: 100%; min-height: 44px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: #fffdf8; color: var(--ink); }

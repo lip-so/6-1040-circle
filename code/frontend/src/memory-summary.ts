@@ -28,9 +28,9 @@ export function memorySummary(content: string, name: string, card?: ContactCard 
     const rows: MemoryDetail[] = [];
     for (const fact of card.facts) {
       const label = labels[fact.kind];
-      const value = fact.kind === "date" ? formatMemoryDate(fact.value) : fact.value.trim();
-      const concise = fact.kind === "discussion" ? value.replace(/^Discussed\s*:?\s+/iu, "") : fact.kind === "other" ? value.replace(/^Notes?:\s*/iu, "") : value;
-      if (!concise) continue;
+      const value = fact.kind === "date" ? formatMemoryDate(fact.value.trim()) : fact.value.trim();
+      const concise = fact.kind === "discussion" ? value.replace(/^Discussed(?:\s*:\s*|\s+|$)/iu, "") : fact.kind === "other" ? value.replace(/^Notes?:\s*/iu, "") : value;
+      if (!concise.trim() || /^(?:not recorded|unknown|n\/a)$/iu.test(concise.trim())) continue;
       const displayed = fact.basis === "inferred" ? `May be: ${concise}` : concise;
       const row = rows.find(row => row.label === label);
       if (!row) rows.push({ label, value: displayed });

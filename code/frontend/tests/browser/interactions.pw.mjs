@@ -38,6 +38,13 @@ async function setup(page, {long=false}={}) {
   return state;
 }
 
+async function editField(dialog, label, options = {exact:true}) {
+  await expect(dialog).toBeVisible();
+  const field = dialog.getByLabel(label, options);
+  if (!await field.count()) await dialog.getByLabel("Add field", {exact:true}).selectOption({label});
+  return field;
+}
+
 test("Text, Voice, Form preserve independent drafts and are named, pressed and keyboard reachable",async({page})=>{
   const state=await setup(page);
   await page.getByRole("button",{name:"Remember",exact:true}).click();
@@ -81,7 +88,7 @@ test("edit prefills, cancels without writes, recovers a conflict and saves the f
   await expect(dialog.getByLabel("Person",{exact:true})).toHaveValue("Mira Chen");
   await expect(dialog.getByLabel("Does",{exact:true})).toHaveValue(original);
   await expect(dialog.getByLabel("Person",{exact:true})).toBeFocused();
-  await dialog.getByLabel("Person",{exact:true}).fill("Unsent change");
+  await (await editField(dialog, "Person",{exact:true})).fill("Unsent change");
   await dialog.getByRole("button",{name:"Cancel",exact:true}).click();
   await expect(edit).toBeFocused();expect(state.calls.filter(c=>c.path==="/memories/edit")).toHaveLength(0);
   await edit.click();await expect(dialog).toBeVisible();await page.keyboard.press("Escape");await expect(dialog).toHaveCount(0);await expect(edit).toBeFocused();
@@ -146,12 +153,12 @@ for(const width of [320,390,640,1280]) test(`responsive layout ${width}px: long 
   await page.locator(".contact-name").click();await page.getByText("Personal notes",{exact:true}).click();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.locator(".edit-contact").click();const dialog=page.getByRole("dialog");
-  await expect(dialog.getByLabel("Person",{exact:true})).toBeFocused();
-  await dialog.getByLabel("Notes",{exact:true}).fill("Expanded notes ".repeat(100));
+  await expect(dialog.locator("input, textarea").first()).toBeFocused();
+  await (await editField(dialog, "Notes",{exact:true})).fill("Expanded notes ".repeat(100));
   await page.screenshot({path:`../tests/output/browser-artifacts/editor-${width}.png`});
   await dialog.getByRole("button",{name:"Cancel",exact:true}).focus();await expect(dialog.getByRole("button",{name:"Cancel",exact:true})).toBeInViewport();
   await page.keyboard.press("Tab");await expect(dialog.getByRole("button",{name:"Save changes",exact:true})).toBeFocused();
-  await page.keyboard.press("Tab");await expect(dialog.getByLabel("Person",{exact:true})).toBeFocused();
+  await page.keyboard.press("Tab");await expect(dialog.locator("input, textarea").first()).toBeFocused();
   expect(await dialog.evaluate(el=>el.scrollWidth <= el.clientWidth)).toBe(true);
   await page.keyboard.press("Escape");await expect(dialog).toHaveCount(0);await expect(page.locator(".edit-contact")).toBeFocused();
   await page.screenshot({path:`../tests/output/browser-artifacts/responsive-${width}.png`,fullPage:false});
@@ -267,12 +274,12 @@ test("A1 guided outgoing content retains full fields, multiline Contact, clearin
   await expect(dialog).toHaveCount(0);
   expect(outgoingEdits(state)[1].content).toBe(losslessGuided.replace("mira@example.test\n  555-0100", "new@example.test"));
   await open();
-  for (const name of ["Does", "Discussed", "Contact", "Notes"]) await dialog.getByLabel(name, {exact:true}).fill("");
-  await dialog.getByLabel("Date (MM/DD/YYYY)", {exact:true}).fill("");
+  for (const name of ["Does", "Discussed", "Contact", "Notes"]) await (await editField(dialog, name, {exact:true})).fill("");
+  await (await editField(dialog, "Date (MM/DD/YYYY)", {exact:true})).fill("");
   await dialog.getByRole("button", {name:"Save changes",exact:true}).click(); await expect(dialog).toHaveCount(0);
   expect(outgoingEdits(state)[2].content).toBe("Person: Mira Chen\nWhen:\nDoes:\nDiscussed:");
   await open();
-  for (const name of ["Does", "Discussed", "Contact", "Notes", "Date (MM/DD/YYYY)"]) await expect(dialog.getByLabel(name, {exact:true})).toHaveValue("");
+  for (const name of ["Does", "Discussed", "Contact", "Notes", "Date (MM/DD/YYYY)"]) await expect(dialog.getByLabel(name, {exact:true})).toHaveCount(0);
   expect(state.rows[0].original).toBe("Immutable first original with stale work.");
 });
 
@@ -285,18 +292,18 @@ test("A1 raw grouped outgoing content retains an omitted reminder once and repla
   await page.getByRole("button", {name:"Edit Mira Chen",exact:true}).click();
   await expect(dialog.getByText("Some details from your note are kept together", {exact:false})).toBeVisible();
   await expect(dialog.getByLabel("Does", {exact:true})).toHaveValue(source);
-  await expect(dialog.getByLabel("Notes", {exact:true})).toHaveValue("");
-  await dialog.getByLabel("Contact", {exact:true}).fill("new@example.test");
+  await expect(dialog.getByLabel("Notes", {exact:true})).toHaveCount(0);
+  await (await editField(dialog, "Contact", {exact:true})).fill("new@example.test");
   await dialog.getByRole("button", {name:"Save changes",exact:true}).click(); await expect(dialog).toHaveCount(0);
   expect(outgoingEdits(state)[0].content).toBe(`Person: Mira Chen\nWhen:\nDoes: ${source}\nDiscussed:\nContact: new@example.test`);
   expect(outgoingEdits(state)[0].content.split("Send the battery paper")).toHaveLength(2);
   await page.getByRole("button", {name:"Edit Mira Chen",exact:true}).click();
-  await dialog.getByLabel("Does", {exact:true}).fill("Builds wind turbines. Send the battery paper.");
+  await (await editField(dialog, "Does", {exact:true})).fill("Builds wind turbines. Send the battery paper.");
   await dialog.getByRole("button", {name:"Save changes",exact:true}).click(); await expect(dialog).toHaveCount(0);
   expect(outgoingEdits(state)[1].content).not.toContain("solar panels"); expect(outgoingEdits(state)[1].content).not.toContain("batteries");
   await page.getByRole("button", {name:"Edit Mira Chen",exact:true}).click();
   await expect(dialog.getByLabel("Does", {exact:true})).toHaveValue("Builds wind turbines. Send the battery paper.");
-  await expect(dialog.getByLabel("Notes", {exact:true})).toHaveValue("");
+  await expect(dialog.getByLabel("Notes", {exact:true})).toHaveCount(0);
 });
 
 test("A1 cross-line and discussion/contact groups are visible once and stay together in outgoing content", async ({page}) => {
@@ -313,7 +320,7 @@ test("A1 cross-line and discussion/contact groups are visible once and stay toge
   await expect(dialog.getByText("Review the whole field before replacing it", {exact:false})).toBeVisible();
   await expect(dialog.getByLabel("Does", {exact:true})).toHaveValue(lines.slice(1,3).join("\n"));
   await expect(dialog.getByLabel("Discussed", {exact:true})).toHaveValue(lines.slice(3).join("\n"));
-  await expect(dialog.getByLabel("Contact", {exact:true})).toHaveValue("");
+  await expect(dialog.getByLabel("Contact", {exact:true})).toHaveCount(0);
   await dialog.getByRole("button", {name:"Save changes",exact:true}).click(); await expect(dialog).toHaveCount(0);
   expect(outgoingEdits(state)[0].content).toBe("Person: Mira Chen\nWhen:\nDoes: Mira builds solar panels\n  and designs batteries. Send the battery paper.\nDiscussed: We discussed sensors\n  and email mira@example.test.\nNotes: Met Mira Chen.");
 });
@@ -330,10 +337,10 @@ test("A1 source-anchored relative dates survive processing retry, preserved anch
   await page.getByRole("button", {name:"Edit Mira Chen",exact:true}).click();
   await expect(dialog.getByLabel("Does", {exact:true})).toHaveValue("Mira develops solar panels 10/23/2026.");
   await expect(dialog.getByLabel("Notes", {exact:true})).toHaveValue("Met Mira Chen 10/24/2026.\nSend the battery paper 10/24/2026.");
-  await dialog.getByLabel("Contact", {exact:true}).fill("Email today");
+  await (await editField(dialog, "Contact", {exact:true})).fill("Email today");
   await dialog.getByRole("button", {name:"Save changes",exact:true}).click();
   await expect(dialog.getByRole("alert")).toContainText("explicit date"); expect(outgoingEdits(state)).toHaveLength(0);
-  await dialog.getByLabel("Contact", {exact:true}).fill("");
+  await (await editField(dialog, "Contact", {exact:true})).fill("");
   await dialog.getByRole("button", {name:"Save changes",exact:true}).click();
   await expect(dialog.getByRole("alert")).toContainText("Retry the same form");
   await expect(dialog.getByLabel("Notes", {exact:true})).toHaveValue("Met Mira Chen 10/24/2026.\nSend the battery paper 10/24/2026.");
@@ -342,7 +349,7 @@ test("A1 source-anchored relative dates survive processing retry, preserved anch
   expect(state.rows[0].revision).toBe(1); expect(state.rows[0].referenceDate).toBe("2026-10-24");
   await page.getByRole("button", {name:"Edit Mira Chen",exact:true}).click();
   await expect(dialog.getByLabel("Does", {exact:true})).toHaveValue("Mira develops solar panels 10/23/2026.");
-  await dialog.getByLabel("Contact", {exact:true}).fill("new@example.test");
+  await (await editField(dialog, "Contact", {exact:true})).fill("new@example.test");
   await dialog.getByRole("button", {name:"Save changes",exact:true}).click(); await expect(dialog).toHaveCount(0);
   expect(outgoingEdits(state)[2].content).toContain("10/23/2026"); expect(outgoingEdits(state)[2].content).toContain("10/24/2026");
   expect(outgoingEdits(state)[2].content).not.toMatch(/\b(today|yesterday)\b/iu);
@@ -359,7 +366,7 @@ test("A1 missing-anchor date review preserves the full draft and sends no edit u
   await expect(dialog.getByLabel("Does", {exact:true})).toHaveValue(source);
   await dialog.getByRole("button", {name:"Save changes",exact:true}).click();
   expect(outgoingEdits(state)).toHaveLength(0); await expect(dialog.getByLabel("Does", {exact:true})).toHaveValue(source);
-  await dialog.getByLabel("Does", {exact:true}).fill("Met Mira Chen 10/24/2026. Builds solar panels 10/23/2026. Send the battery paper.");
+  await (await editField(dialog, "Does", {exact:true})).fill("Met Mira Chen 10/24/2026. Builds solar panels 10/23/2026. Send the battery paper.");
   state.handlers["/memories/edit"] = () => ({error:"INVALID_REQUEST"});
   await dialog.getByRole("button", {name:"Save changes",exact:true}).click();
   await expect(dialog.getByRole("alert")).toContainText("couldn't be accepted");
@@ -407,11 +414,11 @@ for (const name of ["Today", "Yesterday"]) for (const anchor of ["", "2026-10-24
     const open = () => page.getByRole("button", {name:`Edit ${name}`,exact:true}).click();
     const dialog = page.getByRole("dialog", {name:"Edit encounter"});
     await open(); await expect(dialog.getByRole("alert")).toHaveCount(0);
-    await dialog.getByLabel("Contact", {exact:true}).fill("cancelled@example.test");
+    await (await editField(dialog, "Contact", {exact:true})).fill("cancelled@example.test");
     await dialog.getByRole("button", {name:"Cancel",exact:true}).click(); expect(outgoingEdits(state)).toHaveLength(0);
-    await open(); await expect(dialog.getByLabel("Contact", {exact:true})).toHaveValue("");
+    await open(); await expect(dialog.getByLabel("Contact", {exact:true})).toHaveCount(0);
     await expect(dialog.getByLabel(fallback ? "Does" : "Notes", {exact:true})).toHaveValue(fallback ? source : `Met ${name}.`);
-    await dialog.getByLabel("Contact", {exact:true}).fill("new@example.test");
+    await (await editField(dialog, "Contact", {exact:true})).fill("new@example.test");
     const retry = name === "Today" && fallback && !anchor;
     if (retry) {
       const persist = state.handlers["/memories/edit"]; let fail = true;
@@ -430,7 +437,7 @@ for (const name of ["Today", "Yesterday"]) for (const anchor of ["", "2026-10-24
     await page.reload(); await open();
     await expect(dialog.getByRole("alert")).toHaveCount(0);
     await expect(dialog.getByLabel(fallback ? "Does" : "Notes", {exact:true})).toHaveValue(fallback ? source : `Met ${name}.`);
-    await dialog.getByLabel("Contact", {exact:true}).fill("second@example.test");
+    await (await editField(dialog, "Contact", {exact:true})).fill("second@example.test");
     await dialog.getByRole("button", {name:"Save changes",exact:true}).click(); await expect(dialog).toHaveCount(0);
     expect(outgoingEdits(state).at(-1).content).toBe(expected.replace("new@example.test", "second@example.test"));
     expect(state.rows[0].original).toBe(source);
@@ -451,9 +458,9 @@ for (const name of ["Today", "Yesterday"]) for (const anchor of ["", "2026-10-24
     if (!anchor) {
       await dialog.getByRole("button", {name:"Save changes",exact:true}).click();
       await expect(dialog.getByRole("alert")).toContainText("explicit date"); expect(outgoingEdits(state)).toHaveLength(0);
-      await dialog.getByLabel("Does", {exact:true}).fill(stable);
+      await (await editField(dialog, "Does", {exact:true})).fill(stable);
     }
-    await dialog.getByLabel("Contact", {exact:true}).fill("new@example.test");
+    await (await editField(dialog, "Contact", {exact:true})).fill("new@example.test");
     await dialog.getByRole("button", {name:"Save changes",exact:true}).click(); await expect(dialog).toHaveCount(0);
     expect(outgoingEdits(state)[0].content).toBe(`Person: ${name}\nWhen:\nDoes: ${stable}\nDiscussed:\nContact: new@example.test`);
   });
@@ -470,7 +477,7 @@ test("A1-I01 ambiguous name/date evidence stays visible and requires explicit co
   await expect(dialog.getByLabel("Does", {exact:true})).toHaveValue(source);
   await dialog.getByRole("button", {name:"Save changes",exact:true}).click();
   await expect(dialog.getByRole("alert")).toContainText("ambiguous wording"); expect(outgoingEdits(state)).toHaveLength(0);
-  await dialog.getByLabel("Does", {exact:true}).fill("Met 10/24/2026. Builds solar panels.");
+  await (await editField(dialog, "Does", {exact:true})).fill("Met 10/24/2026. Builds solar panels.");
   await dialog.getByRole("button", {name:"Save changes",exact:true}).click(); await expect(dialog).toHaveCount(0);
   expect(outgoingEdits(state)[0].content).toBe("Person: Today\nWhen:\nDoes: Met 10/24/2026. Builds solar panels.\nDiscussed:");
 });
@@ -484,21 +491,21 @@ for (const source of ["Someone works on ocean sensors.", "Met Dana or Daria; the
     const open = () => page.getByRole("button", {name:"Edit Unnamed encounter",exact:true}).click();
     const dialog = page.getByRole("dialog", {name:"Edit encounter"});
     await open();
-    await expect(dialog.getByLabel("Person", {exact:true})).toHaveValue("");
-    await expect(dialog.getByLabel("Person", {exact:true})).toHaveJSProperty("required", false);
+    await expect(dialog.getByLabel("Person", {exact:true})).toHaveCount(0);
+    await expect(await editField(dialog, "Person")).toHaveJSProperty("required", false);
     await expect(dialog.getByLabel("Does", {exact:true})).toHaveValue(source);
-    await dialog.getByLabel("Contact", {exact:true}).fill("new@example.test");
+    await (await editField(dialog, "Contact", {exact:true})).fill("new@example.test");
     await dialog.getByRole("button", {name:"Save changes",exact:true}).click(); await expect(dialog).toHaveCount(0);
     expect(outgoingEdits(state)[0].content).toBe(`Person:\nWhen:\nDoes: ${source}\nDiscussed:\nContact: new@example.test`);
     await open();
-    await expect(dialog.getByLabel("Person", {exact:true})).toHaveValue("");
+    await expect(dialog.getByLabel("Person", {exact:true})).toHaveCount(0);
     await expect(dialog.getByLabel("Does", {exact:true})).toHaveValue(source);
-    await dialog.getByLabel("Contact", {exact:true}).fill("second@example.test");
+    await (await editField(dialog, "Contact", {exact:true})).fill("second@example.test");
     await dialog.getByRole("button", {name:"Save changes",exact:true}).click(); await expect(dialog).toHaveCount(0);
     expect(outgoingEdits(state)[1].content).toBe(outgoingEdits(state)[0].content.replace("new@example.test", "second@example.test"));
     expect(state.rows[0].original).toBe(source);
     await open();
-    for (const label of ["Person","Does","Discussed","Contact","Notes","Date (MM/DD/YYYY)"]) await dialog.getByLabel(label, {exact:true}).fill("");
+    for (const label of ["Person","Does","Discussed","Contact","Notes","Date (MM/DD/YYYY)"]) await (await editField(dialog, label, {exact:true})).fill("");
     await dialog.getByRole("button", {name:"Save changes",exact:true}).click();
     await expect(dialog.getByRole("alert")).toContainText("at least one encounter detail");
     expect(outgoingEdits(state)).toHaveLength(2);
@@ -536,11 +543,11 @@ test("A2 exact 20k conversion warns before writing, keeps invalid-date drafts vi
   await expect(dialog.getByRole("alert")).toContainText("31 characters over");
   await expect(dialog.getByRole("alert")).toContainText("No text will be shortened automatically");
   await dialog.getByRole("button", {name:"Save changes",exact:true}).click(); expect(outgoingEdits(state)).toHaveLength(0);
-  await dialog.getByLabel("Date (MM/DD/YYYY)", {exact:true}).fill("bad");
+  await (await editField(dialog, "Date (MM/DD/YYYY)", {exact:true})).fill("bad");
   await expect(dialog.getByRole("alert")).toContainText("35 characters over");
   await expect(dialog.getByLabel("Does", {exact:true})).toHaveValue(source);
-  await dialog.getByLabel("Date (MM/DD/YYYY)", {exact:true}).fill("");
-  await dialog.getByLabel("Does", {exact:true}).fill(source.slice(0,-31));
+  await (await editField(dialog, "Date (MM/DD/YYYY)", {exact:true})).fill("");
+  await (await editField(dialog, "Does", {exact:true})).fill(source.slice(0,-31));
   await expect(dialog.getByRole("alert")).toHaveCount(0);
   await dialog.getByRole("button", {name:"Save changes",exact:true}).click(); await expect(dialog).toHaveCount(0);
   expect(outgoingEdits(state)[0].content).toHaveLength(20_000);
@@ -564,21 +571,20 @@ test("A2 multiline Person opens focused and retains the same control after its l
   expect(outgoingEdits(state)[1].content).toBe("Person: Mira Chen\nWhen:\nDoes: Builds sensors\nDiscussed:");
 });
 
-for (const anchor of ["2025-12-31", ""]) test(`A2 guided relative wording keeps its source-day interpretation and discloses ${anchor || "missing"} day`, async ({page}) => {
+for (const anchor of ["2025-12-31", ""]) test(`A2 guided relative wording keeps its source-day interpretation without a disclaimer (${anchor || "missing"} day)`, async ({page}) => {
   const state = await setup(page); persistEdits(state);
   const source = "Person: Mira Chen\nWhen:\nDoes: Builds sensors\nDiscussed:\nNotes: Met yesterday. Send the paper today.";
   state.rows[0].content = source; state.rows[0].original = source; state.rows[0].referenceDate = anchor;
   await page.getByRole("button", {name:"Edit Mira Chen",exact:true}).click();
   const dialog = page.getByRole("dialog", {name:"Edit encounter"});
-  await expect(dialog.getByText(anchor ? "rather than the day you edit" : "reference day is unavailable", {exact:false})).toBeVisible();
-  if (anchor) await expect(dialog.getByText("12/31/2025", {exact:false})).toBeVisible();
+  await expect(dialog.getByText(/saved reference day|reference day is unavailable/)).toHaveCount(0);
   await expect(dialog.getByLabel("Notes", {exact:true})).toHaveValue("Met yesterday. Send the paper today.");
-  await dialog.getByLabel("Contact", {exact:true}).fill("new@example.test");
+  await (await editField(dialog, "Contact", {exact:true})).fill("new@example.test");
   await dialog.getByRole("button", {name:"Save changes",exact:true}).click(); await expect(dialog).toHaveCount(0);
   expect(outgoingEdits(state)[0].content).toBe(source.replace("\nNotes:", "\nContact: new@example.test\nNotes:"));
   expect(state.rows[0].referenceDate).toBe(anchor);
   await page.reload(); await page.getByRole("button", {name:"Edit Mira Chen",exact:true}).click();
-  await expect(dialog.getByText(anchor ? "12/31/2025" : "reference day is unavailable", {exact:false})).toBeVisible();
+  await expect(dialog.getByText(/saved reference day|reference day is unavailable/)).toHaveCount(0);
   await expect(dialog.getByLabel("Notes", {exact:true})).toHaveValue("Met yesterday. Send the paper today.");
 });
 
@@ -591,7 +597,7 @@ test("A2 inferred summary stays visibly uncertain and is not inserted into revie
   await page.getByRole("button", {name:"Edit Mira Chen",exact:true}).click();
   const dialog = page.getByRole("dialog", {name:"Edit encounter"});
   await expect(dialog.getByLabel("Does", {exact:true})).toHaveValue(source);
-  await dialog.getByLabel("Contact", {exact:true}).fill("new@example.test");
+  await (await editField(dialog, "Contact", {exact:true})).fill("new@example.test");
   await dialog.getByRole("button", {name:"Save changes",exact:true}).click(); await expect(dialog).toHaveCount(0);
   expect(outgoingEdits(state)[0].content).toContain("may work on ocean sensors; this is unconfirmed.");
   expect(outgoingEdits(state)[0].content).not.toContain("Sensor engineer");
@@ -605,12 +611,12 @@ test("A2 an oversized draft after a processing failure makes no further write an
   state.handlers["/memories/edit"] = input => { const answer = persist(input); if (fail) { fail = false; return {error:"INTERNAL_ERROR"}; } return answer; };
   await page.getByRole("button", {name:"Edit Mira Chen",exact:true}).click();
   const dialog = page.getByRole("dialog", {name:"Edit encounter"});
-  await dialog.getByLabel("Contact", {exact:true}).fill("saved@example.test");
+  await (await editField(dialog, "Contact", {exact:true})).fill("saved@example.test");
   await dialog.getByRole("button", {name:"Save changes",exact:true}).click();
   await expect(dialog.getByRole("alert")).toContainText("Retry the same form");
   expect(state.rows[0].content).toContain("saved@example.test");
   const priorContent = state.rows[0].content;
-  await dialog.getByLabel("Does", {exact:true}).fill("x".repeat(20_000));
+  await (await editField(dialog, "Does", {exact:true})).fill("x".repeat(20_000));
   await dialog.getByRole("button", {name:"Save changes",exact:true}).click();
   await expect(dialog.getByRole("alert")).toContainText("No text will be shortened automatically");
   await expect(dialog.getByRole("alert")).not.toContainText("saved encounter has not changed");
@@ -646,7 +652,7 @@ test("A2-I01 oversized raw draft is refused promptly before date review and rema
   await dialog.getByRole("button", {name:"Save changes",exact:true}).click({timeout:4_000});
   // A further real interaction also proves that synchronous date scanning has
   // not blocked the page behind an already-visible size warning.
-  await dialog.getByLabel("Contact", {exact:true}).fill("still-editable@example.test", {timeout:4_000});
+  await (await editField(dialog, "Contact", {exact:true})).fill("still-editable@example.test", {timeout:4_000});
   await expect(activity).toHaveValue(oversized, {timeout:4_000});
   await expect(dialog.getByRole("alert")).toContainText("No text will be shortened automatically");
   expect(outgoingEdits(state)).toHaveLength(0);
@@ -771,11 +777,11 @@ for (const failure of ["processing", "network"]) test(`A5 ${failure} preparation
   await page.getByRole("button", {name:"Edit Unnamed encounter",exact:true}).click();
   const dialog = page.getByRole("dialog", {name:"Edit encounter"});
   await expect(dialog.getByLabel("Does", {exact:true})).toHaveValue(source);
-  await expect(dialog.getByLabel("Person", {exact:true})).toHaveValue("");
+  await expect(dialog.getByLabel("Person", {exact:true})).toHaveCount(0);
   await expect(dialog.getByRole("alert").filter({hasText:"last version loaded in Recent people"})).toContainText("may have changed since then");
   await expect(dialog.getByRole("alert").filter({hasText:"characters over"})).toContainText("No text will be shortened automatically");
   expect(outgoingEdits(state)).toHaveLength(0);
-  await dialog.getByLabel("Does", {exact:true}).fill("Keep this shorter reminder.");
+  await (await editField(dialog, "Does", {exact:true})).fill("Keep this shorter reminder.");
   await dialog.getByRole("button", {name:"Save changes",exact:true}).click();
   await expect(dialog).toHaveCount(0);
   expect(outgoingEdits(state)).toHaveLength(1);
@@ -797,7 +803,7 @@ test("A5 successful null-card preparation uses its fresh source and revision ins
   await expect(dialog.getByLabel("Person", {exact:true})).toHaveValue("Quinn");
   await expect(dialog.getByLabel("Does", {exact:true})).toHaveValue("Builds acoustic sensors");
   await expect(dialog.getByLabel("Notes", {exact:true})).toHaveValue("Fresh source reminder");
-  await expect(dialog.getByText("10/25/2026", {exact:false})).toBeVisible();
+  await expect(dialog.getByLabel("Date (MM/DD/YYYY)", {exact:true})).toHaveCount(0);
   await expect(dialog.getByText("last version loaded in Recent people", {exact:false})).toHaveCount(0);
   await dialog.getByRole("button", {name:"Save changes",exact:true}).click();
   await expect(dialog).toHaveCount(0); expect(outgoingEdits(state)).toHaveLength(1);
@@ -879,4 +885,36 @@ test("blue reason compacts an older referral response and keeps its exact note c
   await expect(result.locator("blockquote")).not.toBeVisible();
   await result.locator(".personal-notes summary").click();
   await expect(result.locator("blockquote")).toHaveText(source);
+});
+
+
+test("edit prefills saved values, hides empty fields, and supports adding and clearing a field", async ({page}) => {
+  const state = await setup(page); persistEdits(state);
+  const source = "Person: Mira Chen\nWhen:\nDoes: Builds sensors\nDiscussed:";
+  state.rows[0].content = source; state.rows[0].original = source;
+  state.rows[0].card = {name:"Mira Chen",nameQuote:"Person: Mira Chen",facts:[{kind:"role",value:"Builds sensors",quote:"Does: Builds sensors"}]};
+  const open = () => page.getByRole("button", {name:"Edit Mira Chen",exact:true}).click();
+  const dialog = page.getByRole("dialog", {name:"Edit encounter"});
+  await open();
+  await expect(dialog.getByLabel("Person", {exact:true})).toHaveValue("Mira Chen");
+  await expect(dialog.getByLabel("Does", {exact:true})).toHaveValue("Builds sensors");
+  await expect(dialog.getByText(/saved reference day|reference day is unavailable/)).toHaveCount(0);
+  for (const label of ["Date (MM/DD/YYYY)","Discussed","Contact","Notes"]) await expect(dialog.getByLabel(label, {exact:true})).toHaveCount(0);
+  const added = await editField(dialog,"Contact");
+  await expect(added).toBeFocused(); await added.fill("discarded@example.test");
+  await dialog.getByRole("button", {name:"Cancel",exact:true}).click();
+  expect(outgoingEdits(state)).toHaveLength(0);
+  await open(); await expect(dialog.getByLabel("Contact", {exact:true})).toHaveCount(0);
+  await (await editField(dialog,"Contact")).fill("saved@example.test");
+  await dialog.getByRole("button", {name:"Save changes",exact:true}).click(); await expect(dialog).toHaveCount(0);
+  expect(outgoingEdits(state)[0].content).toBe(`${source}\nContact: saved@example.test`);
+  await open();
+  const contact = dialog.getByLabel("Contact", {exact:true});
+  await expect(contact).toHaveValue("saved@example.test");
+  await contact.fill(""); await expect(contact).toBeFocused();
+  await dialog.getByRole("button", {name:"Save changes",exact:true}).click(); await expect(dialog).toHaveCount(0);
+  await open();
+  await expect(dialog.getByLabel("Contact", {exact:true})).toHaveCount(0);
+  await expect(dialog.getByLabel("Does", {exact:true})).toHaveValue("Builds sensors");
+  expect(state.rows[0].original).toBe(source);
 });
