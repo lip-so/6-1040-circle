@@ -2,13 +2,13 @@
 
 ## Purpose
 
-Store each search need and make its exact description available for owner-scoped result formation.
+Store exact search descriptions for owner-scoped result formation.
 
-Seeking records needs; Graphing performs contact selection through Circle’s composition. This concept has no ongoing/resolved status, saved-search editor, deletion action, recommendations or automatic rediscovery.
+Implementation: [Seeking.ts](../../src/concepts/Seeking.ts).
 
 ## Principle
 
-If a user records a need, they can later retrieve its description without having to enter it again.
+A saved need retains its description for later retrieval.
 
 ## Types
 
@@ -23,19 +23,19 @@ a set of Needs with
   an owner User
   a description String
 
-Rule: each successful seek creates a new identity, even for an identical description. Preserve the supplied description exactly; query normalization and recall caching belong to Graphing, not Seeking.
+Rule: every seek creates a new identity, including repeated descriptions.
 ```
 
 ## Actions
 
 ```actions
 seek(owner: User, description: String) : returns (need: Need)
-  where description is blank (empty or whitespace-only)
+  where description is blank
   then
     refuses EMPTY_DESCRIPTION "The need description must not be blank."
-  where description is not blank
+  where description is nonblank
   then
-    create a need with a fresh identity, owner and exact supplied description
+    store owner and exact description under a fresh identity
     returns need
 ```
 
@@ -43,6 +43,5 @@ seek(owner: User, description: String) : returns (need: Need)
 
 ```queries
 _get(owner: User, need: Need) : optional (description: String)
-  Return the exact stored description if need exists and belongs to owner; filter by owner and identity in the database query.
-  Return no row otherwise.
+  Return the owned need's description; otherwise no row. Filter by owner and identity.
 ```

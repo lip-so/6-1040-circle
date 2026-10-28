@@ -411,7 +411,7 @@ async function removeConnection(memory: string, label: string) {
       </section>
 
       <section class="recent-people" aria-labelledby="recent-heading" :aria-busy="loadingPeople">
-        <div class="recent-heading"><h2 id="recent-heading" tabindex="-1">Recent people</h2><button class="text-button" type="button" :disabled="loadingPeople || busy" title="Reload the newest encounters; this resets the list position." @click="recent.refresh">Reload from start</button></div>
+        <div class="recent-heading"><h2 id="recent-heading" tabindex="-1">Recent people</h2></div>
         <p v-if="loadingPeople && !loadedPeople" class="status" role="status">Loading saved people…</p>
         <p v-if="peopleError" class="refusal" role="alert">{{ peopleError }} <button class="text-button" type="button" :disabled="loadingPeople" @click="recent.retry">Retry</button></p>
         <div v-else-if="loadedPeople && !people.length && !loadingPeople" class="empty-people">

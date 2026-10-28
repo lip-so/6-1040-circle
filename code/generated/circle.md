@@ -92,7 +92,7 @@ Defined in [Remembering](../design/concepts/Remembering.md), line 1.
 
 - `remember(owner: User, content: String, submission: String, capturedAt: DateTime, timeZone?: String) : returns (memory: Memory)`
   - Refuses `EMPTY_CONTENT`: Encounter content must not be blank.
-  - Refuses `SUBMISSION_CONFLICT`: This save token cannot be reused for this encounter.
+  - Refuses `SUBMISSION_CONFLICT`: This save token was already used for a different note.
 - `forget(owner: User, memory: Memory) : returns ()`
   - Refuses `MEMORY_NOT_FOUND`: Encounter not found.
 - `inspect(owner: User, memory: Memory) : returns (content: String, original: String, revision: Number, referenceDate: String)`
@@ -102,7 +102,7 @@ Defined in [Remembering](../design/concepts/Remembering.md), line 1.
   - Refuses `EMPTY_CONTENT`: Encounter content must not be blank.
   - Refuses `EDIT_CONFLICT`: The encounter changed. Reopen it before editing.
 - `transcribe(audio: String, mediaType: String) : returns (content: String)`
-  - Refuses `INVALID_AUDIO`: The recording could not be accepted.
+  - Refuses `INVALID_AUDIO`: Unsupported or invalid recording.
 
 #### Queries
 

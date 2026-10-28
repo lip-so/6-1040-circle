@@ -673,7 +673,7 @@ test("A3 actual Retry retains two loaded pages and resumes the failed cursor onc
     return {memories:rows.slice(start,start+21)};
   };
   const start=state.calls.length;
-  await page.getByRole("button",{name:"Reload from start",exact:true}).click();
+  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
   await expect(page.locator(".contact-list h3")).toHaveCount(20);
   await page.getByRole("button",{name:"Load more",exact:true}).click();
   await expect(page.locator(".contact-list h3")).toHaveCount(40);
@@ -685,7 +685,6 @@ test("A3 actual Retry retains two loaded pages and resumes the failed cursor onc
   await expect.poll(()=>state.calls.slice(start).filter(call=>call.path==="/memories/list"&&call.input.after==="page-39").length).toBe(2);
   try {
     await expect(page.locator(".recent-actions button")).toBeDisabled();
-    await expect(page.getByRole("button",{name:"Reload from start",exact:true})).toBeDisabled();
   } finally { gate.resolve(); }
   await expect(page.locator(".contact-list h3")).toHaveCount(60);
   expect(await displayedNames(page)).toEqual(rows.map(value=>value.card.name));
@@ -693,7 +692,7 @@ test("A3 actual Retry retains two loaded pages and resumes the failed cursor onc
   await expect(page.getByRole("button",{name:"Load more",exact:true})).toHaveCount(0);
 });
 
-test("A3 Reload from start recovers older notes after another tab removes the paging anchor", async ({page}) => {
+test("A3 returning to the tab recovers older notes after another tab removes the paging anchor", async ({page}) => {
   const state=await setup(page), rows=paginationRows(45); let live=[...rows];
   state.handlers["/memories/list"]=async({after})=>{
     const anchor=live.findIndex(value=>value.memory===after);
@@ -701,15 +700,15 @@ test("A3 Reload from start recovers older notes after another tab removes the pa
     const start=after ? anchor+1 : 0;
     return {memories:live.slice(start,start+21)};
   };
-  const reload=page.getByRole("button",{name:"Reload from start",exact:true});
-  await reload.click(); await expect(page.locator(".contact-list h3")).toHaveCount(20);
+  const refresh=()=>page.evaluate(() => window.dispatchEvent(new Event("focus")));
+  await refresh(); await expect(page.locator(".contact-list h3")).toHaveCount(20);
   await page.getByRole("button",{name:"Load more",exact:true}).click();
   await expect(page.locator(".contact-list h3")).toHaveCount(40);
   live=live.filter(value=>value.memory!=="page-39");
   await page.getByRole("button",{name:"Load more",exact:true}).click();
   await expect(page.getByRole("button",{name:"Load more",exact:true})).toHaveCount(0);
-  await expect(reload).toBeEnabled(); expect(await displayedNames(page)).toHaveLength(40);
-  await reload.click(); await expect(page.locator(".contact-list h3")).toHaveCount(20);
+  expect(await displayedNames(page)).toHaveLength(40);
+  await refresh(); await expect(page.locator(".contact-list h3")).toHaveCount(20);
   await page.getByRole("button",{name:"Load more",exact:true}).click();
   await expect(page.locator(".contact-list h3")).toHaveCount(40);
   await page.getByRole("button",{name:"Load more",exact:true}).click();
@@ -719,18 +718,18 @@ test("A3 Reload from start recovers older notes after another tab removes the pa
   await expect(page.getByRole("heading",{name:"Contact 39",exact:true})).toHaveCount(0);
 });
 
-test("A3 a failed explicit reload retains the list and Retry preserves replacement intent", async ({page}) => {
+test("A3 a failed focus refresh retains the list and Retry preserves replacement intent", async ({page}) => {
   const state=await setup(page), rows=paginationRows(45); let fail=false;
   state.handlers["/memories/list"]=async({after})=>{
     if(fail) return {abort:true};
     const start=after ? rows.findIndex(value=>value.memory===after)+1 : 0;
     return {memories:rows.slice(start,start+21)};
   };
-  const reload=page.getByRole("button",{name:"Reload from start",exact:true});
-  await reload.click(); await expect(page.locator(".contact-list h3")).toHaveCount(20);
+  const refresh=()=>page.evaluate(() => window.dispatchEvent(new Event("focus")));
+  await refresh(); await expect(page.locator(".contact-list h3")).toHaveCount(20);
   await page.getByRole("button",{name:"Load more",exact:true}).click();
   await expect(page.locator(".contact-list h3")).toHaveCount(40);
-  fail=true; await reload.click(); await expect(page.getByRole("alert")).toContainText("Couldn't load");
+  fail=true; await refresh(); await expect(page.getByRole("alert")).toContainText("Couldn't load");
   expect(await displayedNames(page)).toEqual(rows.slice(0,40).map(value=>value.card.name));
   fail=false; await page.getByRole("button",{name:"Retry",exact:true}).click();
   await expect(page.locator(".contact-list h3")).toHaveCount(20);
@@ -768,7 +767,7 @@ for (const failure of ["processing", "network"]) test(`A5 ${failure} preparation
   const source = "x".repeat(20_000);
   state.rows[0] = {...state.rows[0], content:source, original:source, card:null};
   state.handlers["/memories/prepare-edit"] = () => failure === "network" ? {abort:true} : {error:"INTERNAL_ERROR"};
-  await page.getByRole("button", {name:"Reload from start",exact:true}).click();
+  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
   await page.getByRole("button", {name:"Edit Unnamed encounter",exact:true}).click();
   const dialog = page.getByRole("dialog", {name:"Edit encounter"});
   await expect(dialog.getByLabel("Does", {exact:true})).toHaveValue(source);
@@ -816,7 +815,7 @@ for (const error of ["NOT_FOUND", "CONFLICT", "UNAUTHORIZED"]) test(`A5 ${error}
 
 test("A5 failed preparation without a matching loaded row keeps the retry path instead of inventing a source", async ({page}) => {
   const state = await setup(page); state.rows = [];
-  await page.getByRole("button", {name:"Reload from start",exact:true}).click();
+  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
   await expect(page.locator(".contact-list h3")).toHaveCount(0);
   state.handlers["/needs/seek"] = () => ({results:{need:"fresh-need",description:"sensors",suggestions:[{...row,target:row.memory,source:row.memory,label:"Mira Chen",reason:"Develops sensors"}]}});
   state.handlers["/memories/prepare-edit"] = () => ({error:"INTERNAL_ERROR"});

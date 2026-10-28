@@ -8,23 +8,43 @@ Sofia Lipkevych’s 6.1040 Fall 2026 personal project. The design notebook is in
 
 ## P4: current implementation and materials
 
-| Start here | Link / actual status |
-| --- | --- |
-| App | [circle.mit-sdg.dev](https://circle.mit-sdg.dev/) — Sofia deploys. The October 26, 15:36 EDT inspection still showed an older frontend; [release handoff and live checks](design-docs/p4-release-handoff.md). |
-| Final design document | Sofia is writing the final 1–2-page synthesis. [Factual outline](design-docs/p4-design-summary-outline.md) and [immutable historical/version map](design-docs/p4-version-map.md) are ready; final prose/rendered length pending. |
-| Narrated final demo, at most **three minutes** | [Video wrapper and recording brief](design-docs/p4-video.md) — real URL, release and playback check pending Sofia’s recording. |
-| Current specifications and reactions | [Six concepts](code/design/concepts/) · [type bindings](code/design/types.md) · [Circle endpoints/reactions/view/formers](code/design/compositions/Circle.md) · [reused accounts](code/design/compositions/reusable/accounts.md) · [Commons](code/design/compositions/reusable/commons.md) · [generated readback](code/generated/circle.md) · [caller contract](code/generated/wire.ts). |
-| Implementation and provider instructions | [Backend](code/src/) · [frontend](code/frontend/src/) · [actual AI instructions](code/src/providers/brain-provider.ts) · [provider boundary](code/src/providers/README.md). |
-| Verification and tests | [P4 verification](design-docs/p4-verification.md) · [saved P4 output](code/tests/p4-output/) · [concept tests](code/tests/concepts/) · [HTTP/composition tests](code/tests/compositions/) · [UI helper tests](code/tests/ui/) · [rendered Chrome tests](code/frontend/tests/browser/) · [provider tests](code/tests/providers/). |
-| Design development | [Factual refinement record](design-docs/p4-change-record.md) · [agent journal](agent-journal.md) · [P3 visual study](design-docs/visual-study.md) · [access review](design-docs/p4-access-review.md). |
-| Participant readiness | [Synthetic setup, three task cards and blank observation sheet](design-docs/p4-participant-kit/) — preparation only; sessions have not been claimed. |
-| Reproduction / evidence navigation | [Clean-copy results](design-docs/p4-reproducibility.md) · [evidence index and retained work records](design-docs/p4-evidence-index.md). |
+| Start here                               | Link / actual status                                                                                                                                                                                                                                                                                                                                                                     |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| App                                      | [circle.mit-sdg.dev](https://circle.mit-sdg.dev/)                                                                                                                                                                                                                                                                                                                                        |
+| Current specifications and reactions     | [Six concepts](code/design/concepts/) · [type bindings](code/design/types.md) · [Circle endpoints/reactions/view/formers](code/design/compositions/Circle.md) · [reused accounts](code/design/compositions/reusable/accounts.md) · [Commons](code/design/compositions/reusable/commons.md) · [generated readback](code/generated/circle.md) · [caller contract](code/generated/wire.ts). |
+| Implementation and provider instructions | [Backend](code/src/) · [frontend](code/frontend/src/) · [actual AI instructions](code/src/providers/brain-provider.ts) · [provider boundary](code/src/providers/README.md).                                                                                                                                                                                                              |
+| Verification and tests                   | [Saved P4 verification output](code/tests/p4-output/) · [concept tests](code/tests/concepts/) · [HTTP/composition tests](code/tests/compositions/) · [UI helper tests](code/tests/ui/) · [rendered Chrome tests](code/frontend/tests/browser/) · [provider tests](code/tests/providers/).                                                                                                |
+| Design development                       | [Agent journal](agent-journal.md) · [P3 visual study](design-docs/visual-study.md) · [recorded review](code/tests/p4-output/a7-review.md).                                                                                                                                                                                                                                               |
+| Reproduction / evidence navigation       | [Clean-copy logs](code/tests/p4-output/clean-copy/) · [P4 captures and checks](code/tests/p4-output/).                                                                                                                                                                                                                                                                                   |
 
 Each saved original is a separate encounter; equal names are not merged and unknown names can remain unknown. Editing changes current recall while Personal notes retains the first saved wording. AI summaries can be wrong; inspect source evidence. Graphing is source-local; cross-note relationship tracing, automatic rediscovery, saved-search lifecycle, recommendations/exclusions and Connecting remain deferred from P1.
 
+## Current behavior
+
+Remember accepts text, an editable voice transcript, or a form. Saving creates one encounter. Edit changes its current content while the nested **Personal notes** disclosure keeps the first saved wording. Removal asks for confirmation.
+
+The `contact-v6` prompts organize each encounter into its own structured card with exact source evidence. They ask for compact phrases, grouped discussion topics, preserved organizations and opportunity dates, and clear distinctions between direct recruiting, planned recruiting and referrals. Search uses the saved cards and their evidence, with instructions to respect specific topics, dates and the requested relationship. Discussion or interest alone does not establish expertise. These are model instructions, so the resulting interpretation still needs review.
+
+Blue match reasons show the most relevant supporting facts without appended verbatim evidence quotes. The shared [summary formatter](code/src/match-summary.ts) also compacts known verbose referral wording, such as **Chicago internship contacts · this summer**, for older saved values and responses. It preserves uncertainty and negation without changing the stored note or search selection. An explicit search, save or edit preparation refreshes outdated card processing; simply reading the list does not run the model.
+
+**Recent people** shows the newest 20 encounters, with **Load more** for older entries. It refreshes when returning to the tab and after saving, editing or removing an encounter. A failed read keeps the displayed entries and offers **Retry**. The separate **Reload from start** button has been removed.
+
+## Implemented concepts
+
+Each specification links directly to its implementation. The six concepts are registered together in [concepts.ts](code/src/concepts.ts); cross-concept behavior stays in [Circle's composition](code/src/compositions/Circle.ts).
+
+| Concept | Responsibility | Specification | Implementation |
+| --- | --- | --- | --- |
+| Remembering | Exact notes, revisions, first originals, source-date anchors, removal and temporary transcription | [Remembering.md](code/design/concepts/Remembering.md) | [Remembering.ts](code/src/concepts/Remembering.ts) |
+| Graphing | Evidence-backed cards, processing versions, cached recall selections and withdrawal | [Graphing.md](code/design/concepts/Graphing.md) | [Graphing.ts](code/src/concepts/Graphing.ts) |
+| Seeking | Separate owner-scoped search needs with exact descriptions | [Seeking.md](code/design/concepts/Seeking.md) | [Seeking.ts](code/src/concepts/Seeking.ts) |
+| Registering | Unique case-sensitive usernames and stable local user identities | [Registering.md](code/design/concepts/Registering.md) | [Registering.ts](code/src/concepts/Registering/Registering.ts) |
+| Federating, instantiated as CommonsFederating | Commons sign-in attempts, nonce/PKCE checks and stable external-account links | [Federating.md](code/design/concepts/Federating.md) | [Federating.ts](code/src/concepts/Federating/Federating.ts) |
+| Sessioning | Opaque sessions with seven-day idle and 90-day absolute expiry | [Sessioning.md](code/design/concepts/Sessioning.md) | [Sessioning.ts](code/src/concepts/Sessioning/Sessioning.ts) |
+
 ## Run locally
 
-Tested with **Bun 1.4.2**, the existing lockfiles and authenticated local MongoDB. Commons access is needed for interactive sign-in. The ordinary tests inject providers and need no AI key. Chrome is required for the rendered suite. [Clean-copy verification and limits](design-docs/p4-reproducibility.md).
+Tested with **Bun 1.4.2**, the existing lockfiles and authenticated local MongoDB. Commons access is needed for interactive sign-in. The ordinary tests inject providers and need no AI key. Chrome is required for the rendered suite. [Recorded clean-copy verification](code/tests/p4-output/clean-copy/).
 
 From the repository root:
 
@@ -49,7 +69,7 @@ bun run build
 bun run start
 ```
 
-Open [localhost:3000](http://localhost:3000/) and sign in through Commons. Alternatively, `bun run dev` starts the backend on 3000 and the development frontend on [localhost:5173](http://localhost:5173/). Stop the process with Ctrl-C. **`/health` checks MongoDB only**; it can return `ok` while AI processing is unavailable. Real HTTPS microphone access also depends on browser/OS permission.
+Open [localhost:3000](http://localhost:3000/) and sign in through Commons. Alternatively, `bun run dev` starts the backend on 3000 and the development frontend on [localhost:5173](http://localhost:5173/). Stop the process with Ctrl-C. `/health` **checks MongoDB only**; it can return `ok` while AI processing is unavailable. Real HTTPS microphone access also depends on browser/OS permission.
 
 ## Run verification
 
@@ -61,15 +81,21 @@ bun run build
 CIRCLE_BROWSER_PREVIEW=1 bun run test
 ```
 
-The root test command runs the Bun database/unit suite and rendered Chrome suite. The preview flag uses the production build; without it, browser tests use development serving. Browser tests mock API/microphone transport while Vue, keyboard events, dialogs and layout run in Chrome. They do not verify real Commons, deployed persistence or microphone hardware. Fresh local results: **231 Bun tests / 1,245 assertions and 69 rendered scenarios passed**. Existing thirteen analysis advisories and three build notices are assessed in [P4 verification](design-docs/p4-verification.md).
+The root test command runs the Bun database/unit suite and rendered Chrome suite. The preview flag uses the production build; without it, browser tests use development serving. Browser tests mock API/microphone transport while Vue, keyboard events, dialogs and layout run in Chrome. They do not verify real Commons, deployed persistence or microphone hardware. Published suite counts and captures are dated evidence in [saved P4 verification output](code/tests/p4-output/); current follow-up checks are recorded in the [agent journal](agent-journal.md). The retained logs include [analysis advisories](code/tests/p4-output/advisories.txt) and [build notices](code/tests/p4-output/build.txt).
 
 Run one suite with `bun run --cwd code test` or `CIRCLE_BROWSER_PREVIEW=1 bun run --cwd code/frontend test:browser`. Preserve `code/tests/output/`, which contains genuine historical P3 evidence. Current P4 captures live in `code/tests/p4-output/`; browser tests still produce transient/current screenshots under the historical path when run locally, so use a clean copy to refresh publication evidence.
 
-The separate explicit live check, `bun run --cwd code check:brain`, requires server AI configuration and test MongoDB. It sends only hand-authored synthetic fixtures to the external service and can incur API cost. It is **not** part of the ordinary suite. Earlier five-case live evidence is dated separately; deterministic tests do not prove general model quality.
+The separate explicit live check, `bun run --cwd code check:brain`, requires server AI configuration and test MongoDB. It sends only hand-authored synthetic fixtures to the external service and can incur API cost. It is **not** part of the ordinary suite. The [six-contact quality corpus](code/scripts/recall-quality-cases.ts) additionally checks concise cards and 11 searches covering opportunity timing, referrals, synonyms, specific discussions and expertise exclusions. To run only that corpus:
+
+```sh
+bun run --cwd code check:brain --quality-only
+```
+
+The October 27 quality run passed those fixtures. Earlier five-case live evidence is dated separately; deterministic tests and finite live samples do not prove general model quality.
 
 Current bounds: 20,000 characters per encounter, 2,000 per search, two minutes/4 MiB per recording, and 256 notes/256 KiB per complete search corpus. Oversized context refuses explicitly rather than truncating. Cold AI work can outlast the caller’s 120-second deadline and continue; manual retry can reuse completed work. No cross-concept rollback is promised.
 
-## Earlier milestones
+## Earlier parts
 
 The [P3 beta journey](design-docs/p3-user-journey.md), [visual study](design-docs/visual-study.md) and [original execution captures](code/tests/output/) remain dated historical evidence. P3 introduced AI capture/recall, editing and removal; P4’s fidelity, date, retry, recovery and task-clarity refinements are described above. P1/P2 links below preserve their earlier scope. The P2 recording is the alpha demo.
 

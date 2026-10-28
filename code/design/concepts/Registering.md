@@ -2,13 +2,13 @@
 
 ## Purpose
 
-Assign a stable local user identity to each unique username. Circle’s account composition uses this when linking a Commons identity; Registering itself does not handle sign-in or read another concept.
+Assign a stable local identity to each unique username.
 
-*Prevents:* two people end up with the same username.
+Implementation: [Registering.ts](../../src/concepts/Registering/Registering.ts).
 
 ## Principle
 
-Maya registers the username `maya`. Looking up `maya` returns her local user identity, and looking up that identity returns `maya`. Ben tries to register `maya` too and is refused with "That username is taken.", so he registers `ben`.
+Registering maya succeeds once; another registration of maya is refused.
 
 ## Types
 
@@ -21,31 +21,31 @@ Maya registers the username `maya`. Looking up `maya` returns her local user ide
 a set of Users with
   a unique username String
 
-Rule: usernames are exact and case-sensitive; Maya and maya are different. Registration does not trim or normalize them. A unique database index enforces uniqueness even for concurrent registrations.
+Rule: usernames are exact and case-sensitive, without trimming or normalization. Uniqueness holds under concurrent registration.
 ```
 
 ## Actions
 
 ```actions
 identify(user: User) : returns (username: String)
-  where user does not exist
+  where user is unknown
   then
     refuses USER_NOT_FOUND "Account not found."
   where user exists
   then
-    read the user's exact username without changing state
+    read without changing state
     returns username
 
 register(username: String) : returns (user: User)
-  where username is not 3 to 32 ASCII letters, digits, underscores, or hyphens
+  where username is not 3 to 32 ASCII letters, digits, underscores or hyphens
   then
     refuses INVALID_USERNAME "A username must have 3 to 32 letters, digits, underscores, or hyphens."
-  where username is accepted and some user has exactly username
+  where username is valid and taken
   then
     refuses USERNAME_TAKEN "That username is taken."
-  where username is accepted and no user has username
+  where username is valid and available
   then
-    add a new user with username
+    create a user with username
     returns user
 ```
 
@@ -53,8 +53,8 @@ register(username: String) : returns (user: User)
 
 ```queries
 _byUsername(username: String) : optional (user: User)
-  Returns the user with exactly this username, or no row when nobody has it.
+  Return the exact username's user, or no row if unknown.
 
 _username(user: User) : optional (username: String)
-  Returns the user's username, or no row for an unknown user.
+  Return the user's username, or no row if unknown.
 ```
