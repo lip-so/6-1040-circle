@@ -44,7 +44,7 @@ async function enter(answer: Promise<object>, messages: Record<string, string>):
 }
 
 /** Signs out, then reloads the page so that the tab's uploads, polling, and requests stop. */
-async function signOut() {
+async function signOut(onEnded?: () => void) {
   revision += 1;
   signingOut.value = true;
   const result = await attempt(() => api.auth.logout());
@@ -53,6 +53,7 @@ async function signOut() {
     error.value = "We couldn't sign you out. Try again.";
     return;
   }
+  onEnded?.();
   me.value = null;
   window.location.assign("/");
 }

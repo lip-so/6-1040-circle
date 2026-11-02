@@ -68,6 +68,16 @@ export type CircleWire = {
     };
     error: { error: AppWideError | "INVALID_INPUT" | "NOT_SIGNED_IN" | "USER_NOT_FOUND" };
   };
+  "/auth/test": {
+    input: Record<string, never>;
+    output: {
+      "expiresAt": Jsonify<AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Sessioning"]["start"]>>, ["expiresAt"]>>;
+      "session": Jsonify<AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Sessioning"]["start"]>>, ["session"]>>;
+      "user": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["start"]>[0], ["subject"]>, AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Registering"]["registerGuest"]>>, ["user"]>]>>;
+      "username": Jsonify<AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Registering"]["registerGuest"]>>, ["username"]>>;
+    };
+    error: { error: AppWideError | "INVALID_INPUT" };
+  };
   "/memories/edit": {
     input: {
       "content": Jsonify<AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Remembering"]["edit"]>[0], ["content"]>>;
@@ -213,6 +223,14 @@ export type CircleWireHttp = {
       "username": Jsonify<AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Registering"]["identify"]>>, ["username"]>>;
     };
     error: { error: HttpAppWideError | "INVALID_REQUEST" | "UNAUTHORIZED" };
+  };
+  "/auth/test": {
+    input: Record<string, never>;
+    output: {
+      "user": Jsonify<AllOf<[AtPath<Parameters<(typeof ApplicationConceptSet.concepts)["Sessioning"]["start"]>[0], ["subject"]>, AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Registering"]["registerGuest"]>>, ["user"]>]>>;
+      "username": Jsonify<AtPath<Awaited<ReturnType<(typeof ApplicationConceptSet.concepts)["Registering"]["registerGuest"]>>, ["username"]>>;
+    };
+    error: { error: HttpAppWideError | "INVALID_REQUEST" };
   };
   "/memories/edit": {
     input: {

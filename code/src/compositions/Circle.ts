@@ -2,9 +2,18 @@ import { endpoint, receive, respond } from "@mit-sdg/sync-engine/boundary";
 import { each, former, now, view, where } from "@mit-sdg/sync-engine/language";
 import { concepts } from "../concepts.ts";
 
-import { editInput, transcriptionInput, memoryIdentityInput, memoryListInput, rememberInput, sessionTextInput } from "./inputs.ts";
+import { testEntryInput, editInput, transcriptionInput, memoryIdentityInput, memoryListInput, rememberInput, sessionTextInput } from "./inputs.ts";
 
-const { Remembering, Seeking, Graphing, Sessioning } = concepts;
+const { Registering, Remembering, Seeking, Graphing, Sessioning } = concepts;
+
+const StartTest = endpoint(
+  "/auth/test",
+  ({ user, username, session, expiresAt }) => receive({})
+    .then(Registering.registerGuest({}).responds({ user, username }))
+    .then(Sessioning.start({ subject: user }).responds({ session, expiresAt }))
+    .then(respond({ user, username, session, expiresAt })),
+  { input: { required: [] }, validators: { input: testEntryInput } },
+);
 
 export const SavedMemories = former(
   "saved memories of (owner) after (after)",
@@ -108,4 +117,4 @@ const Edit = endpoint(
   { input: { required: ["session", "memory", "content", "submission", "revision"], defaults: { timeZone: "America/New_York" } }, validators: { input: editInput } },
 );
 
-export const composition = { OwnedMemory, NeedResults, SavedMemories, ListMemories, Remember, Seek, Forget, Transcribe, PrepareEdit, Edit };
+export const composition = { StartTest, OwnedMemory, NeedResults, SavedMemories, ListMemories, Remember, Seek, Forget, Transcribe, PrepareEdit, Edit };

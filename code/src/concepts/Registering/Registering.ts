@@ -49,6 +49,21 @@ export class RegisteringConcept {
     return { user };
   }
 
+  /** Always creates a new identity under the same atomic username constraint. */
+  async registerGuest() {
+    await this.#ready();
+    for (;;) {
+      const username = `test_${Buffer.from(crypto.getRandomValues(new Uint8Array(12))).toString("hex")}`;
+      const user = crypto.randomUUID() as User;
+      try {
+        await this.users.insertOne({ _id: user, username });
+        return { user, username };
+      } catch (error) {
+        if (!isDuplicate(error)) throw error;
+      }
+    }
+  }
+
   async identify({ user }: { user: User }): Promise<{ username: string }> {
     const found = await this.users.findOne({ _id: user });
     if (!found) throw new UserNotFound("Account not found.");

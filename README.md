@@ -6,6 +6,18 @@ Circle helps students retain encounter context and later find relevant people fr
 
 Sofia Lipkevych’s 6.1040 Fall 2026 personal project. The [design journal](https://github.com/lip-so/6-1040-sofia/blob/main/reflections/design-notebook.md) is in the private individual repository.
 
+## P5 submission
+
+| Deliverable                 | Location                                                                                                     |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Task list                   | [Eight study tasks](design-docs/p5/task-list.md)                                                             |
+| Deployed app with test data | [Circle](https://circle.mit-sdg.dev/) · [24 fictional encounters](design-docs/p5/data/encounters.json)       |
+| 2 study reports             | [Study 1](design-docs/p5/study-1.md) · [Study 2](design-docs/p5/study-2.md)                                  |
+| Design flaws                | [Design findings](design-docs/p5/findings.md)                                                                |
+| Personal reflection         | [Personal reflection](https://github.com/lip-so/6-1040-sofia/blob/main/reflections/p5-reflection.md) |
+
+After starting the app, choose **Try test mode** on the sign-in screen. **Exit test mode** returns to sign-in.
+
 ## P4: current implementation and materials
 
 | Start here                               | Link / actual status                                                                                                                                                                                                                                                                                                                                                                     |

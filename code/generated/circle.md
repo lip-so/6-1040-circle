@@ -74,6 +74,7 @@ Defined in [Registering](../design/concepts/Registering.md), line 1.
 - `register(username: String) : returns (user: User)`
   - Refuses `INVALID_USERNAME`: A username must have 3 to 32 letters, digits, underscores, or hyphens.
   - Refuses `USERNAME_TAKEN`: That username is taken.
+- `registerGuest() : returns (user: User, username: String)`
 
 #### Queries
 
@@ -158,7 +159,7 @@ _Views name reusable conditions. Multiple `where` blocks are alternatives._
 ### the memory (memory) owned by (owner)
 
 Authored path: `Circle.OwnedMemory`.
-- Covered by [Circle](../design/compositions/Circle.md), line 7.
+- Covered by [Circle](../design/compositions/Circle.md), line 21.
 
 ```view
 the memory (memory) owned by (owner) — inputs (owner, memory); outputs (content, original, revision, referenceDate); bindings () — answers at most one (content, original, revision, referenceDate)
@@ -173,7 +174,7 @@ _the authored explanation; this section records the generated shape._
 ### results for (owner)'s need (need) from (recall)
 
 Authored path: `Circle.NeedResults`.
-- Covered by [Circle](../design/compositions/Circle.md), line 47.
+- Covered by [Circle](../design/compositions/Circle.md), line 61.
 
 ```former
 Former "results for (owner)'s need (need) from (recall)" — inputs (owner, need, recall); bindings (description, target, label, source, reason, content, original, revision, referenceDate, card); promises exactly one record — forms:
@@ -199,7 +200,7 @@ Former "results for (owner)'s need (need) from (recall)" — inputs (owner, need
 ### saved memories of (owner) after (after)
 
 Authored path: `Circle.SavedMemories`.
-- Covered by [Circle](../design/compositions/Circle.md), line 7.
+- Covered by [Circle](../design/compositions/Circle.md), line 21.
 
 ```former
 Former "saved memories of (owner) after (after)" — inputs (owner, after); bindings (memory, listedContent, content, original, revision, referenceDate, card); promises exactly one record — forms:
@@ -220,8 +221,8 @@ Former "saved memories of (owner) after (after)" — inputs (owner, after); bind
 ### Circle.Edit
 
 Authored path: `Circle.Edit`.
-- Covered by [Circle](../design/compositions/Circle.md), line 19.
-- Covered by [Circle](../design/compositions/Circle.md), line 61.
+- Covered by [Circle](../design/compositions/Circle.md), line 33.
+- Covered by [Circle](../design/compositions/Circle.md), line 76.
 
 ```reaction
 when RequestBoundary.request (content, memory, path: "/memories/edit", requestId, revision, session, submission, timeZone)
@@ -234,8 +235,8 @@ then
 ### Circle.Edit#2
 
 Authored path: `Circle.Edit`.
-- Covered by [Circle](../design/compositions/Circle.md), line 19.
-- Covered by [Circle](../design/compositions/Circle.md), line 61.
+- Covered by [Circle](../design/compositions/Circle.md), line 33.
+- Covered by [Circle](../design/compositions/Circle.md), line 76.
 
 ```reaction
 when Sessioning.use (session, subject: owner), asked by Circle.Edit
@@ -249,8 +250,8 @@ then
 ### Circle.Edit#3
 
 Authored path: `Circle.Edit`.
-- Covered by [Circle](../design/compositions/Circle.md), line 19.
-- Covered by [Circle](../design/compositions/Circle.md), line 61.
+- Covered by [Circle](../design/compositions/Circle.md), line 33.
+- Covered by [Circle](../design/compositions/Circle.md), line 76.
 
 ```reaction
 when Remembering.edit (capturedAt, content, memory, owner, revision, submission, timeZone), asked by Circle.Edit#2
@@ -261,8 +262,8 @@ then
 ### Circle.Edit#4
 
 Authored path: `Circle.Edit`.
-- Covered by [Circle](../design/compositions/Circle.md), line 19.
-- Covered by [Circle](../design/compositions/Circle.md), line 61.
+- Covered by [Circle](../design/compositions/Circle.md), line 33.
+- Covered by [Circle](../design/compositions/Circle.md), line 76.
 
 ```reaction
 when Remembering.inspect (memory, owner, content: savedContent, referenceDate, revision: savedRevision), asked by Circle.Edit#3
@@ -273,8 +274,8 @@ then
 ### Circle.Edit#5
 
 Authored path: `Circle.Edit`.
-- Covered by [Circle](../design/compositions/Circle.md), line 19.
-- Covered by [Circle](../design/compositions/Circle.md), line 61.
+- Covered by [Circle](../design/compositions/Circle.md), line 33.
+- Covered by [Circle](../design/compositions/Circle.md), line 76.
 
 ```reaction
 when Graphing.ingest (content: savedContent, owner, referenceDate, revision: savedRevision, source: memory), asked by Circle.Edit#4
@@ -287,8 +288,8 @@ then
 ### Circle.Forget
 
 Authored path: `Circle.Forget`.
-- Covered by [Circle](../design/compositions/Circle.md), line 49.
-- Covered by [Circle](../design/compositions/Circle.md), line 62.
+- Covered by [Circle](../design/compositions/Circle.md), line 63.
+- Covered by [Circle](../design/compositions/Circle.md), line 77.
 
 ```reaction
 when RequestBoundary.request (memory, path: "/memories/forget", requestId, session)
@@ -299,8 +300,8 @@ then
 ### Circle.Forget#2
 
 Authored path: `Circle.Forget`.
-- Covered by [Circle](../design/compositions/Circle.md), line 49.
-- Covered by [Circle](../design/compositions/Circle.md), line 62.
+- Covered by [Circle](../design/compositions/Circle.md), line 63.
+- Covered by [Circle](../design/compositions/Circle.md), line 77.
 
 ```reaction
 when Sessioning.use (session, subject: owner), asked by Circle.Forget
@@ -313,8 +314,8 @@ then
 ### Circle.Forget#3
 
 Authored path: `Circle.Forget`.
-- Covered by [Circle](../design/compositions/Circle.md), line 49.
-- Covered by [Circle](../design/compositions/Circle.md), line 62.
+- Covered by [Circle](../design/compositions/Circle.md), line 63.
+- Covered by [Circle](../design/compositions/Circle.md), line 77.
 
 ```reaction
 when Remembering.forget (memory, owner), asked by Circle.Forget#2
@@ -325,8 +326,8 @@ then
 ### Circle.Forget#4
 
 Authored path: `Circle.Forget`.
-- Covered by [Circle](../design/compositions/Circle.md), line 49.
-- Covered by [Circle](../design/compositions/Circle.md), line 62.
+- Covered by [Circle](../design/compositions/Circle.md), line 63.
+- Covered by [Circle](../design/compositions/Circle.md), line 77.
 
 ```reaction
 when Graphing.withdraw (owner, source: memory), asked by Circle.Forget#3
@@ -339,8 +340,8 @@ then
 ### Circle.ListMemories
 
 Authored path: `Circle.ListMemories`.
-- Covered by [Circle](../design/compositions/Circle.md), line 15.
-- Covered by [Circle](../design/compositions/Circle.md), line 58.
+- Covered by [Circle](../design/compositions/Circle.md), line 29.
+- Covered by [Circle](../design/compositions/Circle.md), line 73.
 
 ```reaction
 when RequestBoundary.request (after, path: "/memories/list", requestId, session)
@@ -351,8 +352,8 @@ then
 ### Circle.ListMemories#2
 
 Authored path: `Circle.ListMemories`.
-- Covered by [Circle](../design/compositions/Circle.md), line 15.
-- Covered by [Circle](../design/compositions/Circle.md), line 58.
+- Covered by [Circle](../design/compositions/Circle.md), line 29.
+- Covered by [Circle](../design/compositions/Circle.md), line 73.
 
 ```reaction
 when Sessioning.use (session, subject: owner), asked by Circle.ListMemories
@@ -365,8 +366,8 @@ then
 ### Circle.PrepareEdit
 
 Authored path: `Circle.PrepareEdit`.
-- Covered by [Circle](../design/compositions/Circle.md), line 19.
-- Covered by [Circle](../design/compositions/Circle.md), line 60.
+- Covered by [Circle](../design/compositions/Circle.md), line 33.
+- Covered by [Circle](../design/compositions/Circle.md), line 75.
 
 ```reaction
 when RequestBoundary.request (memory, path: "/memories/prepare-edit", requestId, session)
@@ -377,8 +378,8 @@ then
 ### Circle.PrepareEdit#2
 
 Authored path: `Circle.PrepareEdit`.
-- Covered by [Circle](../design/compositions/Circle.md), line 19.
-- Covered by [Circle](../design/compositions/Circle.md), line 60.
+- Covered by [Circle](../design/compositions/Circle.md), line 33.
+- Covered by [Circle](../design/compositions/Circle.md), line 75.
 
 ```reaction
 when Sessioning.use (session, subject: owner), asked by Circle.PrepareEdit
@@ -391,8 +392,8 @@ then
 ### Circle.PrepareEdit#3
 
 Authored path: `Circle.PrepareEdit`.
-- Covered by [Circle](../design/compositions/Circle.md), line 19.
-- Covered by [Circle](../design/compositions/Circle.md), line 60.
+- Covered by [Circle](../design/compositions/Circle.md), line 33.
+- Covered by [Circle](../design/compositions/Circle.md), line 75.
 
 ```reaction
 when Remembering.inspect (memory, owner, content, original, referenceDate, revision), asked by Circle.PrepareEdit#2
@@ -403,8 +404,8 @@ then
 ### Circle.PrepareEdit#4
 
 Authored path: `Circle.PrepareEdit`.
-- Covered by [Circle](../design/compositions/Circle.md), line 19.
-- Covered by [Circle](../design/compositions/Circle.md), line 60.
+- Covered by [Circle](../design/compositions/Circle.md), line 33.
+- Covered by [Circle](../design/compositions/Circle.md), line 75.
 
 ```reaction
 when Graphing.ingest (content, owner, referenceDate, revision, source: memory), asked by Circle.PrepareEdit#3
@@ -415,8 +416,8 @@ then
 ### Circle.PrepareEdit#5
 
 Authored path: `Circle.PrepareEdit`.
-- Covered by [Circle](../design/compositions/Circle.md), line 19.
-- Covered by [Circle](../design/compositions/Circle.md), line 60.
+- Covered by [Circle](../design/compositions/Circle.md), line 33.
+- Covered by [Circle](../design/compositions/Circle.md), line 75.
 
 ```reaction
 when Remembering.inspect (memory, owner, content: currentContent, original: currentOriginal, referenceDate: currentDate, revision: currentRevision), asked by Circle.PrepareEdit#4
@@ -430,8 +431,8 @@ then
 ### Circle.Remember
 
 Authored path: `Circle.Remember`.
-- Covered by [Circle](../design/compositions/Circle.md), line 15.
-- Covered by [Circle](../design/compositions/Circle.md), line 56.
+- Covered by [Circle](../design/compositions/Circle.md), line 29.
+- Covered by [Circle](../design/compositions/Circle.md), line 71.
 
 ```reaction
 when RequestBoundary.request (content, path: "/memories/remember", requestId, session, submission, timeZone)
@@ -444,8 +445,8 @@ then
 ### Circle.Remember#2
 
 Authored path: `Circle.Remember`.
-- Covered by [Circle](../design/compositions/Circle.md), line 15.
-- Covered by [Circle](../design/compositions/Circle.md), line 56.
+- Covered by [Circle](../design/compositions/Circle.md), line 29.
+- Covered by [Circle](../design/compositions/Circle.md), line 71.
 
 ```reaction
 when Sessioning.use (session, subject: owner), asked by Circle.Remember
@@ -459,8 +460,8 @@ then
 ### Circle.Remember#3
 
 Authored path: `Circle.Remember`.
-- Covered by [Circle](../design/compositions/Circle.md), line 15.
-- Covered by [Circle](../design/compositions/Circle.md), line 56.
+- Covered by [Circle](../design/compositions/Circle.md), line 29.
+- Covered by [Circle](../design/compositions/Circle.md), line 71.
 
 ```reaction
 when Remembering.remember (capturedAt, content, owner, submission, timeZone, memory), asked by Circle.Remember#2
@@ -471,8 +472,8 @@ then
 ### Circle.Remember#4
 
 Authored path: `Circle.Remember`.
-- Covered by [Circle](../design/compositions/Circle.md), line 15.
-- Covered by [Circle](../design/compositions/Circle.md), line 56.
+- Covered by [Circle](../design/compositions/Circle.md), line 29.
+- Covered by [Circle](../design/compositions/Circle.md), line 71.
 
 ```reaction
 when Remembering.inspect (memory, owner, content: savedContent, referenceDate, revision), asked by Circle.Remember#3
@@ -483,8 +484,8 @@ then
 ### Circle.Remember#5
 
 Authored path: `Circle.Remember`.
-- Covered by [Circle](../design/compositions/Circle.md), line 15.
-- Covered by [Circle](../design/compositions/Circle.md), line 56.
+- Covered by [Circle](../design/compositions/Circle.md), line 29.
+- Covered by [Circle](../design/compositions/Circle.md), line 71.
 
 ```reaction
 when Graphing.ingest (content: savedContent, owner, referenceDate, revision, source: memory), asked by Circle.Remember#4
@@ -497,8 +498,8 @@ then
 ### Circle.Seek
 
 Authored path: `Circle.Seek`.
-- Covered by [Circle](../design/compositions/Circle.md), line 41.
-- Covered by [Circle](../design/compositions/Circle.md), line 57.
+- Covered by [Circle](../design/compositions/Circle.md), line 55.
+- Covered by [Circle](../design/compositions/Circle.md), line 72.
 
 ```reaction
 when RequestBoundary.request (description, path: "/needs/seek", requestId, session)
@@ -509,8 +510,8 @@ then
 ### Circle.Seek#2
 
 Authored path: `Circle.Seek`.
-- Covered by [Circle](../design/compositions/Circle.md), line 41.
-- Covered by [Circle](../design/compositions/Circle.md), line 57.
+- Covered by [Circle](../design/compositions/Circle.md), line 55.
+- Covered by [Circle](../design/compositions/Circle.md), line 72.
 
 ```reaction
 when Sessioning.use (session, subject: owner), asked by Circle.Seek
@@ -523,8 +524,8 @@ then
 ### Circle.Seek#3
 
 Authored path: `Circle.Seek`.
-- Covered by [Circle](../design/compositions/Circle.md), line 41.
-- Covered by [Circle](../design/compositions/Circle.md), line 57.
+- Covered by [Circle](../design/compositions/Circle.md), line 55.
+- Covered by [Circle](../design/compositions/Circle.md), line 72.
 
 ```reaction
 when Seeking.seek (description, owner, need), asked by Circle.Seek#2
@@ -537,8 +538,8 @@ then
 ### Circle.Seek#4
 
 Authored path: `Circle.Seek`.
-- Covered by [Circle](../design/compositions/Circle.md), line 41.
-- Covered by [Circle](../design/compositions/Circle.md), line 57.
+- Covered by [Circle](../design/compositions/Circle.md), line 55.
+- Covered by [Circle](../design/compositions/Circle.md), line 72.
 
 ```reaction
 when Graphing.recall (description, notes, owner, recall), asked by Circle.Seek#3
@@ -549,11 +550,50 @@ then
   RequestBoundary.respond (requestId, results: former "results for (owner)'s need (need) from (recall)" with (need, owner, recall))
 ```
 
+### Circle.StartTest
+
+Authored path: `Circle.StartTest`.
+- Covered by [Circle](../design/compositions/Circle.md), line 5.
+- Covered by [Circle](../design/compositions/Circle.md), line 70.
+
+```reaction
+when RequestBoundary.request (path: "/auth/test", requestId)
+then
+  Registering.registerGuest ()
+```
+
+### Circle.StartTest#2
+
+Authored path: `Circle.StartTest`.
+- Covered by [Circle](../design/compositions/Circle.md), line 5.
+- Covered by [Circle](../design/compositions/Circle.md), line 70.
+
+```reaction
+when Registering.registerGuest (user, username), asked by Circle.StartTest
+then
+  Sessioning.start (subject: user)
+```
+
+### Circle.StartTest#3
+
+Authored path: `Circle.StartTest`.
+- Covered by [Circle](../design/compositions/Circle.md), line 5.
+- Covered by [Circle](../design/compositions/Circle.md), line 70.
+
+```reaction
+when Sessioning.start (subject: user, expiresAt, session), asked by Circle.StartTest#2
+where
+  earlier, Registering.registerGuest (user, username), asked by Circle.StartTest
+  earlier, RequestBoundary.request (path: "/auth/test", requestId)
+then
+  RequestBoundary.respond (expiresAt, requestId, session, user, username)
+```
+
 ### Circle.Transcribe
 
 Authored path: `Circle.Transcribe`.
-- Covered by [Circle](../design/compositions/Circle.md), line 17.
-- Covered by [Circle](../design/compositions/Circle.md), line 59.
+- Covered by [Circle](../design/compositions/Circle.md), line 31.
+- Covered by [Circle](../design/compositions/Circle.md), line 74.
 
 ```reaction
 when RequestBoundary.request (audio, mediaType, path: "/memories/transcribe", requestId, session)
@@ -564,8 +604,8 @@ then
 ### Circle.Transcribe#2
 
 Authored path: `Circle.Transcribe`.
-- Covered by [Circle](../design/compositions/Circle.md), line 17.
-- Covered by [Circle](../design/compositions/Circle.md), line 59.
+- Covered by [Circle](../design/compositions/Circle.md), line 31.
+- Covered by [Circle](../design/compositions/Circle.md), line 74.
 
 ```reaction
 when Sessioning.use (session), asked by Circle.Transcribe
@@ -578,8 +618,8 @@ then
 ### Circle.Transcribe#3
 
 Authored path: `Circle.Transcribe`.
-- Covered by [Circle](../design/compositions/Circle.md), line 17.
-- Covered by [Circle](../design/compositions/Circle.md), line 59.
+- Covered by [Circle](../design/compositions/Circle.md), line 31.
+- Covered by [Circle](../design/compositions/Circle.md), line 74.
 
 ```reaction
 when Remembering.transcribe (audio, mediaType, content), asked by Circle.Transcribe#2

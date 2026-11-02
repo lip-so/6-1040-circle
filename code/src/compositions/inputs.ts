@@ -52,3 +52,8 @@ export const editInput: EndpointValidator = value => {
   const { revision, memory, ...rest } = value as Record<string, unknown>;
   return { ok: Number.isSafeInteger(revision) && (revision as number) >= 0 && typeof memory === "string" && /^[\da-f-]{1,64}$/iu.test(memory) && rememberInput(rest).ok };
 };
+
+/** The public entry accepts no caller-selected registration or authority fields. */
+export const testEntryInput: EndpointValidator = value => ({ ok:
+  typeof value === "object" && value !== null && !Array.isArray(value) && Object.keys(value).length === 0,
+});

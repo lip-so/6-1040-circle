@@ -19,6 +19,7 @@ import RemovalConfirmation from "./reusable/RemovalConfirmation.vue";
 import ContactRow from "./reusable/ContactRow.vue";
 import CommonsButton from "./reusable/CommonsButton.vue";
 import CommonsCallback from "./reusable/CommonsCallback.vue";
+import { useTestMode } from "./test-mode.ts";
 import { useSession } from "./reusable/session.ts";
 
 const { me, checked, signingOut, error: accountError, load, signOut, sessionEnded } = useSession();
@@ -61,6 +62,8 @@ const people = computed(() => memories.value.map(memory => {
   const label = memoryLabel(memory.content, memory.card);
   return { ...memory, label, details: memorySummary(memory.content, label, memory.card) };
 }));
+const testMode = useTestMode(() => { void recent.refresh(); });
+const { active: testActive, setupVisible, hasRun: testHasRun, plan: testPlan, completed: testCompleted, entering: testEntering, running: testRunning, error: testError, unconfirmed: testUnconfirmed, stopped: testStopped, storageWarning } = testMode;
 type Results = CircleWireHttp["/needs/seek"]["output"]["results"];
 const results = ref<Results | null>(null);
 const suggestions = computed(() => results.value?.suggestions.map(suggestion => ({
@@ -68,7 +71,7 @@ const suggestions = computed(() => results.value?.suggestions.map(suggestion => 
 })) ?? []);
 
 onMounted(() => {
-  if (!callback.value) void load();
+  if (!callback.value) void load().then(() => testMode.resume());
   window.addEventListener("focus", refreshOnFocus);
 });
 onBeforeUnmount(() => {
@@ -76,6 +79,7 @@ onBeforeUnmount(() => {
   cancelVoice();
   sessionScope.invalidate();
   recent.clear();
+  testMode.invalidate();
 });
 watch(description, () => { results.value = null; searchError.value = ""; });
 watch(draft, () => { saveError.value = ""; });
@@ -97,14 +101,14 @@ watch([me, signingOut], () => {
   saveError.value = "";
   searchError.value = "";
   mode.value = "find";
-  if (me.value && !signingOut.value) void recent.refresh();
+  if (me.value && !signingOut.value && !setupVisible.value) void recent.refresh();
 }, { flush: "sync" });
 
 async function refreshOnFocus() {
   if (!me.value || signingOut.value) return;
   const current = sessionScope.current();
   const authenticated = await load();
-  if (authenticated && current() && me.value && !signingOut.value) void recent.refresh();
+  if (authenticated && current() && me.value && !signingOut.value && !setupVisible.value) void recent.refresh();
 }
 
 function finishedCommons() {
@@ -336,8 +340,8 @@ async function removeConnection(memory: string, label: string) {
   <header class="topbar">
     <a class="brand" href="/" aria-label="Circle home">Circle<span class="brand-period" aria-hidden="true">.</span></a>
     <div v-if="me" class="account">
-      <span>{{ me.username }}</span>
-      <button class="text-button" type="button" :disabled="signingOut" @click="signOut">{{ signingOut ? "Signing out…" : "Sign out" }}</button>
+      <span>{{ testActive ? "Test account" : me.username }}</span>
+      <button class="text-button" type="button" :disabled="signingOut" @click="testActive ? testMode.exit() : signOut()">{{ signingOut ? "Signing out…" : testActive ? "Exit test mode" : "Sign out" }}</button>
     </div>
   </header>
 
@@ -348,13 +352,38 @@ async function removeConnection(memory: string, label: string) {
       <div class="sign-in-copy">
         <h1>Remember the<br />people you meet<span class="vermilion">.</span></h1>
         <p class="lead">Find them when you need them.</p>
-        <CommonsButton />
+        <CommonsButton :disabled="testHasRun" />
+        <button v-if="!testPlan" type="button" class="test-button" :disabled="testEntering || signingOut" @click="testMode.start">{{ testEntering ? "Opening test mode…" : testUnconfirmed ? "Retry test entry" : "Try test mode" }}</button>
+        <p class="hint test-intro">Try Circle with 24 fictional encounters. Initial organization may take a few minutes.</p>
+        <p v-if="testHasRun" class="hint test-intro"><strong>Test mode — 24 fictional encounters</strong><br />All people and contact details here are fictional.</p>
+        <p v-if="testError" class="refusal" role="alert">{{ testError }}</p>
+        <button v-if="testPlan && testError && !testStopped" class="button primary" type="button" :disabled="testRunning || signingOut" @click="testMode.run">Retry setup</button>
+        <button v-if="testHasRun && !testEntering" class="text-button" type="button" :disabled="signingOut" @click="testMode.exit">{{ signingOut ? "Signing out…" : "Exit test mode" }}</button>
         <p v-if="accountError" class="refusal" role="alert">{{ accountError }}</p>
       </div>
       <AnimatedBackdrop />
     </section>
 
     <template v-else>
+      <aside v-if="testActive" class="test-banner" aria-label="Test mode">
+        <strong>Test mode — 24 fictional encounters</strong>
+        <p class="hint">You’re trying Circle as a reviewer. All people and contact details here are fictional.</p>
+      </aside>
+      <aside v-else-if="testPlan" class="test-banner">
+        <p role="alert">{{ testError }}</p>
+        <button class="text-button" type="button" @click="testMode.dismiss">Dismiss previous test setup</button>
+      </aside>
+      <section v-if="setupVisible" class="test-setup" aria-label="Setting up test mode">
+        <h1>Preparing your encounters</h1>
+        <p class="status" role="status" aria-live="polite">{{ testCompleted }} of {{ testMode.total }} encounters organized{{ testRunning ? "…" : "." }}</p>
+        <progress :value="testCompleted" :max="testMode.total" aria-label="Encounters organized" />
+        <p class="hint">Initial organization may take a few minutes. Each encounter is saved and organized before we continue.</p>
+        <p v-if="testError" class="refusal" role="alert">{{ testError }}</p>
+        <p v-if="storageWarning" class="hint">{{ storageWarning }}</p>
+        <p v-if="accountError" class="refusal" role="alert">{{ accountError }}</p>
+        <button v-if="testError && !testStopped" class="button primary" type="button" :disabled="testRunning || signingOut" @click="testMode.run">Retry setup</button>
+      </section>
+      <template v-else>
       <p v-if="accountError" class="refusal" role="alert">{{ accountError }}</p>
       <p v-if="notice" class="status" role="status">{{ notice }}</p>
       <p v-if="preparingEdit" class="status" role="status">Preparing encounter…</p>
@@ -427,6 +456,7 @@ async function removeConnection(memory: string, label: string) {
         </div>
         <div v-if="hasMore" class="recent-actions"><button class="text-button" type="button" :disabled="loadingPeople" @click="recent.more">{{ loadingPeople ? "Loading…" : "Load more" }}</button></div>
       </section>
+      </template>
     </template>
   </main>
 </template>

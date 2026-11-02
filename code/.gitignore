@@ -10,3 +10,9 @@ node_modules/
 tests/output/browser-artifacts/*/
 tests/output/browser-artifacts/.last-run.json
 frontend/dist/
+
+# Local P5 verification output and historical setup receipts.
+tests/p5-output/
+
+# Local review records are not P5 submission deliverables.
+.sync-engine/work/p5-test-mode/

@@ -5,6 +5,8 @@ import { api } from "../api/client.ts";
 import CommonsMark from "./CommonsMark.vue";
 import { useSession } from "./session.ts";
 
+defineProps<{ disabled?: boolean }>();
+
 const { error } = useSession();
 const working = ref(false);
 
@@ -21,7 +23,7 @@ async function start() {
 </script>
 
 <template>
-  <button type="button" class="commons-button" :disabled="working" @click="start">
+  <button type="button" class="commons-button" :disabled="working || disabled" @click="start">
     <CommonsMark :size="26" />
     {{ working ? "Opening Commons…" : "Sign in with Commons" }}
   </button>

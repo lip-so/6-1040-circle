@@ -1,0 +1,126 @@
+{
+  "version": "circle-p5-v1",
+  "fictional": true,
+  "encounters": [
+    {
+      "id": "mira",
+      "label": "Mira Chen",
+      "content": "Met Mira Chen at a robotics seminar on September 8, 2026. Mira is a PhD student in robot learning at Harbor Robotics Lab. Her lab may host undergraduate researchers for spring 2027; she said to ask again in November, not that a position is guaranteed. We discussed world models for mobile robots. Contact: mira@harbor.example."
+    },
+    {
+      "id": "omar",
+      "label": "Omar Singh",
+      "content": "Met Omar Singh at a research open house on September 10, 2026. Omar builds warehouse robots at Northline Robotics. He explicitly said his group has no undergraduate research openings for spring 2027. We discussed navigation in crowded spaces. Contact: omar@northline.example."
+    },
+    {
+      "id": "priya",
+      "label": "Priya Nair",
+      "content": "Met Priya Nair at a makerspace dinner on September 12, 2026. Priya is a mechanical engineering PhD student designing soft robotic grippers at Elm Lab. We discussed fabrication. I did not ask about openings. Contact: priya@elm.example."
+    },
+    {
+      "id": "leo",
+      "label": "Leo Martins",
+      "content": "Met Leo Martins at the arts club on September 14, 2026. Leo is a graphic designer who makes event posters. We discussed a public lecture on quantum computing that we both attended. Leo said he has no quantum research background. Contact: leo@studio.example."
+    },
+    {
+      "id": "ravi",
+      "label": "Ravi Menon",
+      "content": "Met Ravi Menon at a physics poster session on September 16, 2026. Ravi is a doctoral researcher studying quantum error correction at Lantern Quantum Lab. He offered to answer introductory questions about quantum computing. We discussed fault-tolerant qubits. Contact: ravi@lantern.example."
+    },
+    {
+      "id": "lena",
+      "label": "Lena Ortiz",
+      "content": "Met Lena Ortiz at a climate startup meetup on September 18, 2026. Lena designs rooftop solar panels at Solstice Works. We discussed recycling panel materials. Her company is not hiring interns for summer 2027. Contact: lena@solstice.example."
+    },
+    {
+      "id": "sarah",
+      "label": "Sarah Okafor",
+      "content": "Had coffee with Sarah Okafor from the entrepreneurship club on September 20, 2026. Sarah studies economics. Her former roommate Tomas assembles small batches of hardware prototypes, and Sarah offered to introduce me. Sarah does not do manufacturing herself. Contact: sarah@campus.example."
+    },
+    {
+      "id": "daniel",
+      "label": "Daniel Park",
+      "content": "Met Daniel Park at a startup demo night on September 22, 2026. Daniel founded Aster Chips and now advises the company rather than working there. We discussed low-power AI accelerators. He did not mention any current hiring. Contact: daniel@aster.example."
+    },
+    {
+      "id": "zoe",
+      "label": "Zoë Laurent",
+      "content": "Met Zoë Laurent after a French society event on September 24, 2026. Zoë is a front-end engineer at Cedar Health building accessible appointment forms. We discussed keyboard navigation. Contact: zoe@cedar.example."
+    },
+    {
+      "id": "sam-hardware",
+      "label": "Sam Rivera",
+      "content": "Met Sam Rivera, an electrical engineering graduate student, at the hardware hack night on September 26, 2026. Sam designs battery management circuits at Beacon Lab. We discussed testing battery packs. Contact: sam.hardware@beacon.example."
+    },
+    {
+      "id": "sam-design",
+      "label": "Sam Rivera",
+      "content": "Met Sam Rivera, a design student, at the campus museum on September 28, 2026. This is a different Sam Rivera from the electrical engineering graduate student. Sam designs exhibition signage and has no battery engineering experience. We discussed typography. Contact: sam.design@museum.example."
+    },
+    {
+      "id": "yuki",
+      "label": "Yuki Tanaka",
+      "content": "Met Yuki Tanaka at the data science lunch on September 30, 2026. Yuki is a graduate researcher analyzing public transit delays at Junction Lab. We discussed causal inference, not robotics. Contact: yuki@junction.example."
+    },
+    {
+      "id": "fatima",
+      "label": "Fatima El-Sayed",
+      "content": "Met Fatima El-Sayed at a biology mixer on October 2, 2026. Fatima researches plant genetics at Linden Lab. We discussed drought-resistant crops. She is not a marine biologist. Contact: fatima@linden.example."
+    },
+    {
+      "id": "ben",
+      "label": "Ben Wallace",
+      "content": "Met Ben Wallace at a career panel on October 4, 2026. Ben recruits software engineering interns for HarborPay for summer 2027. Applications open in January 2027. We discussed interview preparation. Contact: ben@harborpay.example."
+    },
+    {
+      "id": "lucia",
+      "label": "Lucía Fernández",
+      "content": "Met Lucía Fernández at a community mapping workshop on October 6, 2026. Lucía builds geospatial tools for pedestrian safety at Open Streets Studio. We discussed mapping wheelchair-accessible paths. Contact: lucia@openstreets.example."
+    },
+    {
+      "id": "ethan",
+      "label": "Ethan Cole",
+      "content": "Met Ethan Cole at the game development jam on October 8, 2026. Ethan programs audio tools for games. We discussed procedural sound and audio latency. Contact: ethan@play.example."
+    },
+    {
+      "id": "aisha",
+      "label": "Aisha Bello",
+      "content": "Met Aisha Bello at the climate policy forum on October 10, 2026. Aisha studies energy policy and writes about offshore wind permitting. We discussed deployment timelines, not engineering wind turbines. Contact: aisha@policy.example."
+    },
+    {
+      "id": "max",
+      "label": "Max Nguyen",
+      "content": "Met Max Nguyen at a founder lunch on October 12, 2026. Max operates a campus food delivery startup. They hope to hire a mobile developer later but have no funded position now. We discussed grocery logistics. Contact: max@pantry.example."
+    },
+    {
+      "id": "isabel",
+      "label": "Isabel Costa",
+      "content": "Met Isabel Costa at the public health workshop on October 14, 2026. Isabel develops low-cost air quality sensors at Willow Instruments. We discussed calibration and open hardware. Contact: isabel@willow.example."
+    },
+    {
+      "id": "quinn",
+      "label": "Quinn Zhao",
+      "content": "Met Quinn Zhao at a waterfront engineering event on October 16, 2026. Quinn builds ocean temperature sensors at Tide Instruments. Quinn is an electrical engineer, not a marine biologist, and did not mention hiring. We discussed waterproof housings. Contact: quinn@tide.example."
+    },
+    {
+      "id": "unknown",
+      "label": "Unknown name",
+      "content": "Spoke with someone after the October 18, 2026 machine learning seminar. I missed their name. They said they might work on medical imaging, but I am not sure of their role or institution. We discussed dataset privacy. No contact details recorded."
+    },
+    {
+      "id": "gabriel",
+      "label": "Gabriel Santos",
+      "content": "Met Gabriel Santos at a film screening on October 20, 2026. Gabriel is a documentary editor. We discussed recording clear interview audio. I forgot to ask for contact details."
+    },
+    {
+      "id": "nina",
+      "label": "Nina Patel",
+      "content": "Met Nina Patel at a student volunteer fair on October 24, 2026. Nina organizes peer mentoring for first-generation college students. We discussed training volunteer mentors. Contact: nina@mentors.example."
+    },
+    {
+      "id": "elena",
+      "label": "Elena Torres",
+      "content": "Met Elena Torres at the civic technology showcase on October 28, 2026. Elena is an environmental engineer at Maple City Lab. She builds neighborhood noise-monitoring stations. We discussed sharing public sensor data without recording conversations. Contact: elena@maple.example."
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # Circle types
 
-Circle reuses Conceptbox's Commons-only sign-in modules. Registering gives each
+Circle reuses Conceptbox's Commons sign-in modules and adds a bounded public test entry using the same Registering and Sessioning instances. Registering gives each
 person a local user identity; CommonsFederating links Commons' stable identity
 to that user. Sessioning resolves the user for every protected request. That
 same user owns their notes, needs, and graph. A request cannot choose its owner.

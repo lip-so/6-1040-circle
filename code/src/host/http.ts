@@ -2,7 +2,7 @@ import { httpPolicy } from "@mit-sdg/sync-engine-http/policy";
 import { accountsHttp } from "../compositions/reusable/accounts.ts";
 import { commonsHttp } from "../compositions/reusable/commons.ts";
 
-/** Cookie bindings follow Conceptbox's Commons-only sign-in example. */
+/** Commons and test-mode entry issue the same protected session cookie. */
 export function circleHttpPolicy(publicOrigin: string) {
   return httpPolicy({
     publicOrigin,
@@ -24,7 +24,7 @@ export function circleHttpPolicy(publicOrigin: string) {
       SOURCE_NOT_OWNED: "FORBIDDEN",
     },
     cookies: {
-      session: accountsHttp.sessionCookie("circle-session", commonsHttp.startingSessions),
+      session: accountsHttp.sessionCookie("circle-session", [...commonsHttp.startingSessions, "/auth/test"]),
       signIn: commonsHttp.signInCookie("circle-sign-in"),
     },
   });
