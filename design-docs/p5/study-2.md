@@ -1,17 +1,15 @@
-# Study 2 — P2
+# Study 2: P2
 
-**To complete:** Replace the blanks with observations from the second participant. Aim for **200–300 words total** across the five paragraphs; the suggested budgets total 250 words. Remove this note when finished.
+On November 1, 2026, P2, who is not enrolled in 6.1040, gave consent and participated in a 40-minute Circle session. The moderator provided an introduction and no task-specific hints. Tasks covered reading a saved card, saving Avery’s encounter, contextual search, voice capture, editing, and deletion.
 
-<!-- report:start -->
+During the study, it took P2 a moment to understand the UI. No hints were provided.
 
-[Setup — about 40 words: Date, session duration, relevant participant background, confirmation they are outside 6.1040, consent, device and whether they used the local or deployed app. State that the starting network was fictional.]
+When reading a saved encounter, it took P2 a few seconds to find the expand button for the original notes.
 
-[What worked — about 50 words: Identify a task, what the participant tried, the actual result and why it was useful. Include a concrete action or clearly labeled paraphrase. State whether completion was independent or assisted.]
+The UI did not appear entirely intuitive to the user. They questioned the figures in the background, whether they were supposed to be covered, why the app redirected them back to Findings, and how to easily search by name. The user initially assumed Circle was just a regular contacts app.
 
-[What was difficult — about 60 words: Identify a task, the participant’s expectation, what happened, any hesitation or error, and how they recovered or stopped. Include any help you gave. Distinguish a problem using the controls from a problem understanding the outcome.]
+When adding a connection, the user was cautious about voice input, as they thought it would be automatically processed and sent off without review. They were pleasantly surprised when given the option to read through their input before proceeding.
 
-[Interpretation — about 60 words: Explain what the observation and debrief suggest about the design. Consider an alternative explanation and a positive or complicating observation. Compare with Study 1 only where the evidence supports the comparison.]
+The recommendations retrieved were seen as useful, but the user was confused about data organization and correction. They mentioned that, when editing data, it was unclear how to add new fields, when to edit the original input text, and what each change would affect. The interdependence between these elements was not clear.
 
-[Implication and limits — about 40 words: Propose one concrete improvement and connect it to the findings. State any protocol change, service failure, missing evidence or assisted prerequisite that limits the conclusion.]
-
-<!-- report:end -->
+When saving an encounter, the automatic structuring of information into fields drew a positive reaction. The user pointed out that consolidating the information manually would have taken them much longer. They were also surprised that the system inferred the date (today) from the narrative.

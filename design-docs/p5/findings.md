@@ -1,33 +1,43 @@
 # Design flaws and opportunities
 
-Three opportunities from [Study 1](study-1.md). Evidence comes from a meeting summary and moderator confirmations; causes and severity are provisional. Where no failure was documented, severity describes potential impact. Revisit these after Study 2.
+[Study 1](study-1.md), [Study 2](study-2.md)
 
-## F1 — Prepare users for first-use microphone permission
+## 1. Make context-based search easier to discover
 
-**Evidence:** P1 reacted positively to voice capture but had to grant microphone permission during the hands-free task. No task-specific hint was given; transcript accuracy and the final save outcome are unknown.
+**Evidence:** P1 quickly forgot a newly saved contact's name. P2 initially assumed Circle was a conventional contacts app and questioned how to search by name. Both participants found contextual recommendations useful.
 
-**Explanation:** Browser permission adds an interaction when the user expects speaking to reduce effort. Ordinary first-use browser setup may explain the friction; the evidence does not establish that Circle’s recording controls were confusing.
+**Explanation:** Circle's distinction from a contacts app is not immediately apparent. Users may default to name-based search rather than describing a remembered encounter or current need.
 
-**Possible improvement:** Explain the permission step beside Start recording and show a clear text-entry fallback if access is refused. Test first-use recording with Study 2 before pre-granting permission.
+**Possible improvement:** Add example queries beside Find to illustrate contextual retrieval. Make sure it's evident that it works well with both full sentences and key-words.
 
-**Level:** Physical — operating a browser permission control interrupts capture. **Severity:** Minor — an extra setup step is documented, with no reported abandonment or intervention.
+**Level:** Conceptual, understanding how retrieval differs from conventional (e.g. Google) search. **Severity:** Moderate, misunderstanding the search model could limit use of app's main functionality.
 
-## F2 — Make context-based recall easy to discover
+## 2. Separate saved encounters from contextual findings
 
-**Evidence:** P1 quickly forgot the newly saved contact’s name. The session included searches for research needs, although exact queries and returned people were not recorded.
+**Evidence:** P2 questioned why navigation returned them to Findings and how to locate saved encounters. They also took several seconds to find the button for expanding original notes.
 
-**Explanation:** Remembering a name cannot be a prerequisite for retrieving an encounter. This supports Circle’s core design opportunity; it does not establish that P1 failed to find the person or that current search guidance failed.
+**Explanation:** The distinction between stored encounters and ones that are coming from search is unclear.
 
-**Possible improvement:** Add a short example beside Find, such as “Someone working on robot learning who may take undergraduates next spring.” Check whether Study 2 can formulate a need and justify a relevant result without a name or moderator hint.
+**Possible improvement:** Introduce a dedicated Encounters page with a searchable list of saved records. Use explicit controls such as "View original notes" and keep Findings as a separate search interface.
 
-**Level:** Conceptual — retrieval should match the user’s remembered situation and current need. **Severity:** Moderate potential impact — a name-dependent expectation could prevent useful recall, but that failure was not observed here.
+**Level:** Structural. **Severity:** Moderate, confusion was observed, although it did not make the user fail, just made it harded for them to undestand the UI.
 
-## F3 — Clarify the limits of opportunity search
+## 3. Clarify how editing affects structured data
 
-**Evidence:** P1 considered Circle useful for research opportunities and less useful for company internships. The summary gives no explanation or verified comparison of results.
+**Evidence:** P2 was unsure when to edit the original narrative, how to add new fields, and which information would change. They nevertheless appreciated automatic field extraction.
 
-**Explanation:** A saved encounter’s value may depend on the kind of opportunity sought. The difference could reflect the fictional network, P1’s networking habits or the interface’s framing; the evidence cannot distinguish these.
+**Explanation:** The relationship between original notes and extracted fields is unclear: users cannot predict whether changing one representation affects old notes, or only the fields they are changing.
 
-**Possible improvement:** Explain that Find searches saved encounters and preserves uncertainty about openings. Test one recent research need and one recent internship need, then ask what each result would let the participant do next.
+**Possible improvement:** Separate original notes from editable fields, introduce an explicit "Add field" action, and clarify when changes trigger reprocessing. Make editing in form format rather than text input.
 
-**Level:** Conceptual — the opportunity concerns the scope and value users expect from their network. **Severity:** Moderate potential impact — a mismatch could reduce return use, while no incorrect result or blocked task was documented.
+**Level:** Conceptual. **Severity:** Moderate.
+
+## 4. Clarify the scope and evidence behind recommendations
+
+**Evidence:** P1 found contextual search useful for research opportunities but less useful for company internships.
+
+**Explanation:** Users may not understand what evidence supports a recommendation or whether Circle identifies a relevant connection versus an actual opportunity.
+
+**Possible improvement:** Show which saved encounters support each recommendation, distinguish relevant expertise from confirmed opportunities, and tell the user when information is missing.
+
+**Level:** Conceptual. **Severity:** Moderate potential impact, unclear expectations could reduce trust, although no incorrect recommendation was documented.

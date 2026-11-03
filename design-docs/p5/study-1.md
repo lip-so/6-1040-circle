@@ -1,17 +1,11 @@
-# Study 1 — P1
+# Study 1: P1
 
-<!-- report:start -->
+On November 1, 2026, P1, who is not enrolled in 6.1040, gave consent and participated in a 40-minute Circle session. The moderator provided an introduction but no task-specific hints.
 
-On November 1, 2026, P1, who is not enrolled in 6.1040, gave consent and participated in a 40-minute Circle session. The moderator provided an introduction and no task-specific hints. Tasks covered reading a saved card, saving Avery’s encounter, contextual search, voice capture, editing, and deletion.
+During the study, P1 quickly forgot the name of a newly saved contact. This demonstrated the importance of preserving contextual information to help users recover connections later.
 
-A useful moment occurred when P1 quickly forgot the newly saved contact’s name. This supports the problem framing: preserving a connection requires retaining enough context to recover it later. The session included searches involving robotics research, a PhD student and spring 2027 opportunities, alongside a quantum-related query. These scenarios exercised retrieval through a current need, although the summary does not identify the returned people or confirm their relevance.
+The session included searches related to robotics research, a PhD student, spring 2027 opportunities, and a quantum-related query. These scenarios tested how users could retrieve connections based on their current needs rather than searching by name. However, the available summary does not establish whether the returned people were relevant.
 
-Voice input drew a positive reaction. However, P1 had to grant microphone permission during the hands-free task, introducing a setup step into an interaction intended to reduce typing. This is an execution hurdle worth observing in a follow-up study. It could reflect ordinary first-use browser setup; the available summary cannot establish whether Circle’s guidance also contributed.
+Voice input drew a positive reaction. However, during the hands-free task, P1 had to grant microphone permission before proceeding. This introduced an additional setup step into an interaction intended to reduce typing. It was unclear whether this was simply a first-use browser requirement or whether clearer guidance within Circle could have made the process more intuitive.
 
-P1 considered contextual search useful for research opportunities and less useful for company internships. That distinction suggests testing how well Circle fits different networking needs, using participants’ recent examples. A microphone readiness check before the hands-free scenario could also distinguish permission friction from problems with recording or transcription.
-
-These findings concern one participant and summarized evidence, supplemented by moderator confirmations. The participant’s networking background, task/debrief time split, and detailed search, edit and removal outcomes are not documented, limiting conclusions about task completion and general usefulness.
-
-<!-- report:end -->
-
-Source: November 1, 2026 Granola meeting summary and moderator confirmations. Identifying notes remain in the individual repository. No transcript or verbatim participant quotes were available.
+P1 found contextual search particularly useful for discovering research opportunities but considered it less useful for company internships. This suggested that the value of contextual retrieval may depend on the type of networking task. It would be useful to test these differences further with participants' own networking scenarios.

@@ -4,7 +4,9 @@
 
 Can a student save useful encounter context, recover someone by a later need without remembering their name, and judge or correct what Circle says?
 
-24 fictional encounters were populated in test mode.
+
+
+24 fictional encounters added in test mode.
 
 Time planning: The task budgets total 40 minutes. Also, 3 minutes for introduction and consent and 20 minutes for debriefing.
 
@@ -17,6 +19,6 @@ Time planning: The task budgets total 40 minutes. Also, 3 minutes for introducti
 | T5Capture while on the move 5 min  | Your hands are occupied after an event, so you want to speak this reminder: “Met Noor Haddad at the student venture fair on October 31, 2026. Noor designs accessible museum exhibits. We discussed tactile maps. Contact is noor@museum.example.” Keep an accurate version you would trust later.                | Reveals whether participants discover recording, understand that a transcript still needs review and saving, and recover from permission or transcription trouble. If fails, record the failure and allow typed input. Tests execution and evaluation.                                          |
 | T6Correct an encounter5 min        | Avery sends a correction: their work is acoustic sensors at Meridian Lab, rather than solar panels. Update the encounter. Check that the corrected version can help you find Avery for acoustic-sensor work, and tell me what remains of the wording you first saved.                                             | Depends on T2.Tests whether users find editing, understand the difference between current content and the retained first original, and verify the change through recall. A walkthrough by the author assumes that distinction is already clear. Tests both gulfs over a multi-step sequence.   |
 | T7 Recognize missing evidence4 min | You need a marine biologist who is hiring research assistants. Decide whether your saved encounters establish that you know such a person. Explain what you would do next.                                                                                                                                        | Data mentions ocean sensors without establishing a marine-biologist hiring relationship. Observe whether users recognize unsupported requests and distinguish an empty result from a service failure. No match is expected. Tests evaluation and recovery.                                      |
-| T8 Reconsider, then remove 5 min   | You are considering discarding the encounter with Noor, but change your mind before committing to it. Keep the encounter. Then suppose Noor asks you to discard it after all: do so and check whether you can still retrieve it.                                                                                  | Depends on T5. Tests whether the removal confirmation supports reconsideration, whether users understand when removal takes effect, and how they verify the result. Tests execution and evaluation.                                                                                             |
+| T8 Reconsider, then remove 5 min   | You are considering discarding the encounter with Noor, but change your mind before committing to it. Keep the encounter. Then suppose Noor asks you to discard it after all: do so and check whether you can still retrieve it.                                                                                  | Depends on T5.Tests if the removal confirmation supports reconsideration, and if users understand when removal takes effect, and how they verify the result. Tests execution and evaluation.                                                                                                   |
 
 Note: T6 depends on Avery being saved in T2; T8 depends on Noor being saved in T5.
